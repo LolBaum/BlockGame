@@ -1,0 +1,58 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++.exe Aktive Datei kompilieren",
+            "command": "E:\\Programme\\CodeBlocks\\MinGW\\bin\\g++.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "-std=c++11",
+                "main.cpp",
+                "shader.cpp",
+                "-o", "${fileDirname}\\build\\${fileBasenameNoExtension}.exe",
+                "-I${fileDirname}\\libs\\SDL2-2.0.20\\x86_64-w64-mingw32\\include\\SDL2",
+                "-I${fileDirname}\\libs\\glew-2.1.0\\include\\GL",
+                "-I${fileDirname}\\libs\\glm",
+                "-I${fileDirname}\\libs\\freetype-win\\include",
+                "-L${fileDirname}\\libs\\SDL2-2.0.20\\x86_64-w64-mingw32\\lib",
+                "-L${fileDirname}\\libs\\glew-2.1.0\\lib\\Release\\x64",
+                "-L${fileDirname}\\libs\\freetype-win\\release_dll\\win64",
+                
+                "-lglew32",
+                "-lmingw32",
+                "-lSDL2main",
+                "-lSDL2",
+                "-lglew32",
+                "-lopengl32",
+                "-lWs2_32",
+                "-lole32",
+                "-lcomctl32",
+                "-lgdi32",
+                "-lcomdlg32",
+                "-luuid",
+                "-lfreetype",
+                
+                //"-l${fileDirname}\\libs\\glew-2.1.0\\bin\\Release\\x64\\glew32.dll",
+                //"-lglew32mx",
+                //"-lglu32",
+                //"-lSDL2main",
+                //"$-l{fileDirname}\\libs\\SDL2-2.0.14\\lib\\x64\\SDL2.dll",
+                //"-lSDL2_image",
+                //"-lSDL2_ttf"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Vom Debugger generierte Aufgabe."
+        }
+    ],
+    "version": "2.0.0"
+}
