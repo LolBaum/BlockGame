@@ -46,7 +46,6 @@ public:
 		else {
 			SDL_SetRelativeMouseMode(SDL_FALSE);
 		}
-		
 	}
 
 	int getWidth() {

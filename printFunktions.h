@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sstream>
 #include <ctime>
+#include <iomanip>
 #include "glm/glm.hpp"
 
 using namespace std;
@@ -109,8 +110,8 @@ void slowPrint(string output) {
 std::string vec3_toString(glm::vec3 vec, std::string prefix = "") {
 	std::stringstream ss;
 	string output;
-	ss << prefix << ": ";
-	ss << "x " << vec.x << ", ";
+	ss << prefix << ": " << std::fixed << std::setprecision(1);
+	ss << "x " <<  vec.x << ", ";
 	ss << "y " << vec.y << ", ";
 	ss << "z " << vec.z << ", ";
 	output = ss.str();

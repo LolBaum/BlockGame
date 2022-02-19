@@ -64,16 +64,6 @@ glm::vec3 position_in_chunk(glm::vec3 pos) {
 	else {
 		z = CZ -1 - abs((int)pos.z % CZ);
 	}
-	//if (x == 16) {
-	//	x = 15;
-	//}
-	//if (y == 16) {
-	//	y = 15;
-	//}
-	//if (z == 16) {
-	//	z = 15;
-	//}
-	//std::cout << "### pos in chunk: " << vec3_toString(glm::vec3(x, y, z)) << std::endl;
 	return glm::vec3(x, y, z);
 }
 

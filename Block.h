@@ -24,7 +24,6 @@ private:
 	int typeId;
 	//int rotation;
 	//int light;
-	
 };
 
 

@@ -285,6 +285,16 @@ public:
 	int getNumChunks() {
 		return chunks.size();
 	}
+	int getNumFilledChunks() {
+		int n = 0;
+		for (int i=0; i<chunks.size(); i++){
+			if (!chunks.at(i)->is_empty()){
+				n++;
+			}
+		}
+		return n;
+	}
+
 
 	std::vector<Chunk*>getChunks() {
 		return  chunks;

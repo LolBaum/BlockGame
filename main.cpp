@@ -120,6 +120,8 @@ void RenderText(Shader &s, std::string text, float x, float y, float scale, glm:
 }
 
 
+// String splitting from Stackoverflow https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
+
 void render_multiline_text(Shader &s, std::string text, float x, float y, float scale, glm::vec3 color, int VAO, int VBO, float f_size, float line_offset=5){
 	std::string delimiter = "\n";
 	std::string line;
@@ -131,7 +133,6 @@ void render_multiline_text(Shader &s, std::string text, float x, float y, float 
 		RenderText(s, line, x, y-(line_offset+f_size*scale)*i, scale, color, VAO, VBO);
 		last = next + 1;
 		i++;
-		//std::cout << i << "  " << line << std::endl;
 	}
 }
 // -------------------------------------------------------
@@ -586,6 +587,8 @@ int main_function() {
 
 	std::string text = "FPS: ";
 	float time_since_slow_tick = 0;
+	float time_since_left_tick = 0;
+	float time_since_right_tick = 0;
 
 	bool buttonW = false;
 	bool buttonA = false;
@@ -715,19 +718,27 @@ int main_function() {
 		}if (buttonShift) {
 			player.getCamera()->moveUp(-delta * cameraSpeed);
 		}
-		/*
+		
 		if (mouseButtonL) {
-			player.get_focussed_Block();
+			if (time_since_left_tick > 0.2){
+				time_since_left_tick = 0;
+				player.get_focussed_Block();
+			}
 		}
 		if (mouseButtonR) {
-			player.place_block();
-		}*/
-		if (mouseButtonClickL) {
+			if (time_since_right_tick > 0.2){
+				time_since_right_tick = 0;
+				player.place_block();
+			}
+			
+		}
+		
+/* 		if (mouseButtonClickL) {
 			player.get_focussed_Block();
 		}
 		if (mouseButtonClickR) {
 			player.place_block();
-		}
+		} */
 
 		
 
@@ -823,10 +834,13 @@ int main_function() {
 		delta = ((float32)counterElapsed) / (float32)perfCounterFrequency;
 		uint32 FPS = (uint32)((float32)perfCounterFrequency / (float32)counterElapsed);
 		time_since_slow_tick += delta;
+		time_since_left_tick += delta;
+		time_since_right_tick += delta;
 		ss.str(std::string());
 		if (time_since_slow_tick > 1.0){
 			ss << "FPS: " << FPS << std::endl;
-			ss << "Number of Chunks: "<< chunkManager.getNumChunks() << std::endl;
+			ss << "Number of Chunks: "<< chunkManager.getNumChunks() << "  " << chunkManager.getNumFilledChunks() << std::endl;
+			ss << vec3_toString(player.getPosition(), "pos: ") << std::endl;
 			text = ss.str();
 			time_since_slow_tick = 0;
 		}

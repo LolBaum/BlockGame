@@ -1,10 +1,10 @@
 ## BlockGame
 20.09.2021
 
-Prototype of a Voxelgame.
+Prototype of a Voxelgame with C++ and OpenGL.
  ________________________________________________________________________________________________
  
- # Dependencies
+ ### Dependencies
 
 glew
 glm

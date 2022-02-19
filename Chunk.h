@@ -381,6 +381,12 @@ struct Chunk{
 	void setPos(glm::vec3 newPos) {
 		pos = newPos;
 	}
+	unsigned int get_numBlocks(){
+		return numBlocks;
+	}
+	bool is_empty(){
+		return (numBlocks==0);
+	}
 
 private:
 	Block blocks[CX][CY][CZ];
