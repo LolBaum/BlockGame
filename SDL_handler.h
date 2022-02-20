@@ -54,6 +54,9 @@ public:
 	int getHeight() {
 		return height;
 	}
+	SDL_Window* getWindow(){
+		return window;
+	}
 
 private:
 	SDL_Window* window;

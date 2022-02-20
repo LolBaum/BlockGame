@@ -1,2 +1,5 @@
 backup/
 libs/
+devlog/
+build/screenshots/
+.vscode/settings.json
