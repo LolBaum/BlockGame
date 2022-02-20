@@ -56,6 +56,29 @@ void draw_text(const char* msg, int x, int y, int r, int g, int b, int size){
 }
 
 
+#include <sys/stat.h>
+inline bool exists (const std::string& name) {
+  struct stat buffer;   
+  return (stat (name.c_str(), &buffer) == 0); 
+}
+
+std::string numerate_name(std::string name, std::string ending=".png", int max_tests=100){
+	int i = 0;
+	std::string new_name = name;
+	new_name.append(ending);
+	while(i<max_tests && exists(new_name)){
+		std::cout << new_name << " existiert" << std::endl;
+		new_name = name;
+		new_name.append(to_string(i));
+		new_name.append(ending);
+		i++;
+	}
+	std::cout << "Neuer Name: " << new_name << std::endl;
+	return new_name;
+}
+
+
+
 
 
 // freetype
@@ -348,7 +371,7 @@ int main_function() {
 		//	}
 
 		//}
-
+	numerate_name("screenshots/Screenshot", ".png");
 
 
 	LocalPlayer player = LocalPlayer();
@@ -714,7 +737,7 @@ int main_function() {
 				player.get_focussed_Block();
 
 				//take_screenshot(sdl_handler.getWidth(), sdl_handler.getHeight(), sdl_handler.getWindow());
-				saveScreenshotToFile("Screenshot_1.tga",sdl_handler.getWidth(), sdl_handler.getHeight());
+				//saveScreenshotToFile("Screenshot_1.tga",sdl_handler.getWidth(), sdl_handler.getHeight());
 			}
 		}
 		if (mouseButtonR) {
