@@ -16,16 +16,15 @@ struct Character {
     glm::ivec2   Bearing;    // Offset from baseline to left/top of glyph
     unsigned int Advance;    // Offset to advance to next glyph
 };
-std::map<char, Character> Characters;
+//std::map<char, Character> Characters;
 
-int load_face(FT_Face face, FT_Library ft){
-	if (FT_New_Face(ft, "fonts/TheJewishBitmap.ttf", 0, &face))
+int load_face(FT_Face face, FT_Library ft, const char* pathname, std::map<char, Character>* chars, int font_size = 40){
+	if (FT_New_Face(ft, pathname, 0, &face))
 	{
 		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;  
 		return -1;
 	}
 
-	float font_size = 40;
 
 	FT_Set_Pixel_Sizes(face, 0, font_size);
 	if (FT_Load_Char(face, 'X', FT_LOAD_RENDER))
@@ -72,7 +71,7 @@ int load_face(FT_Face face, FT_Library ft){
 			glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
 			(unsigned int)face->glyph->advance.x
 		};
-		Characters.insert(std::pair<char, Character>(c, character));
+		chars->insert(std::pair<char, Character>(c, character));
 	}
 	return 0;
 }
@@ -81,6 +80,7 @@ class Font{
 private:  
 public:
     //std::map<char, Character> Characters;
+    std::map<char, Character> Characters;
     int size; 
     FT_Face face;
 
@@ -90,7 +90,7 @@ public:
             std::cout << "ERROR::FREETYPE: Failed to load font: " << name << std::endl;  
             // todo: add function for error logging and error handling
         }
-        load_face(face, ft);
+        load_face(face, ft, name, &Characters, s);
         FT_Done_Face(face);
         //FT_Done_FreeType(ft);
         /* glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
@@ -209,8 +209,12 @@ public:
     }
 
     void RenderText(std::string text, Font font, float x, float y, float scale, glm::vec3 color)
-    {
-        // activate corresponding render state	
+    {   
+        // Disable depth testing -> overlaping Characters will be Displayed correctly
+        glDisable(GL_DEPTH_TEST);
+
+        // activate corresponding render state
+        std::map<char, Character> Characters = font.Characters;	
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
         font_shader.bind();
@@ -255,6 +259,7 @@ public:
         glBindTexture(GL_TEXTURE_2D, 0);
         font_shader.unbind();
         glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
     }
 
     void render_multiline_text(std::string text, Font font, float x, float y, float scale, glm::vec3 color, float line_offset=5){
@@ -297,7 +302,7 @@ public:
 //FontSystem Fontsys = FontSystem();
 
 
-void RenderText(Shader &s, std::string text, float x, float y, float scale, glm::vec3 color, int VAO, int VBO)
+/* void RenderText(Shader &s, std::string text, float x, float y, float scale, glm::vec3 color, int VAO, int VBO)
 {
     // activate corresponding render state	
     //s.Use();
@@ -345,12 +350,12 @@ void RenderText(Shader &s, std::string text, float x, float y, float scale, glm:
     glBindTexture(GL_TEXTURE_2D, 0);
 	s.unbind();
 	glDisable(GL_BLEND);
-}
+} */
 
 
 // String splitting from Stackoverflow https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
 
-void render_multiline_text(Shader &s, std::string text, float x, float y, float scale, glm::vec3 color, int VAO, int VBO, float f_size, float line_offset=5){
+/* void render_multiline_text(Shader &s, std::string text, float x, float y, float scale, glm::vec3 color, int VAO, int VBO, float f_size, float line_offset=5){
 	std::string delimiter = "\n";
 	std::string line;
 	size_t last = 0; 
@@ -362,4 +367,4 @@ void render_multiline_text(Shader &s, std::string text, float x, float y, float 
 		last = next + 1;
 		i++;
 	}
-}
+} */
