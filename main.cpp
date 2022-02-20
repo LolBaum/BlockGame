@@ -42,6 +42,8 @@
 #include "SDL_handler.h"
 //#include <filesystem>
 #include <sstream>
+
+
 //namespace fs = std::filesystem; // Needs C++ 17 or above 
 
 
@@ -53,6 +55,9 @@ void draw_text(const char* msg, int x, int y, int r, int g, int b, int size){
 	//TTF_Font
 }
 
+
+
+
 // freetype
 
 #include <ft2build.h>
@@ -63,7 +68,120 @@ void draw_text(const char* msg, int x, int y, int r, int g, int b, int size){
 
 
 // -------------------------------------------------------
+void take_screenshot(int xres, int yres, SDL_Window * window){	
+	SDL_Surface *sshot = SDL_CreateRGBSurface(0, xres, yres, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+	SDL_RenderReadPixels(SDL_GetRenderer(window), NULL, SDL_PIXELFORMAT_ARGB8888, sshot->pixels, sshot->pitch);
+	SDL_SaveBMP(sshot, "screenshot1.bmp");
+	SDL_FreeSurface(sshot);
 
+
+/* 	// Find where to save the file	
+	int x = 1;	
+	//while(x < 100 && System::File::Exists("screenshot" + boost::lexical_cast<string>(x++) + ".bmp"));	
+	std::string filename = "screenshot1.bmp";	
+	// Save it	
+	SDL_SaveBMP(System::Screen, filename.c_str()); */
+
+
+/* 	unsigned int *screenPixels = new unsigned int[xres * yres * 3];
+	if (screenPixels)
+	{
+		// Read the pixels
+		std::cout << "taking Screenshot" << std::endl;
+		glReadPixels(0, 0, xres, yres, GL_RGB, GL_UNSIGNED_INT, screenPixels);
+		
+		#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+		SDL_Surface *bitmap = SDL_CreateRGBSurfaceFrom(screenPixels, xres, yres, 32, xres*4,
+		0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
+		#else
+		SDL_Surface *bitmap = SDL_CreateRGBSurfaceFrom(screenPixels, xres, yres, 32, xres*4,
+		0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+		#endif
+		
+		// Write the file
+		SDL_SaveBMP(bitmap, "screenshot.bmp");
+		
+		// Free everything
+		SDL_FreeSurface(bitmap);
+		delete[] screenPixels;
+	} */
+}
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
+void saveScreenshotToFile(std::string filename, int windowWidth, int windowHeight) {    
+    const int numberOfPixels = windowWidth * windowHeight * 3;
+    unsigned char *pixels =  new unsigned char[numberOfPixels];
+
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glReadBuffer(GL_FRONT);
+    glReadPixels(0, 0, windowWidth, windowHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+
+    //FILE *outputFile = fopen(filename.c_str(), "w");
+    //short header[] = {0, 2, 0, 0, 0, 0, (short) windowWidth, (short) windowHeight, 24};
+	int num_chanels = 3;
+
+/* 	#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+		SDL_Surface *bitmap = SDL_CreateRGBSurfaceFrom(pixels, windowWidth, windowHeight, 32, windowWidth*3,
+		0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
+	#else
+		SDL_Surface *bitmap = SDL_CreateRGBSurfaceFrom(pixels, windowWidth, windowHeight, 32, windowWidth*3,
+		0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+	#endif */
+	//SDL_Surface *bitmap = SDL_CreateRGBSurfaceFrom(pixels, windowWidth, windowHeight, 32, windowWidth * num_chanels,
+	//							0x0000ff00, 0x00ff0000, 0xff000000, 0x000000ff);
+
+	unsigned char *correctpixels = new unsigned char[numberOfPixels];
+	for(int i=0; i<numberOfPixels-2; i=i+3){
+		correctpixels[i] = pixels[i+2];
+		correctpixels[i+1] = pixels[i+1];
+		correctpixels[i+2] = pixels[i];
+	} 
+/* 	int s = windowWidth*3*50;
+	int f = windowWidth*3*51;
+	for(int j=0;j<windowWidth; j++){
+		correctpixels[s+j] = pixels[f-j];
+	} */
+	stbi_flip_vertically_on_write(1);
+
+
+    //fwrite(&header, sizeof(header), 1, outputFile);
+    //fwrite(pixels, numberOfPixels, 1, outputFile);
+    //fclose(outputFile);
+	stbi_write_png("Screenshot7.png", windowWidth, windowHeight, num_chanels, correctpixels, windowWidth * num_chanels);
+
+    printf("Finish writing to file.\n");
+
+	delete[] pixels;
+	delete[] correctpixels;
+
+}
+
+/* void saveScreenshotToFile(std::string filename, int windowWidth, int windowHeight) {    
+    const int numberOfPixels = windowWidth * windowHeight * 3;
+    unsigned char *pixels =  new unsigned char[numberOfPixels];
+
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glReadBuffer(GL_FRONT);
+    glReadPixels(0, 0, windowWidth, windowHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+
+    FILE *outputFile = fopen(filename.c_str(), "w");
+    short header[] = {0, 2, 0, 0, 0, 0, (short) windowWidth, (short) windowHeight, 24};
+
+    fwrite(&header, sizeof(header), 1, outputFile);
+    fwrite(pixels, numberOfPixels, 1, outputFile);
+    fclose(outputFile);
+
+    printf("Finish writing to file.\n");
+
+}
+ */
+
+
+void savePNG(){
+
+}
 
 
 // Main Program
@@ -594,6 +712,9 @@ int main_function() {
 			if (time_since_left_tick > 0.2){
 				time_since_left_tick = 0;
 				player.get_focussed_Block();
+
+				//take_screenshot(sdl_handler.getWidth(), sdl_handler.getHeight(), sdl_handler.getWindow());
+				saveScreenshotToFile("Screenshot_1.tga",sdl_handler.getWidth(), sdl_handler.getHeight());
 			}
 		}
 		if (mouseButtonR) {
