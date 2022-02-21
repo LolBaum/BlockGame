@@ -4,6 +4,27 @@
 #include <string>
 #include <glew.h>
 
+#include <sys/stat.h>
+inline bool exists (const std::string& name) {
+  struct stat buffer;   
+  return (stat (name.c_str(), &buffer) == 0); 
+}
+
+std::string numerate_name(std::string name, std::string ending=".png", int max_tests=100){
+	int i = 0;
+	std::string new_name = name;
+	new_name.append(ending);
+	while(i<max_tests && exists(new_name)){
+		//std::cout << new_name << " exists arleady" << std::endl;
+		new_name = name;
+		new_name.append(to_string(i));
+		new_name.append(ending);
+		i++;
+	}
+	return new_name;
+}
+
+
 
 void savePNG(std::string filename, int windowWidth, int windowHeight, int num_chanels, unsigned char* pixels){
     int no_error = stbi_write_png(filename.c_str(), windowWidth, windowHeight, num_chanels, pixels, windowWidth * num_chanels);
@@ -33,12 +54,7 @@ void saveScreenshotToFile(std::string filename, int windowWidth, int windowHeigh
 	} 
 
 	stbi_flip_vertically_on_write(1);
-
     savePNG(filename.c_str(), windowWidth, windowHeight, num_chanels, correctpixels);
-
-	// stbi_write_png(filename.c_str(), windowWidth, windowHeight, num_chanels, correctpixels, windowWidth * num_chanels);
-
-    // printf("Finish writing to file.\n");
 
 	delete[] pixels;
 	delete[] correctpixels;
