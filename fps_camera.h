@@ -3,9 +3,9 @@
 
 class FPSCamera : public Camera {
 public:
-	FPSCamera(float fov, float width, float height) : Camera(fov, width, height){
+	FPSCamera(float fov, float width, float height, float cam_height = 1.7f) : Camera(fov, width, height){
 		up = glm::vec3(0.0f, 1.0f, 0.0f);
-		camera_height = glm::vec3(0.0f, 1.7f, 0.0f);
+		camera_height = glm::vec3(0.0f, cam_height, 0.0f);
 		yaw = -90.0f;
 		pitch = 0.0f;
 		onMouseMoved(0.0f, 0.0f);
@@ -55,6 +55,10 @@ public:
 
 	glm::vec3 getViewPos() {
 		return position+camera_height;
+	}
+
+	void set_camera_height(float height){
+		camera_height = glm::vec3(0.0f, height, 0.0f);
 	}
 
 protected:
