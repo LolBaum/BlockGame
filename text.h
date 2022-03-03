@@ -10,6 +10,10 @@
 #include "shader.h"
 #include "SDL_handler.h"
 
+	// based on the turorial from learnopengl.com
+	// https://learnopengl.com/In-Practice/Text-Rendering
+
+
 struct Character {
     unsigned int TextureID;  // ID handle of the glyph texture
     glm::ivec2   Size;       // Size of glyph
