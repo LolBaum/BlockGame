@@ -198,7 +198,7 @@ public:
 				pos.x += motion.z;
 			}
 		} */
-		glm::vec3 motion = new_position - position;
+		/* glm::vec3 motion = new_position - position;
 		glm::vec3 correct_motion = motion; //glm::vec3(0,0,0);
 		glm::vec3 pos = new_position;
 
@@ -253,8 +253,95 @@ public:
 			std::cout << "testing Collision Z: " << collided << std::endl;
 			correct_motion.z = 0.0f;
 			pos.z = position.z -motion.z;
+		} */
+
+		glm::vec3 motion = new_position - position;
+		glm::vec3 correct_motion = motion; //glm::vec3(0,0,0);
+		glm::vec3 pos = new_position;
+
+
+		bool collided;
+		int sign_x = sign(motion.x);
+		int sign_z = sign(motion.z);
+		float offset_y;
+		if (motion.y>0){
+			offset_y = player_height;
+			//std::cout << "Motion UP"<< std::endl;
+		}
+		else{
+			offset_y = 0;
 		}
 
+		
+		// check x
+		collided = false;
+		if (chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, position.y, 						position.z + player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, position.y, 						position.z - player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, position.y + player_half_height, position.z + player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, position.y + player_half_height, position.z - player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, position.y + player_height, 		position.z + player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, position.y + player_height, 		position.z - player_radius))){
+			collided = true;
+		}
+		if (collided){
+			correct_motion.x = 0.0f;
+			pos.x = position.x -motion.x;
+		}
+		//std::cout << vec3_toString(position) << std::endl;
+		//std::cout << vec3_toString(glm::vec3(pos.x + player_radius * sign_x, pos.y + offset_y, position.z + player_radius)) << std::endl;
+
+		collided = false;
+		if (chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y + offset_y, position.z + player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y + offset_y, position.z - player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius, 		   pos.y + offset_y, position.z + player_radius*sign_z)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x - player_radius,          pos.y + offset_y, position.z + player_radius*sign_z))){
+			collided = true;
+		}
+		if (collided){
+			correct_motion.y = 0.0f;
+			pos.y = position.y -motion.y;
+		}
+
+		collided = false;
+		if (chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius, pos.y, 					  pos.z + player_radius*sign_z)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x - player_radius, pos.y, 					  pos.z + player_radius*sign_z)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius, pos.y + player_half_height, pos.z + player_radius*sign_z)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x - player_radius, pos.y + player_half_height, pos.z + player_radius*sign_z)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius, pos.y + player_height, 	  pos.z + player_radius*sign_z)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x - player_radius, pos.y + player_height, 	  pos.z + player_radius*sign_z))){
+			collided = true;
+		}
+		if (collided){
+			correct_motion.z = 0.0f;
+			pos.z = position.z -motion.z;
+		}
+
+		// check y
+/* 		collided = false;
+		for (int x = xMin; x <= xMax; x++){
+			for (int z = zMin; z <= zMax; z++){
+				if (chunkManager.getBlockTypeInt(glm::vec3(pos.x, pos.y, position.z))){
+					if (test_block_collision(pos.x, pos.y, position.z)){
+						collided = true;
+		}	}	}	}
+		if (collided){
+			std::cout << "testing Collision Y: " << collided << std::endl;
+			correct_motion.y = 0.0f;
+			pos.y = position.y -motion.y;
+		}
+		
+		collided = false;
+		for (int x = xMin; x <= xMax; x++){
+			for (int y = yMin; y <= yMax; y++){
+				if (chunkManager.getBlockTypeInt(glm::vec3(pos.x, pos.y, pos.z))){
+					if (test_block_collision(pos.x, pos.y, pos.z)){
+						collided = true;
+		}	}	}	}
+		if (collided){
+			std::cout << "testing Collision Z: " << collided << std::endl;
+			correct_motion.z = 0.0f;
+			pos.z = position.z -motion.z;
+		} */
 
 		//camera.translate(correct_motion);
 		//std::cout << vec3_toString(new_position) << std::endl;
@@ -381,9 +468,11 @@ public:
 private:
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 new_position;
+	//glm::vec3 velocity; // Todo: Implement Velocity and Gravity
 
 	float player_radius = 0.3;
 	float player_height =  1.8;
+	float player_half_height = player_height/2;
 
 	float speed = 24.0f;
 	int sightDistance = 5;
