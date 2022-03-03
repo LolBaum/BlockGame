@@ -18,8 +18,7 @@
 #define MIN_HEIGHT 0
 
 #define PLAYER_ACTION_RANGE 5
-#define PLAYER_RADIUS 0.3
-#define PLAYER_HEIGHT 1.8
+
 
 #define APROX_STEP_SIZE 0.1
 
@@ -30,6 +29,7 @@ public:
 	LocalPlayer(){
 		//position = glm::vec3(8.0f, 8.0f, 25.0f);
 		//model = glm::scale(model, glm::vec3(1.2f));
+		camera.set_camera_height(player_height);
 		camera.translate(glm::vec3(8.0f, 28.0f, -100.0f));
 		chunksInSight.reserve(sightDistance * sightDistance * sightDistance);
 		update();
@@ -79,6 +79,20 @@ public:
 	}
 	void moveUp(float amount) {
 		translate(up * amount);
+	}
+
+	bool test_block_collision(int x, int y, int z){
+		float dist_x = position.x - (x + 0.5);
+		float dist_y = position.y + player_height - (y + 0.5);
+		float dist_z = position.z - (z + 0.5);
+		if (dist_x < 0.5 + player_radius ||
+			dist_y < 0.5 + player_height/2.0 ||
+			dist_z < 0.5 + player_radius){
+				return true;
+			}
+		else{
+			return false;
+		}
 	}
 
 	void move(){
@@ -184,12 +198,72 @@ public:
 				pos.x += motion.z;
 			}
 		} */
+		glm::vec3 motion = new_position - position;
+		glm::vec3 correct_motion = motion; //glm::vec3(0,0,0);
+		glm::vec3 pos = new_position;
 
+		int xMin = floorf(new_position.x - player_radius);
+		int xMax = floorf(new_position.x + player_radius);
+		int yMin = floorf(new_position.y);
+		int yMax = floorf(new_position.y + player_height);
+		int zMin = floorf(new_position.z - player_radius);
+		int zMax = floorf(new_position.z + player_radius);
+		bool collided;
+		
+		// check x
+		collided = false;
+		for (int y = yMin; y <= yMax; y++){
+			for (int z = zMin; z <= zMax; z++){
+				if (chunkManager.getBlockTypeInt(glm::vec3(pos.x, position.y, position.z))){
+					if (test_block_collision(pos.x, position.y, position.z)){
+						collided = true;
+					}
+					
+				}	
+			}
+		}
+		if (collided){
+			//std::cout << "testing Collision X: " << collided << std::endl;
+			correct_motion.x = 0.0f;
+			pos.x = position.x -motion.x;
+		}
 
+		// check y
+		collided = false;
+		for (int x = xMin; x <= xMax; x++){
+			for (int z = zMin; z <= zMax; z++){
+				if (chunkManager.getBlockTypeInt(glm::vec3(pos.x, pos.y, position.z))){
+					if (test_block_collision(pos.x, pos.y, position.z)){
+						collided = true;
+		}	}	}	}
+		if (collided){
+			std::cout << "testing Collision Y: " << collided << std::endl;
+			correct_motion.y = 0.0f;
+			pos.y = position.y -motion.y;
+		}
+		
+		collided = false;
+		for (int x = xMin; x <= xMax; x++){
+			for (int y = yMin; y <= yMax; y++){
+				if (chunkManager.getBlockTypeInt(glm::vec3(pos.x, pos.y, pos.z))){
+					if (test_block_collision(pos.x, pos.y, pos.z)){
+						collided = true;
+		}	}	}	}
+		if (collided){
+			std::cout << "testing Collision Z: " << collided << std::endl;
+			correct_motion.z = 0.0f;
+			pos.z = position.z -motion.z;
+		}
 
 
 		//camera.translate(correct_motion);
-		camera.translate(new_position - position);
+		//std::cout << vec3_toString(new_position) << std::endl;
+		if (chunkManager.getBlockTypeInt(new_position)){
+			
+			//std::cout << "testing Collision: " << test_block_collision(new_position.x, new_position.y, new_position.z) << std::endl;
+		}
+
+		camera.translate(correct_motion);
 		update();
 	}
 
@@ -291,7 +365,8 @@ public:
 			float factor = i * APROX_STEP_SIZE;
 			stepPos = viewpos + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
 			if (chunkManager.getBlockTypeInt(stepPos)) {
-				if (glm::length(viewpos - previousPos) > 1.4) {
+				if (glm::length(viewpos - previousPos) > 1.4 &&
+				    floor(previousPos) != floor(position) ) {
 					//std::cout << "\npos: " << vec3_toString(position)
 					//	      << "\npreviousPos: " << vec3_toString(previousPos) <<  std::endl;
 					chunkManager.setBlock(previousPos, 1);
@@ -306,6 +381,10 @@ public:
 private:
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 new_position;
+
+	float player_radius = 0.3;
+	float player_height =  1.8;
+
 	float speed = 24.0f;
 	int sightDistance = 5;
 	std::vector<glm::vec3> chunksInSight;
