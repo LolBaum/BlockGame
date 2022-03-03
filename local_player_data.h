@@ -18,6 +18,9 @@
 #define MIN_HEIGHT 0
 
 #define PLAYER_ACTION_RANGE 5
+#define PLAYER_RADIUS 0.3
+#define PLAYER_HEIGHT 1.8
+
 #define APROX_STEP_SIZE 0.1
 
 
@@ -37,6 +40,7 @@ public:
 	void update() {
 		//camera.translate(position);
 		position = camera.getPos();
+		new_position = position;
 		camera.update();
 		calculateChunkPos();
 		if (currentChunkPos != lastChunkPos) {
@@ -62,8 +66,136 @@ public:
 		}
 	}
 
+
+
+	virtual void translate(glm::vec3 v) {
+		new_position += v;
+	}
+	void moveFront(float amount) {
+		translate(glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * camera.getLookAt()) * amount);
+	}
+	void moveSideways(float amount) {
+		translate(glm::normalize(glm::cross(camera.getLookAt(), up)) * amount);
+	}
+	void moveUp(float amount) {
+		translate(up * amount);
+	}
+
+	void move(){
+		/* glm::vec3 motion = new_position - position;
+		glm::vec3 correct_motion = glm::vec3(0,0,0);
+		glm::vec3 pos = position;
+		int xMin = floorf(new_position.x - PLAYER_RADIUS);
+		int xMax = floorf(new_position.x + PLAYER_RADIUS);
+		int yMin = floorf(new_position.y);
+		int yMax = floorf(new_position.y + PLAYER_HEIGHT);
+		int zMin = floorf(new_position.z - PLAYER_RADIUS);
+		int zMax = floorf(new_position.z + PLAYER_RADIUS);
+		int new_x, new_y, new_z;
+		bool testX = false;
+    	bool testY = false;
+    	bool testZ = false;
+		bool collided = false;
+
+		//std::cout << "Block at Pos: " << chunkManager.getBlockTypeInt(new_position)<< std::endl;
+		//std::cout << "x: " << xMin << " " << xMax << ", y: " << yMin << " " << yMax << ", z: " << zMin << " " << zMax << std::endl;
+		
+
+		if(motion.x < 0){
+			new_x = floorf(pos.x + motion.x - PLAYER_RADIUS);
+			testX = true;
+		}
+		else if(motion.x > 0){
+			new_x = floorf(pos.x + motion.x + PLAYER_RADIUS);
+			testX = true;
+		}
+
+		
+
+		if(testX){
+			collided = false;
+			for (int y=yMin; y<=yMax; y++){
+				for (int z=zMin; z<=zMax; z++){
+					// std::cout << "Block at Pos "<< vec3_toString(new_position) <<" : " << chunkManager.getBlockTypeInt(new_position)<< std::endl;
+					// std::cout << "pos for  X: " << vec3_toString(glm::vec3(new_x, y, z )) << "  :  " << chunkManager.getBlockTypeInt(glm::vec3(new_x, y, z )) << std::endl;
+					//std::cout << "Block for x: " << chunkManager.getBlockTypeInt(new_x,y,z)<< std::endl;
+					if (chunkManager.getBlockTypeInt(glm::vec3(new_x, y, z ))){
+						collided = true;
+						std::cout << "Collision  X: " << new_x << " " <<  y << " " <<  z << " " << std::endl;
+					}
+				}
+			}
+			if (!collided){
+				correct_motion.x = motion.x;
+				pos.x += motion.x;
+			}
+		}
+
+		if(motion.y < 0){
+			new_x = floorf(pos.y + motion.y);
+			testY = true;
+		}
+		else if(motion.y > 0){
+			new_y = floorf(pos.y + motion.y + PLAYER_HEIGHT);
+			testY = true;
+		}
+
+		
+
+		if(testY){
+			collided = false;
+			for (int x=xMin; x<=yMax; x++){
+				for (int z=zMin; z<=zMax; z++){
+					std::cout << "Block at Pos "<< vec3_toString(new_position) <<" : " << chunkManager.getBlockTypeInt(new_position)<< std::endl;
+					std::cout << "pos for  Y: " << vec3_toString(glm::vec3(x, new_y, z )) << "  :  " << chunkManager.getBlockTypeInt(glm::vec3(x, new_y, z )) << std::endl;
+					if (chunkManager.getBlockTypeInt(glm::vec3(x,new_y,z))){
+						collided = true;
+						std::cout << "Collision  Y: " << x << " " <<  new_y << " " <<  z << " " << std::endl;
+					}
+				}
+			}
+			if (!collided){
+				correct_motion.y = motion.y;
+				pos.x += motion.y;
+			}
+		}
+
+		if(motion.z < 0){
+			new_z = floorf(pos.z + motion.z - PLAYER_RADIUS);
+			testZ = true;
+		}
+		else if(motion.z > 0){
+			new_z = floorf(pos.z + motion.z + PLAYER_RADIUS);
+			testZ = true;
+		}
+
+		if (testZ){
+			collided = false;
+			for (int x=xMin; x<=yMax; x++){
+				for (int y=yMin; y<=yMax; y++){
+					if (chunkManager.getBlockTypeInt(glm::vec3(x,y,new_z))){
+						collided = true;
+						std::cout << "Collision  Z: " << x << " " <<  y << " " <<  new_z << " " << std::endl;
+					}
+				}
+			}
+			if (!collided){
+				correct_motion.z = motion.z;
+				pos.x += motion.z;
+			}
+		} */
+
+
+
+
+		//camera.translate(correct_motion);
+		camera.translate(new_position - position);
+		update();
+	}
+
+
+
 	//Get / Set Fuctions,  some could be removed later
-	
 	FloatingCamera* getCamera() {
 		return &camera;
 	}
@@ -129,10 +261,11 @@ public:
 		glm::vec3 lookAt = camera.getLookAt();
 		std::cout << vec3_toString(lookAt, "lookAt") << std::endl;
 		glm::vec3 stepPos;
+		glm::vec3 viewpos = camera.getViewPos();
 		bool found = false;
 		for (int i = 0; i * APROX_STEP_SIZE < PLAYER_ACTION_RANGE; i++) {
 			float factor = i * APROX_STEP_SIZE;
-			stepPos = position + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
+			stepPos = viewpos + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
 			if (chunkManager.getBlockTypeInt(stepPos)) {
 				//std::cout << "\n stepPos: " << vec3_toString(stepPos) << std::endl;
 				chunkManager.setBlock(stepPos, 0);
@@ -151,13 +284,14 @@ public:
 		glm::vec3 lookAt = camera.getLookAt();
 		std::cout << vec3_toString(lookAt, "lookAt") << std::endl;
 		glm::vec3 stepPos;
-		glm::vec3 previousPos = position;
+		glm::vec3 viewpos = camera.getViewPos();
+		glm::vec3 previousPos = viewpos;
 		bool found = false;
 		for (int i = 0; i * APROX_STEP_SIZE < PLAYER_ACTION_RANGE; i++) {
 			float factor = i * APROX_STEP_SIZE;
-			stepPos = position + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
+			stepPos = viewpos + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
 			if (chunkManager.getBlockTypeInt(stepPos)) {
-				if (glm::length(position - previousPos) > 1.4) {
+				if (glm::length(viewpos - previousPos) > 1.4) {
 					//std::cout << "\npos: " << vec3_toString(position)
 					//	      << "\npreviousPos: " << vec3_toString(previousPos) <<  std::endl;
 					chunkManager.setBlock(previousPos, 1);
@@ -170,6 +304,8 @@ public:
 	}
 
 private:
+	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 new_position;
 	float speed = 24.0f;
 	int sightDistance = 5;
 	std::vector<glm::vec3> chunksInSight;
