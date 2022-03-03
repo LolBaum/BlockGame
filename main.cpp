@@ -29,9 +29,11 @@
 #include "shader.h"
 #include "object_models.h"
 #include "floating_camera.h"
+
 #include "printFunktions.h"
 #include "util_funcs.h"
 #include "text.h"
+#include "screenshot.h"
 
 #include "local_player_data.h"
 
@@ -47,164 +49,7 @@
 //namespace fs = std::filesystem; // Needs C++ 17 or above 
 
 
-// Work in Progress Section
-//#include <SDL_image.h> 
-void draw_text(const char* msg, int x, int y, int r, int g, int b, int size){
-	SDL_Surface* surf;
-	SDL_Texture* tex;
-	//TTF_Font
-}
-
-
-#include <sys/stat.h>
-inline bool exists (const std::string& name) {
-  struct stat buffer;   
-  return (stat (name.c_str(), &buffer) == 0); 
-}
-
-std::string numerate_name(std::string name, std::string ending=".png", int max_tests=100){
-	int i = 0;
-	std::string new_name = name;
-	new_name.append(ending);
-	while(i<max_tests && exists(new_name)){
-		std::cout << new_name << " existiert" << std::endl;
-		new_name = name;
-		new_name.append(to_string(i));
-		new_name.append(ending);
-		i++;
-	}
-	std::cout << "Neuer Name: " << new_name << std::endl;
-	return new_name;
-}
-
-
-
-
-
-// freetype
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
-#include <map>
-
-
-
 // -------------------------------------------------------
-void take_screenshot(int xres, int yres, SDL_Window * window){	
-	SDL_Surface *sshot = SDL_CreateRGBSurface(0, xres, yres, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-	SDL_RenderReadPixels(SDL_GetRenderer(window), NULL, SDL_PIXELFORMAT_ARGB8888, sshot->pixels, sshot->pitch);
-	SDL_SaveBMP(sshot, "screenshot1.bmp");
-	SDL_FreeSurface(sshot);
-
-
-/* 	// Find where to save the file	
-	int x = 1;	
-	//while(x < 100 && System::File::Exists("screenshot" + boost::lexical_cast<string>(x++) + ".bmp"));	
-	std::string filename = "screenshot1.bmp";	
-	// Save it	
-	SDL_SaveBMP(System::Screen, filename.c_str()); */
-
-
-/* 	unsigned int *screenPixels = new unsigned int[xres * yres * 3];
-	if (screenPixels)
-	{
-		// Read the pixels
-		std::cout << "taking Screenshot" << std::endl;
-		glReadPixels(0, 0, xres, yres, GL_RGB, GL_UNSIGNED_INT, screenPixels);
-		
-		#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-		SDL_Surface *bitmap = SDL_CreateRGBSurfaceFrom(screenPixels, xres, yres, 32, xres*4,
-		0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
-		#else
-		SDL_Surface *bitmap = SDL_CreateRGBSurfaceFrom(screenPixels, xres, yres, 32, xres*4,
-		0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
-		#endif
-		
-		// Write the file
-		SDL_SaveBMP(bitmap, "screenshot.bmp");
-		
-		// Free everything
-		SDL_FreeSurface(bitmap);
-		delete[] screenPixels;
-	} */
-}
-
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-
-void saveScreenshotToFile(std::string filename, int windowWidth, int windowHeight) {    
-    const int numberOfPixels = windowWidth * windowHeight * 3;
-    unsigned char *pixels =  new unsigned char[numberOfPixels];
-
-    glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    glReadBuffer(GL_FRONT);
-    glReadPixels(0, 0, windowWidth, windowHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
-
-    //FILE *outputFile = fopen(filename.c_str(), "w");
-    //short header[] = {0, 2, 0, 0, 0, 0, (short) windowWidth, (short) windowHeight, 24};
-	int num_chanels = 3;
-
-/* 	#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-		SDL_Surface *bitmap = SDL_CreateRGBSurfaceFrom(pixels, windowWidth, windowHeight, 32, windowWidth*3,
-		0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
-	#else
-		SDL_Surface *bitmap = SDL_CreateRGBSurfaceFrom(pixels, windowWidth, windowHeight, 32, windowWidth*3,
-		0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
-	#endif */
-	//SDL_Surface *bitmap = SDL_CreateRGBSurfaceFrom(pixels, windowWidth, windowHeight, 32, windowWidth * num_chanels,
-	//							0x0000ff00, 0x00ff0000, 0xff000000, 0x000000ff);
-
-	unsigned char *correctpixels = new unsigned char[numberOfPixels];
-	for(int i=0; i<numberOfPixels-2; i=i+3){
-		correctpixels[i] = pixels[i+2];
-		correctpixels[i+1] = pixels[i+1];
-		correctpixels[i+2] = pixels[i];
-	} 
-/* 	int s = windowWidth*3*50;
-	int f = windowWidth*3*51;
-	for(int j=0;j<windowWidth; j++){
-		correctpixels[s+j] = pixels[f-j];
-	} */
-	stbi_flip_vertically_on_write(1);
-
-
-    //fwrite(&header, sizeof(header), 1, outputFile);
-    //fwrite(pixels, numberOfPixels, 1, outputFile);
-    //fclose(outputFile);
-	stbi_write_png("Screenshot7.png", windowWidth, windowHeight, num_chanels, correctpixels, windowWidth * num_chanels);
-
-    printf("Finish writing to file.\n");
-
-	delete[] pixels;
-	delete[] correctpixels;
-
-}
-
-/* void saveScreenshotToFile(std::string filename, int windowWidth, int windowHeight) {    
-    const int numberOfPixels = windowWidth * windowHeight * 3;
-    unsigned char *pixels =  new unsigned char[numberOfPixels];
-
-    glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    glReadBuffer(GL_FRONT);
-    glReadPixels(0, 0, windowWidth, windowHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
-
-    FILE *outputFile = fopen(filename.c_str(), "w");
-    short header[] = {0, 2, 0, 0, 0, 0, (short) windowWidth, (short) windowHeight, 24};
-
-    fwrite(&header, sizeof(header), 1, outputFile);
-    fwrite(pixels, numberOfPixels, 1, outputFile);
-    fclose(outputFile);
-
-    printf("Finish writing to file.\n");
-
-}
- */
-
-
-void savePNG(){
-
-}
 
 
 // Main Program
@@ -213,34 +58,7 @@ int main_function() {
 	//btm.AddBlockType(BlockType(0, 3, 1));
 	//BlockType b = *btm.GetBlockType(0);
 
-	//b.printInfo();
-
-	
-
-	/*
-	std::cout << "Starting Program" << std::endl;
-	SDL_Window* window;
-	SDL_Init(SDL_INIT_EVERYTHING);
-
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
-	SDL_GL_SetSwapInterval(1); // Vsync 
-
-#ifdef _DEBUG
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-#endif
-
-	uint32 flags = SDL_WINDOW_OPENGL;
-
-	window = SDL_CreateWindow("C++ OpenGL Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, flags);
-	SDL_GLContext glContext = SDL_GL_CreateContext(window);
-	*/
-	
+	//b.printInfo();	
 	
 	sdl_handler.initialize();
 
@@ -255,8 +73,6 @@ int main_function() {
 
 
 	//        Wichtig
-
-
 #ifdef _DEBUG
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -267,24 +83,6 @@ int main_function() {
 	Fontsys.initialize();
 	Font font0 = Fontsys.create_Font("fonts/TheJewishBitmap.ttf");
 	Font font = Fontsys.create_Font("fonts/BLKCHCRY.TTF");
-
-	////Plane obj = Plane();
-	//Cube_old obj = Cube_old();
-
-	// based on the turorial from learnopengl.com
-	// https://learnopengl.com/In-Practice/Text-Rendering
-
-	FT_Library ft = Fontsys.ft;
-
-
-	//FT_Face face = font.face;
-
-	//load_face(face, ft);
-
-	//FT_Done_Face(face);
-	//FT_Done_FreeType(ft);
-
-	
 
 /* 	glm::mat4 font_projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
 
@@ -360,18 +158,6 @@ int main_function() {
 
 
 	
-	int s = 4;
-
-
-
-		//for (int i = 0; i < s; i++) {
-		//	for (int j = 0; j < s; j++) {
-		//		chunkManager.loadChunk(i * 16, 0, j * 16);
-		//		//chunkManager.unloadChunk(i * 16, 0, j * 16);
-		//	}
-
-		//}
-	numerate_name("screenshots/Screenshot", ".png");
 
 
 	LocalPlayer player = LocalPlayer();
@@ -609,6 +395,7 @@ int main_function() {
 	bool buttonSpace = false;
 	bool buttonShift = false;
 	bool buttonZ = false;
+	bool buttonF1 = false;
 	bool mouseButtonL = false;
 	bool mouseButtonR = false;
 	bool mouseButtonClickL = false;
@@ -651,6 +438,10 @@ int main_function() {
 					buttonZ = true;
 					GLCALL(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
 					break;
+				case SDLK_F1:
+					buttonF1 = true;
+					saveScreenshotToFile(numerate_name("screenshots/screenshot_", ".png"), sdl_handler.getWidth(), sdl_handler.getHeight());
+					break;
 				}
 			}
 			else if (event.type == SDL_KEYUP) {
@@ -676,6 +467,9 @@ int main_function() {
 				case SDLK_z:
 					buttonZ = false;
 					GLCALL(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
+					break;
+				case SDLK_F1:
+					buttonF1 = false;
 					break;
 				}
 			}
@@ -717,7 +511,7 @@ int main_function() {
 		}
 		*/
 
-		if (buttonW) {
+		/* if (buttonW) {
 			player.getCamera()->moveFront(delta * cameraSpeed);
 		}if (buttonA) {
 			player.getCamera()->moveSideways(-delta * cameraSpeed);
@@ -729,7 +523,22 @@ int main_function() {
 			player.getCamera()->moveUp(delta * cameraSpeed);
 		}if (buttonShift) {
 			player.getCamera()->moveUp(-delta * cameraSpeed);
+		} */
+
+		if (buttonW) {
+			player.moveFront(delta * cameraSpeed);
+		}if (buttonA) {
+			player.moveSideways(-delta * cameraSpeed);
+		}if (buttonS) {
+			player.moveFront(-delta * cameraSpeed);
+		}if (buttonD) {
+			player.moveSideways(delta * cameraSpeed);
+		}if (buttonSpace) {
+			player.moveUp(delta * cameraSpeed);
+		}if (buttonShift) {
+			player.moveUp(-delta * cameraSpeed);
 		}
+		player.move();
 		
 		if (mouseButtonL) {
 			if (time_since_left_tick > 0.2){
@@ -858,7 +667,8 @@ int main_function() {
 		if (time_since_slow_tick > 1.0){
 			ss << "FPS: " << FPS << std::endl;
 			ss << "Number of Chunks: "<< chunkManager.getNumChunks() << "  " << chunkManager.getNumFilledChunks() << std::endl;
-			ss << vec3_toString(player.getPosition(), "pos: ") << std::endl;
+			ss << vec3_toString(player.getPosition(), "pos ") << std::endl;
+			ss << vec3_toString(player.getCamera()->getViewPos(), "cam ") << std::endl;
 			text = ss.str();
 			time_since_slow_tick = 0;
 		}
