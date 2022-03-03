@@ -25,6 +25,19 @@ void _GLGetError(const char* file, int line, const char* call) {
 
 #endif
 
+
+template<typename T>
+int sign(T Value){
+	if (Value>=0){
+		return 1;
+	}
+	else{
+		return -1;
+	}
+}
+
+
+
 bool compareVec3(glm::vec3 v1, glm::vec3 v2) {
 	return ((v1.x == v2.x) && (v1.y == v2.y) && (v1.z == v2.z));
 }
