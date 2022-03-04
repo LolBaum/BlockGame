@@ -26,7 +26,7 @@ struct Chunk{
 		//std::cout << "Called Destructor for Chunk: " << pos.x << ", " << pos.y << ", " << pos.z << ", " << std::endl;
 		vertexBuffer.~ChunkVertexBuffer();
 		indexBuffer.~IndexBuffer();
-		//mesh.~ChunkMesh();
+		mesh.~ChunkMesh();
 	}
 
 	void clearChunk() {
@@ -284,11 +284,8 @@ struct Chunk{
 			uint32* indices = mesh.getIndices();
 
 			indexBuffer.update(indices, numIndices, sizeof(indices[0])); // fix sizeof
-
 			vertexBuffer.update(&vertices[0], numVertices);
 
-			//std::cout << "Mesh consits of " << numVertices << " Vertices" << std::endl;
-			//std::cout << "Mesh consits of " << numIndices << " indices" << std::endl;
 			changed = false;
 		}
 		
@@ -306,7 +303,6 @@ struct Chunk{
 
 		indexBuffer.unbind();
 		vertexBuffer.unbind();
-		//std::cout << "rendering " << pos.x << ", " << pos.y << ", " << pos.z << ", " << std::endl;
 	}
 
 	int calculateNumFaces() {
@@ -317,7 +313,6 @@ struct Chunk{
 				for (int z = 0; z < CZ; z++) {
 					if (blocks[x][y][z].getId() != 0) {
 						c++;
-						//std::cout << "getBlockType("<< x << ", " << y << ", " <<z << ") " << getBlockType(x, y, z) << std::endl;
 						if (getBlockTypeInt(x - 1, y, z) == 0) { // Todo: check for opeaqeness
 							numFaces++;
 							//std::cout << "x - 1 "<<  std::endl;
@@ -347,9 +342,6 @@ struct Chunk{
 				}
 			}
 		}
-
-		//std::cout << "Mesh should consist of " << numFaces*4 << " Vertices" << std::endl;
-		//std::cout << "Mesh should consist of " << numFaces*6 << " indices" << std::endl;
 		return numFaces;
 	}
 
@@ -399,28 +391,3 @@ private:
 	IndexBuffer indexBuffer;
 }; 
 //Chunk NullChunk = *new Chunk(glm::vec3(0,0,0));
-
-
-//void renderChunk(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId, uint32 numIndices,
-//	ChunkVertexBuffer* vertexBuffer, IndexBuffer* indexBuffer) {
-//	vertexBuffer->bind();
-//	indexBuffer->bind();
-//	GLCALL(glUniformMatrix4fv(modelViewProjMatrixLocation, 1, GL_FALSE, modelViewProj));
-//	GLCALL(glActiveTexture(GL_TEXTURE0));
-//	GLCALL(glBindTexture(GL_TEXTURE_2D, textureId));
-//	GLCALL(glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0));
-//	indexBuffer->unbind();
-//	vertexBuffer->unbind();
-//}
-//
-//
-//void renderChunk2(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId, Chunk* chunk) {
-//	chunk->getVertexBuffer()->bind();
-//	chunk->getIndexBuffer()->bind();
-//	GLCALL(glUniformMatrix4fv(modelViewProjMatrixLocation, 1, GL_FALSE, modelViewProj));
-//	GLCALL(glActiveTexture(GL_TEXTURE0));
-//	GLCALL(glBindTexture(GL_TEXTURE_2D, textureId));
-//	GLCALL(glDrawElements(GL_TRIANGLES, chunk->getMesh()->getNumIndices(), GL_UNSIGNED_INT, 0));
-//	chunk->getIndexBuffer()->unbind();
-//	chunk->getVertexBuffer()->unbind();
-//}

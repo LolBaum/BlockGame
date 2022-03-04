@@ -20,9 +20,6 @@ public:
 	glm::mat4 getViewProj() {
 		return viewProj;
 	}
-	//void setViewProj(glm::mat4 newViewProj) {
-	//	viewProj = newViewProj;
-	//}
 
 	virtual void update() {
 		viewProj = projection * view;
@@ -33,9 +30,9 @@ public:
 		view = glm::translate(view, v * -1.0f);
 	}
 
-	//void setFov(float newFov) {
-	//	projection = glm::perspective(newFov / 2.0f, width / height, 0.1f, 1000.0f);
-	//}
+	void setFov(float newFov) {
+		projection = glm::perspective(newFov / 2.0f, width / height, 0.1f, 1000.0f);
+	}
 
 	glm::vec3 getPos() {
 		return position;

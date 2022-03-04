@@ -29,14 +29,6 @@ struct Vertex {
 	float32 i; // light level / intensity
 };
 
-/*
-struct ColorVertex {
-	float x;
-	float y;
-	float z;
-};
-*/
-
 
 struct ColorVertex {
 	float32 x;
@@ -51,5 +43,4 @@ struct ColorVertex {
 	float32 b;
 	float32 a;
 };
-
 

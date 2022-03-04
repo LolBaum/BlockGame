@@ -266,6 +266,8 @@ public:
         glEnable(GL_DEPTH_TEST);
     }
 
+    // String splitting from Stackoverflow https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
+
     void render_multiline_text(std::string text, Font font, float x, float y, float scale, glm::vec3 color, float line_offset=5){
         std::string delimiter = "\n";
         std::string line;
@@ -305,70 +307,3 @@ public:
 
 //FontSystem Fontsys = FontSystem();
 
-
-/* void RenderText(Shader &s, std::string text, float x, float y, float scale, glm::vec3 color, int VAO, int VBO)
-{
-    // activate corresponding render state	
-    //s.Use();
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
-	s.bind();
-    //glUniform3f(glGetUniformLocation(s.Program, "textColor"), color.x, color.y, color.z);
-	glUniform3f(glGetUniformLocation(s.getShaderId(), "textColor"), color.x, color.y, color.z);
-    glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(VAO);
-
-    // iterate through all characters
-    std::string::const_iterator c;
-    for (c = text.begin(); c != text.end(); c++)
-    {
-        Character ch = Characters[*c];
-
-        float xpos = x + ch.Bearing.x * scale;
-        float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
-
-        float w = ch.Size.x * scale;
-        float h = ch.Size.y * scale;
-        // update VBO for each character
-        float vertices[6][4] = {
-            { xpos,     ypos + h,   0.0f, 0.0f },            
-            { xpos,     ypos,       0.0f, 1.0f },
-            { xpos + w, ypos,       1.0f, 1.0f },
-
-            { xpos,     ypos + h,   0.0f, 0.0f },
-            { xpos + w, ypos,       1.0f, 1.0f },
-            { xpos + w, ypos + h,   1.0f, 0.0f }           
-        };
-        // render glyph texture over quad
-        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-        // update content of VBO memory
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); 
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        // render quad
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-        x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
-    }
-    glBindVertexArray(0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-	s.unbind();
-	glDisable(GL_BLEND);
-} */
-
-
-// String splitting from Stackoverflow https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
-
-/* void render_multiline_text(Shader &s, std::string text, float x, float y, float scale, glm::vec3 color, int VAO, int VBO, float f_size, float line_offset=5){
-	std::string delimiter = "\n";
-	std::string line;
-	size_t last = 0; 
-	size_t next = 0; 
-	int i = 0;
-	while ((next = text.find(delimiter, last)) != std::string::npos){
-		line = text.substr(last, next-last);
-		RenderText(s, line, x, y-(line_offset+f_size*scale)*i, scale, color, VAO, VBO);
-		last = next + 1;
-		i++;
-	}
-} */

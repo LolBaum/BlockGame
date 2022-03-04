@@ -47,7 +47,6 @@ struct ChunkVertexBuffer {
 	}
 
 	~ChunkVertexBuffer() {
-		//std::cout << "Called Destructor VertexBuffer: " << bufferId << std::endl;
 		glDeleteBuffers(1, &bufferId);
 	}
 

@@ -351,15 +351,6 @@ private:
 	std::vector<Chunk*> chunks;
 	std::vector<glm::vec3> chunks_to_load;
 	std::vector<glm::vec3> chunks_to_unload;
-
-
-	//int dummy_max_x;
-	//int dummy_max_y;
-	//int dummy_max_z;
-
-	//int dummy_min_x;
-	//int dummy_min_y;
-	//int dummy_min_z;
 };
 
 

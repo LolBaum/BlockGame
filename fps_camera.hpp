@@ -28,16 +28,10 @@ public:
 		update();
 	}
 
-/* 	void update() override {
-		view = glm::lookAt(position, position + lookAt, up);
-		viewProj = projection * view;
-	} */
-
 	void update() override {
 		view = glm::lookAt(position+camera_height, position+camera_height + lookAt, up);
 		viewProj = projection * view;
 	}
-
 
 	void moveFront(float amount) {
 		translate(glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * lookAt) * amount);

@@ -65,9 +65,9 @@ private:
 class BlockTypeManager{
 public:
 	std::vector<BlockType> BlockTypeList;
+	BlockType Air = BlockType(0,0,0);
 	
 	BlockTypeManager() {
-
 	}
 	~BlockTypeManager() {}
 	
@@ -84,6 +84,7 @@ public:
 				return type_dummy;
 			}
 		}
+	return &Air;
 	}
 
 	

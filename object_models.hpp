@@ -16,27 +16,10 @@ public:
 		
 	}
 	~ChunkMesh() {
-		//std::cout << "Called Destructor for Mesh" << std::endl;
-		//vertices.~vector();
-		//indices.~vector();
 		std::vector<Vertex>().swap(vertices);
 		std::vector<uint32>().swap(indices);
 	}
-	//Vertex* dummy_get() {
-	//	obj.push_back(Vertex{ -1.0f, -1.0f, -1.0f,
-	//	0.0f, 0.0f,
-	//	1.0f });
-	//	obj.push_back(Vertex{ 1.0f, -1.0f, -1.0f,
-	//		1.0f, 0.0f,
-	//		0.0f });
-	//	obj.push_back(Vertex{ 1.0f, 1.0f, -1.0f,
-	//		1.0f, 1.0f,
-	//		0.0f });
-	//	obj.push_back(Vertex{ -1.0f, 1.0f, -1.0f,
-	//		0.0f, 1.0f,
-	//		0.0 });
-	//	return obj.data();
-	//}
+
 	uint32 getNumIndices() {
 		return usedIndices;
 	}
@@ -59,10 +42,9 @@ public:
 	void reserveFaces(int numFaces) {
 		reserveVertices(numFaces*4);
 		reserveIndices(numFaces * 6);
-		//std::cout << "Verctor Size: " << vertices.size() << std::endl;
-		//std::cout << "Verctor capacity: " << vertices.capacity() << std::endl;
+		// could return Int as Warning
 	}
-	// k�nnte auch int zur�ckgeben, als Warnung 
+	
 	// rotation: front-0, right-1, back-2, left-3, buttom-4, top-5,
 	void addPlane(glm::vec3 position, int rotation = 0, int tex_x = 0, int tex_y = 1, int size = 1) {
 
@@ -70,15 +52,6 @@ public:
 		float uv_x_2 = tex_x * tex_factor + tex_factor;
 		float uv_y_1 = 1.0f - tex_y * tex_factor - tex_factor;
 		float uv_y_2 = 1.0f - tex_y * tex_factor;
-		/*
-		print_Debug("uv_x_1 " + std::to_string(uv_x_1));
-		print_Debug("uv_x_2 " + std::to_string(uv_x_2));
-		print_Debug("uv_y_1 " + std::to_string(uv_y_1));
-		print_Debug("uv_y_2 " +std::to_string(uv_y_2));
-		print_Debug("tex_factor " + std::to_string(tex_factor));
-		*/
-		//print_Debug("used Indices " + std::to_string(usedIndices));
-		//print_Debug("used Verices " + std::to_string(usedVertices));
 
 		indices.push_back(usedVertices + 0);
 		indices.push_back(usedVertices + 1);
@@ -88,10 +61,6 @@ public:
 		indices.push_back(usedVertices + 3);
 		usedIndices += 6;
 
-
-
-
-		//print_Debug("Case " + std::to_string(rotation));
 		switch (rotation)
 		{
 		case 0: {
@@ -108,7 +77,6 @@ public:
 			vertices.push_back(Vertex{ position.x + -0.5f, position.y + 0.5f, position.z + 0.5f,
 							uv_x_1, uv_y_2,
 							1.0 });
-
 			break;
 		}
 		case 1: {
@@ -124,7 +92,6 @@ public:
 			vertices.push_back(Vertex{ position.x + 0.5f, position.y + 0.5f, position.z + 0.5f,
 							uv_x_1, uv_y_2,
 							1.0 });
-
 			break;
 		}
 		case 2: {
@@ -140,7 +107,6 @@ public:
 			vertices.push_back(Vertex{ position.x + 0.5f, position.y + 0.5f, position.z + -0.5f,
 							uv_x_1, uv_y_2,
 							1.0 });
-
 			break;
 		}
 		case 3: {
@@ -156,7 +122,6 @@ public:
 			vertices.push_back(Vertex{ position.x + -0.5f, position.y + 0.5f, position.z + -0.5f,
 							uv_x_1, uv_y_2,
 							1.0 });
-
 			break;
 		}
 		case 4: {
@@ -194,10 +159,6 @@ public:
 			break;
 		}
 		usedVertices += 4;
-		//print_Debug("used Indices " + std::to_string(usedIndices));
-		//print_Debug("used Verices " + std::to_string(usedVertices));
-		//print_Debug("END Case " + std::to_string(rotation));
-
 	}
 
 	void addPlane_basic_lighting(glm::vec3 position, int rotation = 0, int tex_x = 0, int tex_y = 0, int size = 1) {
@@ -207,17 +168,6 @@ public:
 		float uv_y_1 = 1.0f - tex_y * tex_factor - tex_factor;
 		float uv_y_2 = 1.0f - tex_y * tex_factor;
 
-		
-		/*
-		print_Debug("uv_x_1 " + std::to_string(uv_x_1));
-		print_Debug("uv_x_2 " + std::to_string(uv_x_2));
-		print_Debug("uv_y_1 " + std::to_string(uv_y_1));
-		print_Debug("uv_y_2 " +std::to_string(uv_y_2));
-		print_Debug("tex_factor " + std::to_string(tex_factor));
-		*/
-		//print_Debug("used Indices " + std::to_string(usedIndices));
-		//print_Debug("used Verices " + std::to_string(usedVertices));
-
 		indices.push_back(usedVertices + 0);
 		indices.push_back(usedVertices + 1);
 		indices.push_back(usedVertices + 2);
@@ -226,10 +176,6 @@ public:
 		indices.push_back(usedVertices + 3);
 		usedIndices += 6;
 
-
-
-
-		//print_Debug("Case " + std::to_string(rotation));
 		switch (rotation)
 		{
 		case 0: {
@@ -246,7 +192,6 @@ public:
 			vertices.push_back(Vertex{ position.x + 0.0f, position.y + 1.0f, position.z + 1.0f,
 							uv_x_1, uv_y_2,
 							0.7 });
-
 			break;
 		}
 		case 1: {
@@ -262,7 +207,6 @@ public:
 			vertices.push_back(Vertex{ position.x + 1.0f, position.y + 1.0f, position.z + 1.0f,
 							uv_x_1, uv_y_2,
 							0.8 });
-
 			break;
 		}
 		case 2: {
@@ -278,7 +222,6 @@ public:
 			vertices.push_back(Vertex{ position.x + 1.0f, position.y + 1.0f, position.z + 0.0f,
 							uv_x_1, uv_y_2,
 							0.7 });
-
 			break;
 		}
 		case 3: {
@@ -294,7 +237,6 @@ public:
 			vertices.push_back(Vertex{ position.x + 0.0f, position.y + 1.0f, position.z + 0.0f,
 							uv_x_1, uv_y_2,
 							0.8 });
-
 			break;
 		}
 		case 4: {
@@ -332,10 +274,6 @@ public:
 			break;
 		}
 		usedVertices += 4;
-		//print_Debug("used Indices " + std::to_string(usedIndices));
-		//print_Debug("used Verices " + std::to_string(usedVertices));
-		//print_Debug("END Case " + std::to_string(rotation));
-
 	}
 
 	void add_Block(glm::vec3 position) {
@@ -376,12 +314,6 @@ private:
 };
 
 
-
-
-
-
-
-
 class SimpleChunkMesh {
 public:
 	SimpleChunkMesh() {
@@ -399,23 +331,12 @@ public:
 	uint32* getIndices() {
 		return indices;
 	}
-	// k�nnte auch int zur�ckgeben, als Warnung 
-	// rotation: front-0, right-1, back-2, left-3, buttom-4, top-5,
+
 	void addPlane(glm::vec3 position, int rotation = 0, int tex_x = 0, int tex_y=1, int size = 1) {
-		//print_Debug("addPlane()");
 		float uv_x_1 = tex_x * tex_factor;
 		float uv_x_2 = tex_x * tex_factor + tex_factor;
 		float uv_y_1 = 1.0f - tex_y * tex_factor - tex_factor;
 		float uv_y_2 = 1.0f - tex_y * tex_factor;
-		/*
-		print_Debug("uv_x_1 " + std::to_string(uv_x_1));
-		print_Debug("uv_x_2 " + std::to_string(uv_x_2));
-		print_Debug("uv_y_1 " + std::to_string(uv_y_1));
-		print_Debug("uv_y_2 " +std::to_string(uv_y_2));
-		print_Debug("tex_factor " + std::to_string(tex_factor));
-		*/
-		//print_Debug("used Indices " + std::to_string(usedIndices));
-		//print_Debug("used Verices " + std::to_string(usedVertices));
 
 		indices[usedIndices + 0] = usedVertices + 0;
 		indices[usedIndices + 1] = usedVertices + 1;
@@ -425,10 +346,6 @@ public:
 		indices[usedIndices + 5] = usedVertices + 3;
 		usedIndices += 6;
 
-
-
-
-		//print_Debug("Case " + std::to_string(rotation));
 		switch (rotation)
 		{
 		case 0:{
@@ -445,7 +362,6 @@ public:
 			vertices[usedVertices + 3] = ColorVertex{ position.x + -0.5f, position.y + 0.5f, position.z + 0.5f,
 							uv_x_1, uv_y_2,
 							0.0, 0.5f, 0.0f, 0.5f };
-
 			break;
 		}
 		case 1: {
@@ -461,7 +377,6 @@ public:
 			vertices[usedVertices + 3] = ColorVertex{ position.x + 0.5f, position.y + 0.5f, position.z + 0.5f,
 							uv_x_1, uv_y_2,
 							0.0, 0.5f, 0.0f, 0.5f };
-
 			break;
 		}
 		case 2: {
@@ -477,7 +392,6 @@ public:
 			vertices[usedVertices + 3] = ColorVertex{ position.x + 0.5f, position.y + 0.5f, position.z + -0.5f,
 							uv_x_1, uv_y_2,
 							0.0, 0.5f, 0.0f, 0.5f };
-
 			break;
 		}
 		case 3: {
@@ -493,7 +407,6 @@ public:
 			vertices[usedVertices + 3] = ColorVertex{ position.x + -0.5f, position.y + 0.5f, position.z + -0.5f,
 							uv_x_1, uv_y_2,
 							0.0, 0.5f, 0.0f, 0.5f };
-			
 			break;
 		}
 		case 4: {
@@ -531,9 +444,6 @@ public:
 			break;
 		}
 		usedVertices += 4;
-		//print_Debug("used Indices " + std::to_string(usedIndices));
-		//print_Debug("used Verices " + std::to_string(usedVertices));
-		//print_Debug("END Case " + std::to_string(rotation));
 		
 	}
 
