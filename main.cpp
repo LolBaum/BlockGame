@@ -23,25 +23,25 @@
 
 
 
-#include "definitions.h"
-#include "Vertex_buffer.h"
-#include "index_buffer.h"
-#include "shader.h"
-#include "object_models.h"
-#include "floating_camera.h"
+#include "definitions.hpp"
+#include "Vertex_buffer.hpp"
+#include "index_buffer.hpp"
+#include "shader.hpp"
+#include "object_models.hpp"
+#include "floating_camera.hpp"
 
-#include "printFunktions.h"
-#include "util_funcs.h"
-#include "text.h"
-#include "screenshot.h"
+#include "printFunktions.hpp"
+#include "util_funcs.hpp"
+#include "text.hpp"
+#include "screenshot.hpp"
 
-#include "local_player_data.h"
+#include "local_player_data.hpp"
 
-#include "Block.h"
-#include "Chunk.h"
-#include "SuperChunk.h"
+#include "Block.hpp"
+#include "Chunk.hpp"
+#include "SuperChunk.hpp"
 
-#include "SDL_handler.h"
+#include "SDL_handler.hpp"
 //#include <filesystem>
 #include <sstream>
 

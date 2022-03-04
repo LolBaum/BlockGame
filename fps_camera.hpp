@@ -1,5 +1,5 @@
 #pragma once
-#include "camera.h"
+#include "camera.hpp"
 
 class FPSCamera : public Camera {
 public:
@@ -57,7 +57,7 @@ public:
 		return position+camera_height;
 	}
 
-	void set_camera_height(float height, float offset=-0.1){
+	void set_camera_height(float height, float offset=-0.15){
 		camera_height = glm::vec3(0.0f, height + offset, 0.0f);
 	}
 

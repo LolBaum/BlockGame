@@ -1,7 +1,7 @@
 #pragma once
 #include <glew.h>
 
-#include "definitions.h"
+#include "definitions.hpp"
 
 struct ChunkVertexBuffer {
 	ChunkVertexBuffer() {

@@ -2,12 +2,12 @@
 
 #include <vector>
 
-#include "printFunktions.h"
-#include "util_funcs.h"
+#include "printFunktions.hpp"
+#include "util_funcs.hpp"
 
-#include "Chunk.h"
-#include "Block.h"
-#include "local_player_data.h"
+#include "Chunk.hpp"
+#include "Block.hpp"
+#include "local_player_data.hpp"
 
 
 #include "glm/glm.hpp"

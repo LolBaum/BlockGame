@@ -2,12 +2,12 @@
 #include <glm/ext.hpp>
 #include <glm/gtc/noise.hpp>
 
-#include "vertex_buffer.h"
-#include "index_buffer.h"
-#include "object_models.h"
-#include "Block.h"
-#include "util_funcs.h"
-#include "printFunktions.h"
+#include "vertex_buffer.hpp"
+#include "index_buffer.hpp"
+#include "object_models.hpp"
+#include "Block.hpp"
+#include "util_funcs.hpp"
+#include "printFunktions.hpp"
 
 
 

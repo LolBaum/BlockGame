@@ -1,10 +1,10 @@
 #pragma once
 #include <vector>
 
-#include "definitions.h"
+#include "definitions.hpp"
 #include "glm/glm.hpp"
 
-#include "printFunktions.h"
+#include "printFunktions.hpp"
 
 
 
@@ -62,7 +62,7 @@ public:
 		//std::cout << "Verctor Size: " << vertices.size() << std::endl;
 		//std::cout << "Verctor capacity: " << vertices.capacity() << std::endl;
 	}
-	// könnte auch int zurückgeben, als Warnung 
+	// kï¿½nnte auch int zurï¿½ckgeben, als Warnung 
 	// rotation: front-0, right-1, back-2, left-3, buttom-4, top-5,
 	void addPlane(glm::vec3 position, int rotation = 0, int tex_x = 0, int tex_y = 1, int size = 1) {
 
@@ -399,7 +399,7 @@ public:
 	uint32* getIndices() {
 		return indices;
 	}
-	// könnte auch int zurückgeben, als Warnung 
+	// kï¿½nnte auch int zurï¿½ckgeben, als Warnung 
 	// rotation: front-0, right-1, back-2, left-3, buttom-4, top-5,
 	void addPlane(glm::vec3 position, int rotation = 0, int tex_x = 0, int tex_y=1, int size = 1) {
 		//print_Debug("addPlane()");

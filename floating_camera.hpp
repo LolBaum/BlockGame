@@ -1,6 +1,6 @@
 #pragma once
-#include "fps_camera.h"
-#include "SDL_handler.h"
+#include "fps_camera.hpp"
+#include "SDL_handler.hpp"
 
 class FloatingCamera : public FPSCamera {
 public:

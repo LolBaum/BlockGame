@@ -1,7 +1,7 @@
 #pragma once
 #include <glew.h>
 #include <string>
-#include "definitions.h"
+#include "definitions.hpp"
 
 struct Shader {
 	Shader(const char* ColorVertexShaderFilename, const char* fragmentShaderFilename);

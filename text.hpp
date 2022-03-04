@@ -7,8 +7,8 @@
 #include <iostream>
 #include <map>
 #include <string>
-#include "shader.h"
-#include "SDL_handler.h"
+#include "shader.hpp"
+#include "SDL_handler.hpp"
 
 	// based on the turorial from learnopengl.com
 	// https://learnopengl.com/In-Practice/Text-Rendering

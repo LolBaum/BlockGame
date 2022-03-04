@@ -8,11 +8,11 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-#include "floating_camera.h"
-#include "printFunktions.h"
-#include "util_funcs.h"
+#include "floating_camera.hpp"
+#include "printFunktions.hpp"
+#include "util_funcs.hpp"
 
-#include "SuperChunk.h"
+#include "SuperChunk.hpp"
 
 #define MAX_HEIGHT 128
 #define MIN_HEIGHT 0

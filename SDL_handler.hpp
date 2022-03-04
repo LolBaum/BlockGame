@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include <iostream>
 
-#include "definitions.h"
+#include "definitions.hpp"
 
 class SDL_handler {
 public:
