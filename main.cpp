@@ -51,7 +51,7 @@
 
 // -------------------------------------------------------
 
-
+//FontSystem *Fs;
 // Main Program
 
 
@@ -81,6 +81,7 @@ int main_function() {
 #endif
 
 	FontSystem Fontsys = FontSystem();
+	//Fs = &Fontsys;
 	Fontsys.initialize();
 	Font font0 = Fontsys.create_Font("fonts/TheJewishBitmap.ttf");
 	Font font = Fontsys.create_Font("fonts/BLKCHCRY.TTF");
@@ -167,6 +168,7 @@ int main_function() {
 	bool buttonS = false;
 	bool buttonD = false;
 	bool buttonSpace = false;
+	//bool buttonSpacePress = false;
 	bool buttonShift = false;
 	bool buttonZ = false;
 	bool buttonF1 = false;
@@ -177,7 +179,7 @@ int main_function() {
 
 	bool close = false;
 	sdl_handler.SetRelativeMouseMode(true); // in Init ?
-	float cameraSpeed = 6.0f;
+	//float cameraSpeed = 6.0f;
 	float time = 0.0f;
 	while (!close) {
 
@@ -204,6 +206,8 @@ int main_function() {
 					break;
 				case SDLK_SPACE:
 					buttonSpace = true;
+					//buttonSpacePress = true;
+					//std::cout << "pressed Space" << std::endl;
 					break;
 				case SDLK_LSHIFT:
 					buttonShift = true;
@@ -300,18 +304,22 @@ int main_function() {
 		} */
 
 		if (buttonW) {
-			player.moveFront(delta * cameraSpeed);
+			player.moveFront(delta);
 		}if (buttonA) {
-			player.moveSideways(-delta * cameraSpeed);
+			player.moveSideways(-delta);
 		}if (buttonS) {
-			player.moveFront(-delta * cameraSpeed);
+			player.moveFront(-delta);
 		}if (buttonD) {
-			player.moveSideways(delta * cameraSpeed);
+			player.moveSideways(delta);
 		}if (buttonSpace) {
-			player.moveUp(delta * cameraSpeed);
-		}if (buttonShift) {
-			player.moveUp(-delta * cameraSpeed);
+			player.jump();
+			//player.moveUp(delta);
 		}
+		if (buttonShift) {
+			player.moveUp(-delta);
+		}
+		player.apply_gravity(delta, glm::vec3(0.0f, -0.5f, 0.0f));
+		//player.add_force(delta, glm::vec3(0.0f, -0.5f, 0.0f));
 		player.move();
 		
 		if (mouseButtonL) {
@@ -406,6 +414,7 @@ int main_function() {
 
 		mouseButtonClickL = false;
 		mouseButtonClickR = false;
+		//buttonSpacePress = false;
 	}
 
 	GLCALL(glDeleteTextures(1, &textureId));
