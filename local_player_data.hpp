@@ -72,10 +72,20 @@ public:
 		new_position += v;
 	}
 	void moveFront(float amount) {
-		translate(glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * camera.getLookAt()) * amount * speed);
+		//translate(glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * camera.getLookAt()) * amount * vel_forward);
+		std::cout << "amount " << amount << std::endl; 
+		if (abs(vel_forward) < speed || sign(vel_forward) != sign(amount)){
+			vel_forward += amount*15;
+		}
+		std::cout << "vel_forward " << vel_forward << std::endl; 
+		movement_input = true;
 	}
 	void moveSideways(float amount) {
-		translate(glm::normalize(glm::cross(camera.getLookAt(), up)) * amount * speed);
+		//translate(glm::normalize(glm::cross(camera.getLookAt(), up)) * amount * speed);
+		if (abs(vel_sideways) < speed || sign(vel_sideways) != sign(amount)){
+			vel_sideways += amount*15;
+		}
+		movement_input = true;
 	}
 	void moveUp(float amount) {
 		translate(up * amount * speed);
@@ -117,10 +127,19 @@ public:
 		}
 	}
 
-	void move(){
+	void move(float amount){
 		if (length(velocity) > max_velocity){
 			velocity = normalize(velocity) * max_velocity;
 		}
+		if(abs(vel_forward) > 0 && !movement_input && is_grounded){
+			vel_forward *= 0.5;
+		}
+		translate(glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * camera.getLookAt()) * amount * vel_forward);
+
+		if(abs(vel_sideways) > 0 && !movement_input && is_grounded){
+			vel_sideways *= 0.5;
+		}
+		translate(glm::normalize(glm::cross(camera.getLookAt(), up)) * amount * vel_sideways);
 		//std::cout << vec3_toString(velocity) << std::endl; 
 		glm::vec3 motion = new_position - position + velocity;
 		//std::cout << vec3_toString(motion, "amotion") << std::endl; 
@@ -203,6 +222,8 @@ public:
 
 		camera.translate(correct_motion);
 		update();
+
+		movement_input = false;
 	}
 
 
@@ -311,9 +332,12 @@ private:
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 new_position;
 	glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f); // Todo: Implement Velocity and Gravity
+	float vel_forward = 0;
+	float vel_sideways = 0;
 	float max_velocity = 0.5;
 	float jump_strength = 0.2;
 	bool is_grounded = false;
+	bool movement_input = false;
 
 	float player_radius = 0.3;
 	float player_height =  1.8;

@@ -320,7 +320,7 @@ int main_function() {
 		}
 		player.apply_gravity(delta, glm::vec3(0.0f, -0.5f, 0.0f));
 		//player.add_force(delta, glm::vec3(0.0f, -0.5f, 0.0f));
-		player.move();
+		player.move(delta);
 		
 		if (mouseButtonL) {
 			if (time_since_left_tick > 0.2){
