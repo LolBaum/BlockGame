@@ -72,16 +72,32 @@ public:
 		new_position += v;
 	}
 	void moveFront(float amount) {
-		translate(glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * camera.getLookAt()) * amount);
+		translate(glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * camera.getLookAt()) * amount * speed);
 	}
 	void moveSideways(float amount) {
-		translate(glm::normalize(glm::cross(camera.getLookAt(), up)) * amount);
+		translate(glm::normalize(glm::cross(camera.getLookAt(), up)) * amount * speed);
 	}
 	void moveUp(float amount) {
-		translate(up * amount);
+		translate(up * amount * speed);
 	}
 
-	bool test_block_collision(int x, int y, int z){
+	// the force should be a normalized vector
+	void add_force(float delta_time, glm::vec3 force){
+		velocity += force *  delta_time;
+	}
+	void apply_gravity(float delta_time, glm::vec3 force){
+		if (!is_grounded){
+			velocity += force *  delta_time;
+		}
+		else{
+			if (velocity.y < 0){
+				velocity = force * delta_time;
+			}
+			
+		}
+	}
+
+/* 	bool test_block_collision(int x, int y, int z){
 		float dist_x = position.x - (x + 0.5);
 		float dist_y = position.y + player_height - (y + 0.5);
 		float dist_z = position.z - (z + 0.5);
@@ -93,12 +109,29 @@ public:
 		else{
 			return false;
 		}
+	} */
+
+	void jump(){
+		if (is_grounded){
+			velocity.y = jump_strength;
+		}
 	}
 
 	void move(){
-		glm::vec3 motion = new_position - position;
+		if (length(velocity) > max_velocity){
+			velocity = normalize(velocity) * max_velocity;
+		}
+		//std::cout << vec3_toString(velocity) << std::endl; 
+		glm::vec3 motion = new_position - position + velocity;
+		//std::cout << vec3_toString(motion, "amotion") << std::endl; 
+/* 		if (! is_grounded || velocity.y > 0){
+			motion.y += velocity.y;
+		} */
+		//motion.y += velocity.y;
+		//std::cout << vec3_toString(motion, "bmotion") << std::endl; 
 		glm::vec3 correct_motion = motion; 
-		glm::vec3 pos = new_position;
+		glm::vec3 pos = new_position + velocity;
+		//std::cout << vec3_toString(motion, "motion") << std::endl; 
 
 		bool collided;
 		int sign_x = sign(motion.x);
@@ -111,33 +144,47 @@ public:
 			offset_y = 0;
 		}
 
-		// check x
+		// check y
+		is_grounded = false;
+/* 		if (velocity.y <=0.001 && chunkManager.getBlockTypeInt(glm::vec3(position.x, pos.y-0.0001, position.z))){
+			is_grounded = true;
+		} */
 		collided = false;
-		if (chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, position.y, 						position.z + player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, position.y, 						position.z - player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, position.y + player_half_height, position.z + player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, position.y + player_half_height, position.z - player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, position.y + player_height, 		position.z + player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, position.y + player_height, 		position.z - player_radius))){
+		if (chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius * sign_x, pos.y + offset_y, position.z + player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius * sign_x, pos.y + offset_y, position.z - player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius, 		    pos.y + offset_y, position.z + player_radius*sign_z)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(position.x - player_radius,          pos.y + offset_y, position.z + player_radius*sign_z))){
 			collided = true;
 		}
 		if (collided){
+			is_grounded = true;
+			//velocity = glm::vec3(velocity.x, velocity.y, velocity.z);
+			correct_motion.y = 0.0f;
+			pos.y = position.y -motion.y;
+		}
+		//std::cout << is_grounded << std::endl; 
+
+
+		// add is_gounded to x and z to add wall Climbing
+		// check x
+		//is_grounded = false;
+		collided = false;
+		if (chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z + player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z - player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_half_height, position.z + player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_half_height, position.z - player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_height, 		position.z + player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_height, 		position.z - player_radius))){
+			collided = true;
+		}
+		if (collided){
+			//is_grounded = true;
 			correct_motion.x = 0.0f;
 			pos.x = position.x -motion.x;
 		}
 
-		// check y
-		collided = false;
-		if (chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y + offset_y, position.z + player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y + offset_y, position.z - player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius, 		   pos.y + offset_y, position.z + player_radius*sign_z)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x - player_radius,          pos.y + offset_y, position.z + player_radius*sign_z))){
-			collided = true;
-		}
-		if (collided){
-			correct_motion.y = 0.0f;
-			pos.y = position.y -motion.y;
-		}
+
+		
 
 		// check z
 		collided = false;
@@ -263,13 +310,16 @@ public:
 private:
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 new_position;
-	//glm::vec3 velocity; // Todo: Implement Velocity and Gravity
+	glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f); // Todo: Implement Velocity and Gravity
+	float max_velocity = 0.5;
+	float jump_strength = 0.2;
+	bool is_grounded = false;
 
 	float player_radius = 0.3;
 	float player_height =  1.8;
 	float player_half_height = player_height/2;
 
-	float speed = 24.0f;
+	float speed = 8.0f;
 	int sightDistance = 5;
 	std::vector<glm::vec3> chunksInSight;
 	glm::vec3 position;
