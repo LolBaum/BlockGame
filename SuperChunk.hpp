@@ -8,6 +8,7 @@
 #include "Chunk.hpp"
 #include "Block.hpp"
 #include "local_player_data.hpp"
+#include "textures.hpp"
 
 
 #include "glm/glm.hpp"
@@ -16,12 +17,26 @@
 class SuperChunk
 {
 public:
+	
 	SuperChunk(){
-		
-	}
-	~SuperChunk() {
 
 	}
+	~SuperChunk() {}
+
+	void initialize(){
+		shader.initialize("shaders/basic.vs", "shaders/basic.fs");
+		colorUniformLocation = glGetUniformLocation(shader.getShaderId(), "u_color");
+		if (colorUniformLocation != -1) {
+			GLCALL(glUniform4f(colorUniformLocation, 1.0f, 0.0f, 1.0f, 1.0f));
+		}
+		TextureUniformLocation = glGetUniformLocation(shader.getShaderId(), "u_texture");
+		if (TextureUniformLocation != -1) {
+			GLCALL(glUniform1i(TextureUniformLocation, 0));
+		}
+		modelViewProjMatrixLocation = GLCALL(glGetUniformLocation(shader.getShaderId(), "u_modelViewProj"));
+		tile_atlas.load("Graphics/TileAtlas64.png");
+	}
+
 	void addChunk(int x, int y, int z) {
 		Chunk* newChunk = new Chunk(glm::vec3(x, y, z));
 		chunks.push_back(newChunk);
@@ -122,7 +137,7 @@ public:
 		for (int x = 0; x < CX; x++) {
 			for (int z = 0; z < CY; z++) {
 				float a = (glm::perlin(glm::vec2((x + pos_x) / frequency_a, (z + pos_z) / frequency_a)) + 1) / 2;
-				float b = (glm::perlin(glm::vec2((x + pos_x) / frequency_b, (z + pos_z) / frequency_b)) + 1) / 2 * 48;
+				float b = (glm::perlin(glm::vec2((x + pos_x) / frequency_b, (z + pos_z) / frequency_b)) + 1) / 2 * 48;// + (glm::perlin(glm::vec2((x + pos_x) / 1000, (z + pos_z) / 1000)) + 1)*20;
 				int h = a * b;
 
 				//int h = (glm::abs(glm::perlin(glm::vec2((x + pos_x) / 16.0, (z + pos_z) / 16.0)))) * 16;
@@ -156,11 +171,13 @@ public:
 		chunk->updateMesh();
 	}
 
-	void render(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId) {
+	void render(const GLfloat* modelViewProj) {
+		shader.bind();
 		for (int i = 0; i < chunks.size(); i++) {
-			chunks.at(i)->render(modelViewProjMatrixLocation, modelViewProj, textureId);
+			chunks.at(i)->render(modelViewProjMatrixLocation, modelViewProj, tile_atlas.get_textureId());
 			//std::cout << "renderd Chunk NR " << i << " at " << chunks.at(i)->getPos().x << ", " << chunks.at(i)->getPos().y << ", " << chunks.at(i)->getPos().z << ", " << std::endl;
 		}
+		shader.unbind();
 	}
 
 	Chunk* getChunk(glm::vec3 pos) {
@@ -347,12 +364,24 @@ public:
 		}
 	}
 
+	Shader get_shader(){
+		return shader;
+	} 
+	Texture get_tile_atlas(){
+		return tile_atlas;
+	} 
 private:
 	std::vector<Chunk*> chunks;
 	std::vector<glm::vec3> chunks_to_load;
 	std::vector<glm::vec3> chunks_to_unload;
+
+	int colorUniformLocation;
+	int TextureUniformLocation;
+	int modelViewProjMatrixLocation;
+	Shader shader = Shader();
+	Texture tile_atlas;
 };
 
 
-SuperChunk chunkManager = SuperChunk();
+SuperChunk chunkManager;// = SuperChunk();
 

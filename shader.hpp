@@ -5,6 +5,8 @@
 
 struct Shader {
 	Shader(const char* ColorVertexShaderFilename, const char* fragmentShaderFilename);
+	Shader();
+	void initialize(const char* ColorVertexShaderFilename, const char* fragmentShaderFilename);
 	virtual ~Shader();
 
 	void bind();

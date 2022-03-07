@@ -35,6 +35,8 @@
 #include "text.hpp"
 #include "screenshot.hpp"
 
+#include "textures.hpp"
+
 #include "local_player_data.hpp"
 
 #include "Block.hpp"
@@ -46,6 +48,7 @@
 #include <sstream>
 
 
+
 //namespace fs = std::filesystem; // Needs C++ 17 or above 
 
 
@@ -53,6 +56,9 @@
 
 //FontSystem *Fs;
 // Main Program
+
+
+
 
 
 int main_function() {
@@ -86,13 +92,16 @@ int main_function() {
 	Font font0 = Fontsys.create_Font("fonts/TheJewishBitmap.ttf");
 	Font font = Fontsys.create_Font("fonts/BLKCHCRY.TTF");
 
+	chunkManager = SuperChunk();
+	chunkManager.initialize();
+
 
 
 	LocalPlayer player = LocalPlayer();
 
 	//using Stacks for vertical World Inforamtion e.g. height...
 
-	int32 textureWidth = 0;
+/* 	int32 textureWidth = 0;
 	int32 textureHeight = 0;
 	int32 bitsPerPixel = 0;
 	stbi_set_flip_vertically_on_load(true);
@@ -118,10 +127,13 @@ int main_function() {
 
 	if (textureBuffer) {
 		stbi_image_free(textureBuffer);
-	}
+	} */
+
+	
 
 
-	Shader shader("shaders/basic.vs", "shaders/basic.fs");
+	Shader shader = chunkManager.get_shader();//shader("shaders/basic.vs", "shaders/basic.fs");
+	Texture texture = chunkManager.get_tile_atlas();
 	shader.bind();
 
 	uint64 perfCounterFrequency = SDL_GetPerformanceFrequency();
@@ -136,7 +148,7 @@ int main_function() {
 
 	//glEnable(GL_NORMALIZE);
 
-	int colorUniformLocation = glGetUniformLocation(shader.getShaderId(), "u_color");
+	/* int colorUniformLocation = glGetUniformLocation(shader.getShaderId(), "u_color");
 	if (colorUniformLocation != -1) {
 		GLCALL(glUniform4f(colorUniformLocation, 1.0f, 0.0f, 1.0f, 1.0f));
 	}
@@ -146,7 +158,7 @@ int main_function() {
 		GLCALL(glUniform1i(TextureUniformLocation, 0));
 	}
 
-	int modelViewProjMatrixLocation = GLCALL(glGetUniformLocation(shader.getShaderId(), "u_modelViewProj"));
+	int modelViewProjMatrixLocation = GLCALL(glGetUniformLocation(shader.getShaderId(), "u_modelViewProj")); */
 
 
 
@@ -382,9 +394,8 @@ int main_function() {
 		chunkManager.load_unload_singleChunk();
 		
 
-		shader.bind();
-		chunkManager.render(modelViewProjMatrixLocation, player.getModelViewProj_GL(), textureId);
-		shader.unbind();
+		chunkManager.render(player.getModelViewProj_GL());
+
 
 		Fontsys.render_multiline_text(text, font, 25, sdl_handler.getHeight()-50, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 		Fontsys.RenderText("Hello World :)", font0, 25, sdl_handler.getHeight()-200, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
@@ -404,7 +415,7 @@ int main_function() {
 		ss.str(std::string());
 		if (time_since_slow_tick > 1.0){
 			ss << "FPS: " << FPS << std::endl;
-			ss << "Number of Chunks: "<< chunkManager.getNumChunks() << "  " << chunkManager.getNumFilledChunks() << std::endl;
+			ss << "Number of Chunks: "<< chunkManager.getNumChunks() << ",  " << chunkManager.getNumFilledChunks() << std::endl;
 			ss << vec3_toString(player.getPosition(), "pos ") << std::endl;
 			ss << vec3_toString(player.getCamera()->getViewPos(), "cam ") << std::endl;
 			text = ss.str();
@@ -417,7 +428,7 @@ int main_function() {
 		//buttonSpacePress = false;
 	}
 
-	GLCALL(glDeleteTextures(1, &textureId));
+	GLCALL(glDeleteTextures(1, texture.get_textureId_ptr()));
 
 	return 0;
 }

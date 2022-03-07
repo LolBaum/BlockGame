@@ -5,6 +5,13 @@
 Shader::Shader(const char* ColorVertexShaderFilename, const char* fragmentShaderFilename) {
 	shaderId = createShader(ColorVertexShaderFilename, fragmentShaderFilename);
 }
+
+Shader::Shader() {
+
+}
+void Shader::initialize(const char* ColorVertexShaderFilename, const char* fragmentShaderFilename) {
+	shaderId = createShader(ColorVertexShaderFilename, fragmentShaderFilename);
+}
 Shader::~Shader() {
 	glDeleteProgram(shaderId);
 }
