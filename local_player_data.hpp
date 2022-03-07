@@ -30,7 +30,7 @@ public:
 		//position = glm::vec3(8.0f, 8.0f, 25.0f);
 		//model = glm::scale(model, glm::vec3(1.2f));
 		camera.set_camera_height(player_height);
-		camera.translate(glm::vec3(8.0f, 28.0f, -100.0f));
+		camera.translate(glm::vec3(8.0f, 48.0f, -100.0f));
 		chunksInSight.reserve(sightDistance * sightDistance * sightDistance);
 		update();
 		lastChunkPos = currentChunkPos;
@@ -73,19 +73,21 @@ public:
 	}
 	void moveFront(float amount) {
 		//translate(glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * camera.getLookAt()) * amount * vel_forward);
-		std::cout << "amount " << amount << std::endl; 
+		
 		if (abs(vel_forward) < speed || sign(vel_forward) != sign(amount)){
 			vel_forward += amount*15;
 		}
-		std::cout << "vel_forward " << vel_forward << std::endl; 
-		movement_input = true;
+		
+		movement_input_f = true;
 	}
 	void moveSideways(float amount) {
 		//translate(glm::normalize(glm::cross(camera.getLookAt(), up)) * amount * speed);
+		//std::cout << "amount " << amount << std::endl; 
 		if (abs(vel_sideways) < speed || sign(vel_sideways) != sign(amount)){
 			vel_sideways += amount*15;
 		}
-		movement_input = true;
+		std::cout << "vel_sideways " << vel_sideways << std::endl; 
+		movement_input_s = true;
 	}
 	void moveUp(float amount) {
 		translate(up * amount * speed);
@@ -101,9 +103,8 @@ public:
 		}
 		else{
 			if (velocity.y < 0){
-				velocity = force * delta_time;
+				velocity = force * delta_time; // why? 
 			}
-			
 		}
 	}
 
@@ -131,12 +132,12 @@ public:
 		if (length(velocity) > max_velocity){
 			velocity = normalize(velocity) * max_velocity;
 		}
-		if(abs(vel_forward) > 0 && !movement_input && is_grounded){
+		if(abs(vel_forward) > 0 && !movement_input_f && is_grounded){
 			vel_forward *= 0.5;
 		}
 		translate(glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * camera.getLookAt()) * amount * vel_forward);
 
-		if(abs(vel_sideways) > 0 && !movement_input && is_grounded){
+		if(abs(vel_sideways) > 0 && !movement_input_s && is_grounded){
 			vel_sideways *= 0.5;
 		}
 		translate(glm::normalize(glm::cross(camera.getLookAt(), up)) * amount * vel_sideways);
@@ -223,7 +224,8 @@ public:
 		camera.translate(correct_motion);
 		update();
 
-		movement_input = false;
+		movement_input_f = false;
+		movement_input_s = false;
 	}
 
 
@@ -317,7 +319,7 @@ public:
 			float factor = i * APROX_STEP_SIZE;
 			stepPos = viewpos + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
 			if (chunkManager.getBlockTypeInt(stepPos)) {
-				if (glm::length(viewpos - previousPos) > 1.4 &&
+				if (glm::length(viewpos - previousPos) > player_height &&
 				    floor(previousPos) != floor(position) ) {
 					chunkManager.setBlock(previousPos, 1);
 					found = true;
@@ -337,7 +339,8 @@ private:
 	float max_velocity = 0.5;
 	float jump_strength = 0.2;
 	bool is_grounded = false;
-	bool movement_input = false;
+	bool movement_input_f = false;
+	bool movement_input_s = false;
 
 	float player_radius = 0.3;
 	float player_height =  1.8;
