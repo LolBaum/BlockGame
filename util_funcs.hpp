@@ -2,6 +2,7 @@
 
 #include <glew.h>
 #include <iostream>
+#include <cmath>
 
 #include "glm/glm.hpp"
 
@@ -85,6 +86,16 @@ glm::vec3 scale_vec3(glm::vec3 vec, float value) {
 	vec.y *= value;
 	vec.z *= value;
 	return vec;
+}
+bool is_inside_block(glm::vec3 blockpos, glm::vec3 pos){
+	blockpos = floor(blockpos);
+	pos = floor(pos);
+	if (blockpos == pos){
+		return true;
+	}
+	else{
+		return false;
+	}
 }
 
 //glm::vec3& operator*(glm::vec3& vec, const int& value)
