@@ -86,7 +86,7 @@ public:
 		if (abs(vel_sideways) < speed || sign(vel_sideways) != sign(amount)){
 			vel_sideways += amount*15;
 		}
-		std::cout << "vel_sideways " << vel_sideways << std::endl; 
+		//std::cout << "vel_sideways " << vel_sideways << std::endl; 
 		movement_input_s = true;
 	}
 	void moveUp(float amount) {
@@ -103,24 +103,24 @@ public:
 		}
 		else{
 			if (velocity.y < 0){
-				velocity = force * delta_time; // why? 
+				velocity.y = -0.0; // why? 
 			}
 		}
 	}
 
 /* 	bool test_block_collision(int x, int y, int z){
-		float dist_x = position.x - (x + 0.5);
-		float dist_y = position.y + player_height - (y + 0.5);
-		float dist_z = position.z - (z + 0.5);
-		if (dist_x < 0.5 + player_radius ||
-			dist_y < 0.5 + player_height/2.0 ||
-			dist_z < 0.5 + player_radius){
-				return true;
+		float dist_x = abs(position.x - (x + 0.5));
+		float dist_y = abs(position.y + player_half_height - (y + 0.5));
+		float dist_z = abs(position.z - (z + 0.5));
+		if (dist_x > 0.6 + player_radius ||
+			dist_y > 1 + player_half_height ||
+			dist_z > 0.6 + player_radius){
+				return false;
 			}
 		else{
-			return false;
+			return true;
 		}
-	} */
+	}  */
 
 	void jump(){
 		if (is_grounded){
@@ -170,10 +170,14 @@ public:
 			is_grounded = true;
 		} */
 		collided = false;
-		if (chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius * sign_x, pos.y + offset_y, position.z + player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius * sign_x, pos.y + offset_y, position.z - player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius, 		    pos.y + offset_y, position.z + player_radius*sign_z)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(position.x - player_radius,          pos.y + offset_y, position.z + player_radius*sign_z))){
+		if (/* chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius * sign_x, pos.y, position.z + player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius * sign_x, pos.y, position.z - player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius, 		    pos.y, position.z + player_radius*sign_z)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(position.x - player_radius,          pos.y, position.z + player_radius*sign_z)) || */
+			chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z + player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z - player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z + player_radius)) ||
+			chunkManager.getBlockTypeInt(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z - player_radius))){
 			collided = true;
 		}
 		if (collided){
@@ -228,7 +232,31 @@ public:
 		movement_input_s = false;
 	}
 
+	bool block_collision(glm::vec3 blockpos){
+		blockpos = floor(blockpos);
 
+		if (is_inside_block(blockpos, glm::vec3(position.x + player_radius, position.y,				         position.z + player_radius)) ||
+			is_inside_block(blockpos, glm::vec3(position.x + player_radius, position.y,						 position.z - player_radius)) ||
+			is_inside_block(blockpos, glm::vec3(position.x - player_radius, position.y,						 position.z + player_radius)) ||
+			is_inside_block(blockpos, glm::vec3(position.x - player_radius, position.y, 					 position.z - player_radius)) ||
+			
+			is_inside_block(blockpos, glm::vec3(position.x + player_radius, position.y + player_half_height, position.z + player_radius)) ||
+			is_inside_block(blockpos, glm::vec3(position.x + player_radius, position.y + player_half_height, position.z - player_radius)) ||
+			is_inside_block(blockpos, glm::vec3(position.x - player_radius, position.y + player_half_height, position.z + player_radius)) ||
+			is_inside_block(blockpos, glm::vec3(position.x - player_radius, position.y + player_half_height, position.z - player_radius)) ||
+			
+			is_inside_block(blockpos, glm::vec3(position.x + player_radius, position.y + player_height,      position.z + player_radius)) ||
+			is_inside_block(blockpos, glm::vec3(position.x + player_radius, position.y + player_height,      position.z - player_radius)) ||
+			is_inside_block(blockpos, glm::vec3(position.x - player_radius, position.y + player_height, 	 position.z + player_radius)) ||
+			is_inside_block(blockpos, glm::vec3(position.x - player_radius, position.y + player_height,      position.z - player_radius))){
+				return true;
+		}
+		else{
+			return false;
+		}
+
+
+	}
 
 	//Get / Set Fuctions,  some could be removed later
 	FloatingCamera* getCamera() {
@@ -319,11 +347,38 @@ public:
 			float factor = i * APROX_STEP_SIZE;
 			stepPos = viewpos + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
 			if (chunkManager.getBlockTypeInt(stepPos)) {
-				if (glm::length(viewpos - previousPos) > player_height &&
-				    floor(previousPos) != floor(position) ) {
+				if (!block_collision(previousPos)){
 					chunkManager.setBlock(previousPos, 1);
 					found = true;
 				}
+
+				/* if (!test_block_collision(previousPos.x, previousPos.y, previousPos.z)){
+					chunkManager.setBlock(previousPos, 1);
+					found = true;
+				} */
+
+				/* if (glm::length(viewpos - previousPos) > player_height &&
+				    floor(previousPos) != floor(position) ) {
+					chunkManager.setBlock(previousPos, 1);
+					found = true;
+				} */
+				
+				/* else if(abs(position.x + player_radius - (previousPos.x + 0.5)) > 1 &&
+						 abs(position.y + player_radius - (previousPos.y + 0.5)) > 1){
+					chunkManager.setBlock(previousPos, 1);
+					found = true;
+				} */
+/* 				if (floor(previousPos.x) != floor(position.x) &&  //1.4 clould be changed to to 1 + player_radiaus 
+				    floor(previousPos.z) != floor(position.z) && 
+					glm::length(viewpos - previousPos) > 1.4) {
+					chunkManager.setBlock(previousPos, 1);
+					found = true;
+				}
+				else if (abs(floor(position.y) + player_half_height - floor(previousPos.y)) > player_half_height  //1.4 clould be changed to to 1 + player_radiaus 
+				) {
+					chunkManager.setBlock(previousPos, 1);
+					found = true;
+				} */
 				break;
 			}
 			previousPos = stepPos;
@@ -342,7 +397,7 @@ private:
 	bool movement_input_f = false;
 	bool movement_input_s = false;
 
-	float player_radius = 0.3;
+	float player_radius = 0.4;
 	float player_height =  1.8;
 	float player_half_height = player_height/2;
 
