@@ -217,53 +217,69 @@ struct Chunk{
 							//std::cout << "adding Block" << std::endl;
 
 							glm::vec3 dummyPos = glm::vec3(pos.x, pos.y, pos.z);
+
+							BlockType* bt = getBlockType(x,y,z);
 							
-							switch (id) // ToDo: Get teh texture Type from the Blockmanager 
+							switch (bt->get_texture_type()) // ToDo: Get teh texture Type from the Blockmanager 
 							{
 								// Single Texture
-							case 1: {
+							case SingleTexture: {
+								int tex_x = 0;
+								int tex_y = 0;
+								bt->get_tex_coords(&tex_x, &tex_y);
 								if (getBlockTypeInt(x - 1, y, z) == 0) { // Todo: check for opeaqeness
-									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 3);
+									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 3, tex_x, tex_y);
 								}
 								if (getBlockTypeInt(x + 1, y, z) == 0) { // Todo: check for opeaqeness
-									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 1);
+									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 1, tex_x, tex_y);
 								}
 								if (getBlockTypeInt(x, y - 1, z) == 0) { // Todo: check for opeaqeness
-									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 4);
+									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 4, tex_x, tex_y);
 								}
 								if (getBlockTypeInt(x, y + 1, z) == 0) { // Todo: check for opeaqeness
-									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 5);
+									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 5, tex_x, tex_y);
 								}
 								if (getBlockTypeInt(x, y, z - 1) == 0) { // Todo: check for opeaqeness
-									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 2);
+									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 2, tex_x, tex_y);
 								}
 								if (getBlockTypeInt(x, y, z + 1) == 0) { // Todo: check for opeaqeness
-									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 0);
+									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 0, tex_x, tex_y);
 								}
 								break;
 							}
 								  // Sides, Top, Bottom
 
 								  // dummy test for Gras
-							case 2: {
+							case MultiTexture: {
+								//std::cout << "Mulittexture" << std::endl;
+								int tex_x = 0;
+								int tex_y = 0;
+								SpecialBlockTexture* tex = bt->get_multi_texture();
+								//std::cout << tex << std::endl;
 								if (getBlockTypeInt(x - 1, y, z) == 0) { // Todo: check for opeaqeness
-									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 3, 2, 0);
+									tex->get_left(&tex_x, &tex_y);
+									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 3, tex_x, tex_y); // left
 								}
-								if (getBlockTypeInt(x + 1, y, z) == 0) { // Todo: check for opeaqeness
-									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 1, 2, 0);
+								 if (getBlockTypeInt(x + 1, y, z) == 0) { // Todo: check for opeaqeness
+									tex->get_right(&tex_x, &tex_y);
+									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 1, tex_x, tex_y); // right
 								}
 								if (getBlockTypeInt(x, y - 1, z) == 0) { // Todo: check for opeaqeness
-									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 4, 1, 0);
+									tex->get_bottom(&tex_x, &tex_y);
+									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 4, tex_x, tex_y); // bottom
 								}
 								if (getBlockTypeInt(x, y + 1, z) == 0) { // Todo: check for opeaqeness
-									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 5, 3, 0);
+									tex->get_top(&tex_x, &tex_y);
+									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 5, tex_x, tex_y); // top
 								}
 								if (getBlockTypeInt(x, y, z - 1) == 0) { // Todo: check for opeaqeness
-									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 2, 2, 0);
+									tex->get_back(&tex_x, &tex_y);
+									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 2, tex_x, tex_y); // back
 								}
 								if (getBlockTypeInt(x, y, z + 1) == 0) { // Todo: check for opeaqeness
-									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 0, 2, 0);
-								}
+									tex->get_front(&tex_x, &tex_y);
+									mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 0, tex_x, tex_y); // front
+								} 
 								break;
 							}
 							default:

@@ -72,23 +72,19 @@ public:
 		new_position += v;
 	}
 	void moveFront(float amount) {
-		//translate(glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * camera.getLookAt()) * amount * vel_forward);
-		
 		if (abs(vel_forward) < speed || sign(vel_forward) != sign(amount)){
 			vel_forward += amount*15;
 		}
-		
 		movement_input_f = true;
 	}
+
 	void moveSideways(float amount) {
-		//translate(glm::normalize(glm::cross(camera.getLookAt(), up)) * amount * speed);
-		//std::cout << "amount " << amount << std::endl; 
 		if (abs(vel_sideways) < speed || sign(vel_sideways) != sign(amount)){
 			vel_sideways += amount*15;
 		}
-		//std::cout << "vel_sideways " << vel_sideways << std::endl; 
 		movement_input_s = true;
 	}
+
 	void moveUp(float amount) {
 		translate(up * amount * speed);
 	}
@@ -97,6 +93,7 @@ public:
 	void add_force(float delta_time, glm::vec3 force){
 		velocity += force *  delta_time;
 	}
+
 	void apply_gravity(float delta_time, glm::vec3 force){
 		if (!is_grounded){
 			velocity += force *  delta_time;
@@ -132,26 +129,20 @@ public:
 		if (length(velocity) > max_velocity){
 			velocity = normalize(velocity) * max_velocity;
 		}
+
 		if(abs(vel_forward) > 0 && !movement_input_f && is_grounded){
-			vel_forward *= 0.5;
+			vel_forward *= 0.2;
 		}
 		translate(glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * camera.getLookAt()) * amount * vel_forward);
 
 		if(abs(vel_sideways) > 0 && !movement_input_s && is_grounded){
-			vel_sideways *= 0.5;
+			vel_sideways *= 0.2;
 		}
 		translate(glm::normalize(glm::cross(camera.getLookAt(), up)) * amount * vel_sideways);
-		//std::cout << vec3_toString(velocity) << std::endl; 
+
 		glm::vec3 motion = new_position - position + velocity;
-		//std::cout << vec3_toString(motion, "amotion") << std::endl; 
-/* 		if (! is_grounded || velocity.y > 0){
-			motion.y += velocity.y;
-		} */
-		//motion.y += velocity.y;
-		//std::cout << vec3_toString(motion, "bmotion") << std::endl; 
 		glm::vec3 correct_motion = motion; 
 		glm::vec3 pos = new_position + velocity;
-		//std::cout << vec3_toString(motion, "motion") << std::endl; 
 
 		bool collided;
 		int sign_x = sign(motion.x);
@@ -166,32 +157,28 @@ public:
 
 		// check y
 		is_grounded = false;
-/* 		if (velocity.y <=0.001 && chunkManager.getBlockTypeInt(glm::vec3(position.x, pos.y-0.0001, position.z))){
-			is_grounded = true;
-		} */
 		collided = false;
-		if (/* chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius * sign_x, pos.y, position.z + player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius * sign_x, pos.y, position.z - player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius, 		    pos.y, position.z + player_radius*sign_z)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(position.x - player_radius,          pos.y, position.z + player_radius*sign_z)) || */
+		if (
 			chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z + player_radius)) ||
 			chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z - player_radius)) ||
 			chunkManager.getBlockTypeInt(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z + player_radius)) ||
 			chunkManager.getBlockTypeInt(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z - player_radius))){
 			collided = true;
 		}
+		if (pos.y < MIN_HEIGHT || pos.y > MAX_HEIGHT){
+			collided = true;
+		}
 		if (collided){
 			is_grounded = true;
-			//velocity = glm::vec3(velocity.x, velocity.y, velocity.z);
 			correct_motion.y = 0.0f;
 			pos.y = position.y -motion.y;
 		}
-		//std::cout << is_grounded << std::endl; 
+
+
 
 
 		// add is_gounded to x and z to add wall Climbing
 		// check x
-		//is_grounded = false;
 		collided = false;
 		if (chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z + player_radius)) ||
 			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z - player_radius)) ||
@@ -348,37 +335,9 @@ public:
 			stepPos = viewpos + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
 			if (chunkManager.getBlockTypeInt(stepPos)) {
 				if (!block_collision(previousPos)){
-					chunkManager.setBlock(previousPos, 1);
+					chunkManager.setBlock(previousPos, 4);
 					found = true;
 				}
-
-				/* if (!test_block_collision(previousPos.x, previousPos.y, previousPos.z)){
-					chunkManager.setBlock(previousPos, 1);
-					found = true;
-				} */
-
-				/* if (glm::length(viewpos - previousPos) > player_height &&
-				    floor(previousPos) != floor(position) ) {
-					chunkManager.setBlock(previousPos, 1);
-					found = true;
-				} */
-				
-				/* else if(abs(position.x + player_radius - (previousPos.x + 0.5)) > 1 &&
-						 abs(position.y + player_radius - (previousPos.y + 0.5)) > 1){
-					chunkManager.setBlock(previousPos, 1);
-					found = true;
-				} */
-/* 				if (floor(previousPos.x) != floor(position.x) &&  //1.4 clould be changed to to 1 + player_radiaus 
-				    floor(previousPos.z) != floor(position.z) && 
-					glm::length(viewpos - previousPos) > 1.4) {
-					chunkManager.setBlock(previousPos, 1);
-					found = true;
-				}
-				else if (abs(floor(position.y) + player_half_height - floor(previousPos.y)) > player_half_height  //1.4 clould be changed to to 1 + player_radiaus 
-				) {
-					chunkManager.setBlock(previousPos, 1);
-					found = true;
-				} */
 				break;
 			}
 			previousPos = stepPos;
