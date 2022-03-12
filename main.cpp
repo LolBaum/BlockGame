@@ -62,10 +62,12 @@
 
 
 int main_function() {
-	btm.AddBlockType(BlockType(0, 3, 1));
-	BlockType b = *btm.GetBlockType(0);
-
-	b.printInfo();	
+	btm.AddBlockType(BlockType(1, "Stone", SingleTexture, 0, 1));
+	btm.AddBlockType(BlockType(2, "Dirt", SingleTexture, 1, 0));
+	btm.AddBlockType(BlockType(3, SpecialBlockTexture(2,0, 2,0, 2,0, 2,0, 3,0, 1,0), "Grass", MultiTexture));
+	btm.AddBlockType(BlockType(4, "Cobblestone", SingleTexture, 1, 1));
+	//BlockType b = *btm.GetBlockType(0);
+	//b.printInfo();	
 	
 	sdl_handler.initialize();
 
@@ -144,6 +146,7 @@ int main_function() {
 	glCullFace(GL_BACK);
 	//glFrontFace(GL_CW);
 	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_MULTISAMPLE);
 	//glDepthFunc(GL_ALWAYS);
 
 	//glEnable(GL_NORMALIZE);
