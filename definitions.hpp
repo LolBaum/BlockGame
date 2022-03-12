@@ -29,6 +29,12 @@ struct Vertex {
 	float32 i; // light level / intensity
 };
 
+struct TexCoords {
+	~TexCoords() {}
+	int x; 
+	int y;
+};
+
 
 struct ColorVertex {
 	float32 x;
