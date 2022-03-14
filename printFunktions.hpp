@@ -107,10 +107,10 @@ void slowPrint(string output) {
 
 }
 
-std::string vec3_toString(glm::vec3 vec, std::string prefix = "") {
+std::string vec3_toString(glm::vec3 vec, std::string prefix = "",int precision=5) {
 	std::stringstream ss;
 	string output;
-	ss << prefix << ": " << std::fixed << std::setprecision(1);
+	ss << prefix << ": " << std::fixed << std::setprecision(precision);
 	ss << "x " <<  vec.x << ", ";
 	ss << "y " << vec.y << ", ";
 	ss << "z " << vec.z << ", ";
