@@ -34,7 +34,7 @@ public:
 			GLCALL(glUniform1i(TextureUniformLocation, 0));
 		}
 		modelViewProjMatrixLocation = GLCALL(glGetUniformLocation(shader.getShaderId(), "u_modelViewProj"));
-		tile_atlas.load("Graphics/TileAtlas64.png");
+		tile_atlas.load("graphics/TileAtlas64.png");
 	}
 
 	void addChunk(int x, int y, int z) {

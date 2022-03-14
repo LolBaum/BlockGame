@@ -2,8 +2,8 @@
 
 #include <iostream>
 #include <ostream>
-#include <windows.h>
-#include <conio.h>
+//#include <windows.h>
+//#include <conio.h>
 #include <string.h>
 #include <sstream>
 #include <ctime>
@@ -13,9 +13,11 @@
 using namespace std;
 
 void Set_Console_Color(int color){
+#ifdef WIN_32
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+#endif
 }
-
+/*
 void print_warning(string output){
     Set_Console_Color(14);
     cout << "Warning: " << output << endl;
@@ -27,7 +29,7 @@ void print_error(string output){
     cout << "Error: " << output << endl;
     Set_Console_Color(7);
 }
-
+*/
 void print_Debug(string output, int format=0){
     string prefix = "";
     switch (format) {
