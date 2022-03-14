@@ -22,13 +22,12 @@
 #endif
 
 
-
 #include <glm/gtc/noise.hpp>
 
 
 
 #include "definitions.hpp"
-#include "Vertex_buffer.hpp"
+#include "vertex_buffer.hpp"
 #include "index_buffer.hpp"
 #include "shader.hpp"
 #include "object_models.hpp"

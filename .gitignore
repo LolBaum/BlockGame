@@ -3,3 +3,15 @@ libs/
 devlog/
 build/screenshots/*
 .vscode/settings.json
+build/*
+web_material/
+
+!build/fonts
+!build/graphics
+!build/screenshots
+!build/shaders
+!build/main.exe
+
+!build/freetype.dll
+!build/glew32.dll
+!build/SDL2.dll
