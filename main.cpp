@@ -56,8 +56,12 @@
 
 
 // -------------------------------------------------------
+// WIP
 
 //FontSystem *Fs;
+
+
+
 // Main Program
 
 
@@ -69,6 +73,9 @@ int main_function() {
 	btm.AddBlockType(BlockType(2, "Dirt", SingleTexture, 1, 0));
 	btm.AddBlockType(BlockType(3, SpecialBlockTexture(2,0, 2,0, 2,0, 2,0, 3,0, 1,0), "Grass", MultiTexture));
 	btm.AddBlockType(BlockType(4, "Cobblestone", SingleTexture, 1, 1));
+	btm.AddBlockType(BlockType(5, SpecialBlockTexture(0,2, 0,2, 0,2, 0,2, 1,2, 1,2), "Wood Log", MultiTexture));
+	btm.AddBlockType(BlockType(6, "Wooden Planks", SingleTexture, 0, 3));
+	btm.AddBlockType(BlockType(7, "Leafs", SingleTexture, 2, 3, false));
 	//BlockType b = *btm.GetBlockType(0);
 	//b.printInfo();
 	
@@ -238,6 +245,33 @@ int main_function() {
 					buttonF1 = true;
 					saveScreenshotToFile(numerate_name("screenshots/screenshot_", ".png"), sdl_handler.getWidth(), sdl_handler.getHeight());
 					break;
+				case SDLK_1:
+					player.set_selected_block_type(1);
+					break;
+				case SDLK_2:
+					player.set_selected_block_type(2);
+					break;
+				case SDLK_3:
+					player.set_selected_block_type(3);
+					break;
+				case SDLK_4:
+					player.set_selected_block_type(4);
+					break;
+				case SDLK_5:
+					player.set_selected_block_type(5);
+					break;
+				case SDLK_6:
+					player.set_selected_block_type(6);
+					break;
+				case SDLK_7:
+					player.set_selected_block_type(7);
+					break;
+				case SDLK_8:
+					player.set_selected_block_type(8);
+					break;
+				case SDLK_9:
+					player.set_selected_block_type(9);
+					break;
 				}
 			}
 			else if (event.type == SDL_KEYUP) {
@@ -321,6 +355,8 @@ int main_function() {
 			player.getCamera()->moveUp(-delta * cameraSpeed);
 		} */
 
+		player.move(delta);
+
 		if (buttonW) {
 			player.moveFront(delta);
 		}if (buttonA) {
@@ -338,7 +374,7 @@ int main_function() {
 		}
 		player.apply_gravity(delta, glm::vec3(0.0f, -0.5f, 0.0f));
 		//player.add_force(delta, glm::vec3(0.0f, -0.5f, 0.0f));
-		player.move(delta);
+		
 		
 		if (mouseButtonL) {
 			if (time_since_left_tick > 0.2){
@@ -404,7 +440,7 @@ int main_function() {
 
 
 		Fontsys.render_multiline_text(text, font, 25, sdl_handler.getHeight()-50, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
-		Fontsys.RenderText("Hello World :)", font0, 25, sdl_handler.getHeight()-200, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+		//Fontsys.RenderText("Hello World :)", font0, 25, sdl_handler.getHeight()-200, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 
 
 		sdl_handler.SDL_SwapWindow();
@@ -424,6 +460,8 @@ int main_function() {
 			ss << "Number of Chunks: "<< chunkManager.getNumChunks() << ",  " << chunkManager.getNumFilledChunks() << std::endl;
 			ss << vec3_toString(player.getPosition(), "pos ") << std::endl;
 			ss << vec3_toString(player.getCamera()->getViewPos(), "cam ") << std::endl;
+			ss << btm.GetBlockType(player.get_selected_block_type())->info_srting() << std::endl;
+			ss << "Number of Faces: " << chunkManager.get_num_all_faces() << std::endl;
 			text = ss.str();
 			time_since_slow_tick = 0;
 		}

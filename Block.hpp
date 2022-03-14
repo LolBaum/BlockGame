@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "textures.hpp"
+#include <sstream>
 
 enum TextureType { SingleTexture, MultiTexture, blue };
 
@@ -33,25 +34,27 @@ private:
 
 class BlockType {
 public:
-	BlockType(int TypeId,  std::string blocktypename="Unamed Block", TextureType tex_type = SingleTexture, int tex_cord_x = 0, int tex_cord_y = 0) {
+	BlockType(int TypeId,  std::string blocktypename="Unamed Block", TextureType tex_type = SingleTexture, 
+			  int tex_cord_x = 0, int tex_cord_y = 0, bool opaqueness = true) {
 		//std::cout << "adding Blocktype: " << blocktypename << std::endl;
-		id = TypeId;
-		name = blocktypename;
+		initialize_basic(TypeId, blocktypename, tex_type, opaqueness);
 		texture = StadardBlockTexture(tex_cord_x, tex_cord_y);
 		texture_type = tex_type;
 		printInfo();
 	}
-	BlockType(int TypeId, SpecialBlockTexture tex, std::string blocktypename="Unamed Block", TextureType tex_type = SingleTexture) {
+	BlockType(int TypeId, SpecialBlockTexture tex, std::string blocktypename="Unamed Block", TextureType tex_type = SingleTexture, 
+		      bool opaqueness = true) {
 		//std::cout << "adding Blocktype: " << blocktypename << std::endl;
-		id = TypeId;
-		name = blocktypename;
+		initialize_basic(TypeId, blocktypename, tex_type, opaqueness);
 		multi_texture = tex;
 		texture_type = tex_type;
 		printInfo();
 	}
-	void initialize_basic(int TypeId,  std::string blocktypename="Unamed Block"){
+	void initialize_basic(int TypeId,  std::string blocktypename, TextureType tex_type, bool opaqueness){
 		id = TypeId;
 		name = blocktypename;
+		texture_type = tex_type;
+		opaque = opaqueness;
 	}
 	
 
@@ -76,7 +79,7 @@ public:
 		return &multi_texture;
 	}
 
-	int isOpaque() {
+	bool isOpaque() {
 		return opaque;
 	}
 
@@ -89,6 +92,13 @@ public:
 		}
 		std::cout << "BlockType: " << id << ", " << name << ", " << tt << std::endl;
 	}
+	std::string info_srting(){
+		std::stringstream ss;
+		string output;
+		ss << "BlockType: " << id << ", " << name << std::endl;
+		output = ss.str();
+		return output;
+	}
 
 private:
 	int id;
@@ -97,7 +107,7 @@ private:
 	SpecialBlockTexture multi_texture = SpecialBlockTexture();
 	TextureType texture_type;
 	
-	bool opaque = 0;
+	bool opaque = false;
 };
 
 
@@ -109,7 +119,7 @@ private:
 class BlockTypeManager{
 public:
 	std::vector<BlockType> BlockTypeList;
-	BlockType Air = BlockType(0, "Air", SingleTexture, 0, 0);
+	BlockType Air = BlockType(0, "Air", SingleTexture, 0, 0, false);
 	
 	BlockTypeManager() {
 		std::cout << "calledConstructor for BlockTypeManager" << std::endl;
@@ -120,6 +130,7 @@ public:
 	void AddBlockType(BlockType type) {
 		BlockTypeList.push_back(type);
 	}
+
 
 	BlockType* GetBlockType(int id) {
 		BlockType* type_dummy;

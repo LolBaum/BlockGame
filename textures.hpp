@@ -24,6 +24,10 @@ public:
     void load(const char* filename){
         stbi_set_flip_vertically_on_load(true);
 		auto textureBuffer = stbi_load(filename, &textureWidth, &textureHeight, &bitsPerPixel, 4);
+		if (textureBuffer == NULL){
+			cout << "Cannot load texture " << filename <<": " << stbi_failure_reason() << endl;
+		}
+    		
 		
 		GLCALL(glGenTextures(1, &textureId));
 		GLCALL(glBindTexture(GL_TEXTURE_2D, textureId));
