@@ -34,7 +34,8 @@ public:
 			GLCALL(glUniform1i(TextureUniformLocation, 0));
 		}
 		modelViewProjMatrixLocation = GLCALL(glGetUniformLocation(shader.getShaderId(), "u_modelViewProj"));
-		tile_atlas.load("Graphics/TileAtlas64.png");
+		//tile_atlas.load("Graphics/TileAtlas64.png");
+		tile_atlas.load("graphics/TileAtlas64_Quandary.png");
 	}
 
 	void addChunk(int x, int y, int z) {
@@ -138,7 +139,8 @@ public:
 			for (int z = 0; z < CY; z++) {
 				float a = (glm::perlin(glm::vec2((x + pos_x) / frequency_a, (z + pos_z) / frequency_a)) + 1) / 2;
 				float b = (glm::perlin(glm::vec2((x + pos_x) / frequency_b, (z + pos_z) / frequency_b)) + 1) / 2 * 48;// + (glm::perlin(glm::vec2((x + pos_x) / 1000, (z + pos_z) / 1000)) + 1)*20;
-				int h = a * b;
+				//int h = a * b;
+				int h = a * b/4 + 20;
 
 				//int h = (glm::abs(glm::perlin(glm::vec2((x + pos_x) / 16.0, (z + pos_z) / 16.0)))) * 16;
 				//std::cout << "perlin: " << h << std::endl;
@@ -155,7 +157,7 @@ public:
 					if (h<=max_y)
 					{
 						for (int i = h - gras_hight; i <= h; i++) {
-							chunk->setBlock(x, i - pos_y, z, 2);// add: check if boundings are correct
+							chunk->setBlock(x, i - pos_y, z, 3);// add: check if boundings are correct
 						}
 						 
 					}
@@ -362,6 +364,16 @@ public:
 			std::cout << "pos in chunk: " <<vec3_toString(position_in_chunk(pos)) << std::endl;
 			chunk->setBlock(position_in_chunk(pos), type);
 		}
+	}
+
+	int get_num_all_faces(){
+		int n_faces=0;
+		for (int i=0; i<chunks.size(); i++){
+			if (!chunks.at(i)->is_empty()){
+				n_faces += chunks.at(i)->getNumfaces();
+			}
+		}
+		return n_faces;
 	}
 
 	Shader get_shader(){

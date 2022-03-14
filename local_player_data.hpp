@@ -100,7 +100,7 @@ public:
 		}
 		else{
 			if (velocity.y < 0){
-				velocity.y = -0.0; // why? 
+				//velocity.y = -0.0; // why? 
 			}
 		}
 	}
@@ -169,9 +169,12 @@ public:
 			collided = true;
 		}
 		if (collided){
-			is_grounded = true;
+			if (motion.y <= 0){
+				is_grounded = true;
+			}
 			correct_motion.y = 0.0f;
 			pos.y = position.y -motion.y;
+			velocity.y = -0.0;
 		}
 
 
@@ -335,7 +338,7 @@ public:
 			stepPos = viewpos + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
 			if (chunkManager.getBlockTypeInt(stepPos)) {
 				if (!block_collision(previousPos)){
-					chunkManager.setBlock(previousPos, 4);
+					chunkManager.setBlock(previousPos, selected_block_type);
 					found = true;
 				}
 				break;
@@ -343,6 +346,17 @@ public:
 			previousPos = stepPos;
 		}
 	}
+
+
+	// Work in Progress Functions:
+
+	void set_selected_block_type(int id){
+		selected_block_type = id;
+	}
+	int get_selected_block_type(){
+		return selected_block_type;
+	}
+
 
 private:
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -371,6 +385,11 @@ private:
 	FloatingCamera camera = *new FloatingCamera();
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 modelViewProj = camera.getViewProj() * model;
+
+
+	// still WIP
+	int selected_block_type = 4;
+
 };
 
 
