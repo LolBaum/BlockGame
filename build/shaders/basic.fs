@@ -28,6 +28,12 @@ void main()
     float fog = clamp(exp(-fogdensity * z * z)+0.1, 0.0, 1);
 
 	f_color = mix(fogcolor, texColor * v_lightValue, fog);
+    
+    // this is a tempory solution to make tranparancy work
+    if(f_color.a < 0.5)
+        discard;
+
+
 	//float depth = LinearizeDepth(gl_FragCoord.z)/far;
     //f_color = texColor * v_lightValue * depth; //* u_color;
 }
