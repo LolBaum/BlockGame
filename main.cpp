@@ -13,10 +13,13 @@
 #include "stb_image.h"
 
 //only for Windows
-#pragma comment(lib, "SDL2.lib")
-#pragma comment(lib, "glew32s.lib")
-#pragma comment(lib, "opengl32.lib")
+#ifdef _WIN32
+	#pragma comment(lib, "SDL2.lib")
+	#pragma comment(lib, "glew32s.lib")
+	#pragma comment(lib, "opengl32.lib")
+#else
 
+#endif
 
 
 #include <glm/gtc/noise.hpp>
@@ -24,7 +27,7 @@
 
 
 #include "definitions.hpp"
-#include "Vertex_buffer.hpp"
+#include "vertex_buffer.hpp"
 #include "index_buffer.hpp"
 #include "shader.hpp"
 #include "object_models.hpp"
