@@ -1,10 +1,11 @@
 backup/
-libs/
+libs/*
 devlog/
 build/screenshots/*
 .vscode/settings.json
 build/*
 web_material/
+.testing_new_functions/
 
 !build/fonts
 !build/graphics

@@ -11,11 +11,12 @@
                 "main.cpp",
                 "shader.cpp",
                 "-o", "${fileDirname}\\build\\${fileBasenameNoExtension}.exe",
-                "-I${fileDirname}\\libs\\SDL2-2.0.20\\x86_64-w64-mingw32\\include\\SDL2",
+                "-I${fileDirname}\\libs\\SDL2\\x86_64-w64-mingw32\\include\\SDL2",
                 "-I${fileDirname}\\libs\\glew-2.1.0\\include\\GL",
                 "-I${fileDirname}\\libs\\glm",
                 "-I${fileDirname}\\libs\\freetype-win\\include",
-                "-L${fileDirname}\\libs\\SDL2-2.0.20\\x86_64-w64-mingw32\\lib",
+
+                "-L${fileDirname}\\libs\\SDL2\\x86_64-w64-mingw32\\lib",
                 "-L${fileDirname}\\libs\\glew-2.1.0\\lib\\Release\\x64",
                 "-L${fileDirname}\\libs\\freetype-win\\release_dll\\win64",
                 
