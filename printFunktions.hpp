@@ -2,8 +2,10 @@
 
 #include <iostream>
 #include <ostream>
-//#include <windows.h>
-//#include <conio.h>
+#ifdef _WIN32
+#include <windows.h>
+#include <conio.h>
+#endif
 #include <string.h>
 #include <sstream>
 #include <ctime>
@@ -13,11 +15,29 @@
 using namespace std;
 
 void Set_Console_Color(int color){
-#ifdef WIN_32
+#ifdef _WIN32
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+#else
+	switch (color)
+	{
+	case 14: // yellow
+		printf("\x1B[93m");
+		break;
+	case 7: // white
+		printf("\x1B[37m");
+		break;
+	case 4: // dark red
+		printf("\x1B[31m");
+		break;
+	case 2: // dark green
+		printf("\x1B[32m");
+		break;
+	default:
+		break;
+	}
 #endif
 }
-/*
+
 void print_warning(string output){
     Set_Console_Color(14);
     cout << "Warning: " << output << endl;
@@ -29,7 +49,7 @@ void print_error(string output){
     cout << "Error: " << output << endl;
     Set_Console_Color(7);
 }
-*/
+
 void print_Debug(string output, int format=0){
     string prefix = "";
     switch (format) {
@@ -86,27 +106,16 @@ enum Level {
 
 void slowPrint(string output) {
 	static bool initialized = false;
-	static clock_t last_time;
-	clock_t current_time = clock();
-	clock_t difference = 0;
+	static int tick_counter;
+	//static clock_t last_time;
+	//clock_t current_time = clock();
+	//clock_t difference = 0;
+	tick_counter++;
 
-	if (initialized) {
-		difference = current_time - last_time;
-		if (difference > 6000) {
-			//cout << "initialized" << endl;
-			cout << output << endl;
-			last_time = clock();
-		}
-
-
-	}
-	else {
-		//cout << "not initialized" << endl;
-		last_time = clock();
-		initialized = true;
+	if (tick_counter >= 120) {
 		cout << output << endl;
+		tick_counter = 0;
 	}
-
 }
 
 std::string vec3_toString(glm::vec3 vec, std::string prefix = "",int precision=5) {
