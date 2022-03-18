@@ -35,26 +35,27 @@ private:
 class BlockType {
 public:
 	BlockType(int TypeId,  std::string blocktypename="Unamed Block", TextureType tex_type = SingleTexture, 
-			  int tex_cord_x = 0, int tex_cord_y = 0, bool opaqueness = true) {
+			  int tex_cord_x = 0, int tex_cord_y = 0, bool opaqueness = true, bool collision=true) {
 		//std::cout << "adding Blocktype: " << blocktypename << std::endl;
-		initialize_basic(TypeId, blocktypename, tex_type, opaqueness);
+		initialize_basic(TypeId, blocktypename, tex_type, opaqueness, collision);
 		texture = StadardBlockTexture(tex_cord_x, tex_cord_y);
 		texture_type = tex_type;
 		printInfo();
 	}
 	BlockType(int TypeId, SpecialBlockTexture tex, std::string blocktypename="Unamed Block", TextureType tex_type = SingleTexture, 
-		      bool opaqueness = true) {
+		      bool opaqueness = true, bool collision=true) {
 		//std::cout << "adding Blocktype: " << blocktypename << std::endl;
-		initialize_basic(TypeId, blocktypename, tex_type, opaqueness);
+		initialize_basic(TypeId, blocktypename, tex_type, opaqueness, collision);
 		multi_texture = tex;
 		texture_type = tex_type;
 		printInfo();
 	}
-	void initialize_basic(int TypeId,  std::string blocktypename, TextureType tex_type, bool opaqueness){
+	void initialize_basic(int TypeId,  std::string blocktypename, TextureType tex_type, bool opaqueness, bool collision){
 		id = TypeId;
 		name = blocktypename;
 		texture_type = tex_type;
 		opaque = opaqueness;
+		has_collision = collision; // blocks with no collision, should have opaqueness = false 
 	}
 	
 
@@ -82,6 +83,9 @@ public:
 	bool isOpaque() {
 		return opaque;
 	}
+	bool hasCollision() {
+		return has_collision;
+	}
 
 	void printInfo() {
 		std::string tt;
@@ -108,6 +112,7 @@ private:
 	TextureType texture_type;
 	
 	bool opaque = false;
+	bool has_collision = true;
 };
 
 
@@ -119,7 +124,7 @@ private:
 class BlockTypeManager{
 public:
 	std::vector<BlockType> BlockTypeList;
-	BlockType Air = BlockType(0, "Air", SingleTexture, 0, 0, false);
+	BlockType Air = BlockType(0, "Air", SingleTexture, 0, 0, false, false);
 	
 	BlockTypeManager() {
 		std::cout << "calledConstructor for BlockTypeManager" << std::endl;

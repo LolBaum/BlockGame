@@ -74,8 +74,11 @@ int main_function() {
 	btm.AddBlockType(BlockType(3, SpecialBlockTexture(2,0, 2,0, 2,0, 2,0, 3,0, 1,0), "Grass", MultiTexture));
 	btm.AddBlockType(BlockType(4, "Cobblestone", SingleTexture, 1, 1));
 	btm.AddBlockType(BlockType(5, SpecialBlockTexture(0,2, 0,2, 0,2, 0,2, 1,2, 1,2), "Wood Log", MultiTexture));
-	btm.AddBlockType(BlockType(6, "Wooden Planks", SingleTexture, 0, 3));
+	//btm.AddBlockType(BlockType(6, "Wooden Planks", SingleTexture, 0, 3));
+	btm.AddBlockType(BlockType(6, "Withe Test - no collision", SingleTexture, 3, 1, false, false));
 	btm.AddBlockType(BlockType(7, "Leafs", SingleTexture, 2, 3, false));
+	btm.AddBlockType(BlockType(8, "Glass", SingleTexture, 3, 2, false));
+	btm.AddBlockType(BlockType(9, "Ice", SingleTexture, 3, 3, false));
 	//BlockType b = *btm.GetBlockType(0);
 	//b.printInfo();
 	
@@ -305,6 +308,7 @@ int main_function() {
 			}
 			else if (event.type == SDL_MOUSEMOTION) {
 				player.getCamera()->onMouseMoved(event.motion.xrel, event.motion.yrel);
+				player.update_selection_box();
 			}
 			else if (event.type == SDL_MOUSEBUTTONDOWN) {
 				if (event.button.button == SDL_BUTTON_LEFT) {
@@ -437,6 +441,7 @@ int main_function() {
 		
 
 		chunkManager.render(player.getModelViewProj_GL());
+		player.render_selection_box();
 
 
 		Fontsys.render_multiline_text(text, font, 25, sdl_handler.getHeight()-50, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));

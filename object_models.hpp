@@ -4,7 +4,11 @@
 #include "definitions.hpp"
 #include "glm/glm.hpp"
 
+#include <iostream>
 #include "printFunktions.hpp"
+#include "util_funcs.hpp"
+#include "shader.hpp"
+#include "textures.hpp" 
 
 
 
@@ -519,9 +523,18 @@ private:
 	};
 };
 
-class Cube_old {
+class Box {
 public:
-	Cube_old()  {}
+	Box()  {
+		shader.initialize("shaders/selection_box.vs", "shaders/selection_box.fs");
+		PositionUniformLocation = glGetUniformLocation(shader.getShaderId(), "u_pos");
+		if (PositionUniformLocation != -1) {
+			//std::cout << "cloudn't create PositionUniformLocation for selection box" << std::endl;
+			GLCALL(glUniform3f(PositionUniformLocation, 1.0f, 0.0f, 1.0f));
+		}
+		modelViewProjMatrixLocation = GLCALL(glGetUniformLocation(shader.getShaderId(), "u_modelViewProj"));
+		texture.load("graphics/selection_box_64_2.png");
+	}
 	int getNumIndices() {
 		return numIndices;
 	}
@@ -534,88 +547,103 @@ public:
 	uint32* getIndices() {
 		return indices;
 	}
+	void render(int x, int y, int z, const GLfloat* modelViewProj){
+		shader.bind();
+		GLCALL(glUniform3f(PositionUniformLocation, x, y, z));
+		vertex_buffer.bind();
+		index_buffer.bind();
+		GLCALL(glUniformMatrix4fv(modelViewProjMatrixLocation, 1, GL_FALSE, modelViewProj));
+		GLCALL(glActiveTexture(GL_TEXTURE0));
+		GLCALL(glBindTexture(GL_TEXTURE_2D, texture.get_textureId()));
+		glDisable(GL_CULL_FACE);
+		GLCALL(glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0));
+		glEnable(GL_CULL_FACE);
+		index_buffer.unbind();
+		vertex_buffer.unbind();
+		shader.unbind();
+	}
 
 private:
 	uint32 numVertices = 24;
 	ColorVertex vertices[24] = {
-		ColorVertex{-1.0f, -1.0f, 1.0f, // front
-		0.5f, 0.75f,
+		ColorVertex{-0.0001f, -0.001f, 1.0f, // front
+		0.0f, 0.0f,
 		1.0f, 0.0f, 0.0f, 1.0f},
-		ColorVertex{1.0f, -1.0f, 1.0f,
-		0.75f, 0.75f,
+		ColorVertex{1.0f, -0.001f, 1.0f,
+		1.0f, 0.0f,
 		1.0f, 0.0f, 0.0f, 1.0f},
 		ColorVertex{1.0f, 1.0f, 1.0f,
-		0.75f, 1.0f,
+		1.0f, 1.0f,
 		1.0f, 0.0f, 0.0f, 1.0f},
-		ColorVertex{-1.0f, 1.0f, 1.0f,
-		0.5f, 1.0f,
+		ColorVertex{-0.001f, 1.0f, 1.0f,
+		0.0f, 1.0f,
 		1.0f, 0.0f, 0.0f, 1.0f},
 
 		
-		ColorVertex{1.0f, -1.0f, 1.0f, // right
-		0.5f, 0.75f,
+		ColorVertex{1.0f, -0.001f, 1.0f, // right
+		0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 1.0f},
-		ColorVertex{1.0f, -1.0f, -1.0f,
-		0.75f, 0.75f,
+		ColorVertex{1.0f, -0.001f, -0.001f,
+		1.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 1.0f},
-		ColorVertex{1.0f, 1.0f, -1.0,
-		0.75f, 1.0f,
+		ColorVertex{1.0f, 1.0f, -0.001,
+		1.0f, 1.0f,
 		0.0f, 0.0f, 1.0f, 1.0f},
 		ColorVertex{1.0f, 1.0f, 1.0,
-		0.5f, 1.0f,
+		0.0f, 1.0f,
 		0.0f, 0.0f, 1.0f, 1.0f},
 		
 		
-		ColorVertex{1.0f, -1.0f, -1.0f, // back
-		0.5f, 0.75f,
+		ColorVertex{1.0f, -0.001f, -0.001f, // back
+		0.0f, 0.0f,
 		0.0f, 1.0f, 1.0f, 1.0f},
-		ColorVertex{-1.0f, -1.0f, -1.0,
-		0.75f, 0.75f,
+		ColorVertex{-0.001f, -0.001f, -0.001,
+		1.0f, 0.0f,
 		0.0f, 1.0f, 1.0f, 1.0f},
-		ColorVertex{-1.0f, 1.0f, -1.0,
-		0.75f, 1.0f,
+		ColorVertex{-0.001f, 1.0f, -0.001,
+		1.0f, 1.0f,
 		0.0f, 1.0f, 1.0f, 1.0f},
-		ColorVertex{1.0f, 1.0f, -1.0,
-		0.5f, 1.0f,
+		ColorVertex{1.0f, 1.0f, -0.001,
+		0.0f, 1.0f,
 		0.0f, 1.0f, 1.0f, 1.0f},
 		
-		ColorVertex{-1.0f, -1.0f, -1.0f, // left
-		0.5f, 0.75f,
+		ColorVertex{-0.001f, -0.001f, -0.001f, // left
+		0.0f, 0.0f,
 		0.0, 1.0f, 0.0f, 1.0f},
-		ColorVertex{-1.0f, -1.0f, 1.0f,
-		0.75f, 0.75f,
+		ColorVertex{-0.001f, -0.001f, 1.0f,
+		1.0f, 0.0f,
 		0.0, 1.0f, 0.0f, 1.0f},
-		ColorVertex{-1.0f, 1.0f, 1.0f,
-		0.75f, 1.0f,
+		ColorVertex{-0.001f, 1.0f, 1.0f,
+		1.0f, 1.0f,
 		0.0, 1.0f, 0.0f, 1.0f},
-		ColorVertex{-1.0f, 1.0f, -1.0,
-		0.5f, 1.0f,
+		ColorVertex{-0.001f, 1.0f, -0.001,
+		0.0f, 1.0f,
 		0.0, 1.0f, 0.0f, 1.0f},
 		
-		ColorVertex{-1.0f, -1.0f, -1.0f, // buttom
-		0.25f, 0.75f,
+		ColorVertex{-0.001f, -0.001f, -0.001f, // bottom
+		0.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f},
-		ColorVertex{1.0f, -1.0f, -1.0f,
-		0.5f, 0.75f,
+		ColorVertex{1.0f, -0.001f, -0.001f,
+		1.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f},
-		ColorVertex{1.0f, -1.0f, 1.0f,
-		0.5f, 1.0f,
+		ColorVertex{1.0f, -0.001f, 1.0f,
+		1.0f, 1.0f,
 		0.0f, 0.0f, 0.0f, 1.0f},
-		ColorVertex{-1.0f, -1.0f, 1.0f,
-		0.25f, 1.0f,
+		ColorVertex{-0.001f, -0.001f, 1.0f,
+		0.0f, 1.0f,
 		0.0f, 0.0f, 0.0f, 1.0f},
 		
-		ColorVertex{-1.0f, 1.0f, 1.0f, // top
-		0.75f, 0.75f,
+		ColorVertex{-0.001f, 1.0f, 1.0f, // top
+		0.0f, 0.0f,
 		1.0, 1.0f, 1.0f, 1.0f},
 		ColorVertex{1.0f, 1.0f, 1.0f,
-		1.0f, 0.75f,
+		1.0f, 0.0f,
 		1.0, 1.0f, 1.0f, 1.0f},
-		ColorVertex{1.0f, 1.0f, -1.0,
+		ColorVertex{1.0f, 1.0f, -0.001,
 		1.0f, 1.0f,
 		1.0, 1.0f, 1.0f, 1.0f},
-		ColorVertex{-1.0f, 1.0f, -1.0,
-		0.75f, 1.0f,
+		ColorVertex{-0.001f, 1.0f, -0.001,
+		0.0f, 1.0f,
 		1.0, 1.0f, 1.0f, 1.0f},	
 		
 	};
@@ -643,6 +671,14 @@ private:
 		
 
 	};
+	
+	ColorVertexBuffer vertex_buffer = ColorVertexBuffer(vertices, numVertices);
+	IndexBuffer index_buffer = IndexBuffer(indices, numIndices, sizeof(indices[0]));
+	int PositionUniformLocation;
+	int modelViewProjMatrixLocation;
+	Shader shader = Shader();
+	Texture texture;
+
 	
 };
 

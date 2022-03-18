@@ -12,6 +12,8 @@
 #include "printFunktions.hpp"
 #include "util_funcs.hpp"
 
+#include "object_models.hpp"
+
 #include "SuperChunk.hpp"
 
 #define MAX_HEIGHT 128
@@ -159,10 +161,10 @@ public:
 		is_grounded = false;
 		collided = false;
 		if (
-			chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z + player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z - player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z + player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z - player_radius))){
+			chunkManager.has_Block_collision(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z + player_radius)) ||
+			chunkManager.has_Block_collision(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z - player_radius)) ||
+			chunkManager.has_Block_collision(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z + player_radius)) ||
+			chunkManager.has_Block_collision(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z - player_radius))){
 			collided = true;
 		}
 		if (pos.y < MIN_HEIGHT || pos.y > MAX_HEIGHT){
@@ -183,12 +185,12 @@ public:
 		// add is_gounded to x and z to add wall Climbing
 		// check x
 		collided = false;
-		if (chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z + player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z - player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_half_height, position.z + player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_half_height, position.z - player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_height, 		position.z + player_radius)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_height, 		position.z - player_radius))){
+		if (chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z + player_radius)) ||
+			chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z - player_radius)) ||
+			chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_half_height, position.z + player_radius)) ||
+			chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_half_height, position.z - player_radius)) ||
+			chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_height, 		position.z + player_radius)) ||
+			chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_height, 		position.z - player_radius))){
 			collided = true;
 		}
 		if (collided){
@@ -202,12 +204,12 @@ public:
 
 		// check z
 		collided = false;
-		if (chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius, pos.y, 					  pos.z + player_radius*sign_z)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x - player_radius, pos.y, 					  pos.z + player_radius*sign_z)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius, pos.y + player_half_height, pos.z + player_radius*sign_z)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x - player_radius, pos.y + player_half_height, pos.z + player_radius*sign_z)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x + player_radius, pos.y + player_height, 	  pos.z + player_radius*sign_z)) ||
-			chunkManager.getBlockTypeInt(glm::vec3(pos.x - player_radius, pos.y + player_height, 	  pos.z + player_radius*sign_z))){
+		if (chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius, pos.y, 					  pos.z + player_radius*sign_z)) ||
+			chunkManager.has_Block_collision(glm::vec3(pos.x - player_radius, pos.y, 					  pos.z + player_radius*sign_z)) ||
+			chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius, pos.y + player_half_height, pos.z + player_radius*sign_z)) ||
+			chunkManager.has_Block_collision(glm::vec3(pos.x - player_radius, pos.y + player_half_height, pos.z + player_radius*sign_z)) ||
+			chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius, pos.y + player_height, 	  pos.z + player_radius*sign_z)) ||
+			chunkManager.has_Block_collision(glm::vec3(pos.x - player_radius, pos.y + player_height, 	  pos.z + player_radius*sign_z))){
 			collided = true;
 		}
 		if (collided){
@@ -221,6 +223,7 @@ public:
 		movement_input_f = false;
 		movement_input_s = false;
 	}
+
 
 	bool block_collision(glm::vec3 blockpos){
 		blockpos = floor(blockpos);
@@ -321,9 +324,11 @@ public:
 			if (chunkManager.getBlockTypeInt(stepPos)) {
 				chunkManager.setBlock(stepPos, 0);
 				found = true;
+				//selection_box_pos = floor(stepPos);
 				break;
 			}
 		}
+		update_selection_box();
 	}
 
 	void place_block() {
@@ -345,6 +350,7 @@ public:
 			}
 			previousPos = stepPos;
 		}
+		update_selection_box();
 	}
 
 
@@ -355,6 +361,32 @@ public:
 	}
 	int get_selected_block_type(){
 		return selected_block_type;
+	}
+
+	void render_selection_box(){
+		if (selection_box_is_focussed){
+			selection_box.render(selection_box_pos.x, selection_box_pos.y, selection_box_pos.z, getModelViewProj_GL());
+		}
+		
+	}
+	void update_selection_box(){
+		glm::vec3 lookAt = camera.getLookAt();
+		glm::vec3 stepPos;
+		glm::vec3 viewpos = camera.getViewPos();
+		bool found = false;
+		for (int i = 0; i * APROX_STEP_SIZE < PLAYER_ACTION_RANGE; i++) {
+			float factor = i * APROX_STEP_SIZE;
+			stepPos = viewpos + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
+			if (chunkManager.getBlockTypeInt(stepPos)) {
+				selection_box_pos = floor(stepPos);
+				found = true;
+				selection_box_is_focussed = true;
+				break;
+			}
+		}
+		if (!found){
+			selection_box_is_focussed = false;
+		}
 	}
 
 
@@ -386,9 +418,14 @@ private:
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 modelViewProj = camera.getViewProj() * model;
 
+	
+
 
 	// still WIP
 	int selected_block_type = 4;
+	Box selection_box = Box();
+	glm::vec3 selection_box_pos;
+	bool selection_box_is_focussed = false;
 
 };
 

@@ -35,7 +35,7 @@ public:
 		}
 		modelViewProjMatrixLocation = GLCALL(glGetUniformLocation(shader.getShaderId(), "u_modelViewProj"));
 		//tile_atlas.load("Graphics/TileAtlas64.png");
-		tile_atlas.load("graphics/TileAtlas64_Quandary.png");
+		tile_atlas.load("graphics/TileAtlas64_Quandary_1.png");
 	}
 
 	void addChunk(int x, int y, int z) {
@@ -346,6 +346,11 @@ public:
 		else {
 			return chunk->getBlockTypeInt(position_in_chunk(pos));
 		}
+	}
+
+	bool has_Block_collision(glm::vec3 pos){
+		int typeint = getBlockTypeInt(pos);
+		return btm.GetBlockType(typeint)->hasCollision();
 	}
 
 
