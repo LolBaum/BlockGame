@@ -9,7 +9,18 @@
 #include "util_funcs.hpp"
 #include "printFunktions.hpp"
 
+/* void render_1(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId, ChunkVertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, int32 NumIndices) {
+	vertexBuffer->bind();
+	indexBuffer->bind();
 
+	GLCALL(glUniformMatrix4fv(modelViewProjMatrixLocation, 1, GL_FALSE, modelViewProj));
+	GLCALL(glActiveTexture(GL_TEXTURE0));
+	GLCALL(glBindTexture(GL_TEXTURE_2D, textureId));
+	GLCALL(glDrawElements(GL_TRIANGLES, NumIndices, GL_UNSIGNED_INT, 0));
+
+	indexBuffer->unbind();
+	vertexBuffer->unbind();
+} */
 
 
 struct Chunk{
@@ -18,14 +29,16 @@ struct Chunk{
 		numBlocks = 0;
 		changed = true;
 
-		vertexBuffer = *new ChunkVertexBuffer();
-		indexBuffer = *new IndexBuffer();
+		// vertexBuffer = *new ChunkVertexBuffer();
+		// indexBuffer = *new IndexBuffer();
 	}
 
 	~Chunk(){
 		//std::cout << "Called Destructor for Chunk: " << pos.x << ", " << pos.y << ", " << pos.z << ", " << std::endl;
-		vertexBuffer.~ChunkVertexBuffer();
-		indexBuffer.~IndexBuffer();
+
+		// vertexBuffer.~ChunkVertexBuffer();
+		// indexBuffer.~IndexBuffer();
+
 		mesh.~ChunkMesh();
 	}
 
@@ -202,9 +215,11 @@ struct Chunk{
 			
 
 
-			num_faces = calculateNumFaces();
+			calculateNumFaces();
 			mesh.clearMesh();
 			mesh.reserveFaces(num_faces);
+			mesh_transparent.clearMesh();
+			mesh_transparent.reserveFaces(num_faces_transparent);
 			//std::cout << "mesh.reserveFaces("<<NumFaces<<");" << std::endl;
 			numBlocks = 0;
 			for (int x = 0; x < CX; x++) {
@@ -291,28 +306,21 @@ struct Chunk{
 								int tex_x = 0;
 								int tex_y = 0;
 								bt->get_tex_coords(&tex_x, &tex_y);
-								mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 3, tex_x, tex_y);
-								mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 1, tex_x, tex_y);
-								mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 4, tex_x, tex_y);
-								mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 5, tex_x, tex_y);
-								mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 2, tex_x, tex_y);
-								mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 0, tex_x, tex_y);
+								mesh_transparent.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 3, tex_x, tex_y);
+								mesh_transparent.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 1, tex_x, tex_y);
+								mesh_transparent.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 4, tex_x, tex_y);
+								mesh_transparent.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 5, tex_x, tex_y);
+								mesh_transparent.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 2, tex_x, tex_y);
+								mesh_transparent.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 0, tex_x, tex_y);
 							}
 
 						}
 					}
 				}
 			}
-			//std::cout << "Chunk consits of " << numBlocks << " Blocks" << std::endl;
 
-			uint32 numVertices = mesh.getNumVertices();
-			Vertex* vertices = mesh.getVertices();
-
-			uint32 numIndices = mesh.getNumIndices();
-			uint32* indices = mesh.getIndices();
-
-			indexBuffer.update(indices, numIndices, sizeof(indices[0])); // fix sizeof
-			vertexBuffer.update(&vertices[0], numVertices);
+			mesh.update();
+			mesh_transparent.update();
 
 			changed = false;
 		}
@@ -321,56 +329,51 @@ struct Chunk{
 
 	void render(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId) {
 		updateMesh();
-		vertexBuffer.bind();
-		indexBuffer.bind();
-
-		GLCALL(glUniformMatrix4fv(modelViewProjMatrixLocation, 1, GL_FALSE, modelViewProj));
-		GLCALL(glActiveTexture(GL_TEXTURE0));
-		GLCALL(glBindTexture(GL_TEXTURE_2D, textureId));
-		GLCALL(glDrawElements(GL_TRIANGLES, mesh.getNumIndices(), GL_UNSIGNED_INT, 0));
-
-		indexBuffer.unbind();
-		vertexBuffer.unbind();
+		mesh.render(modelViewProjMatrixLocation, modelViewProj, textureId);
+		mesh_transparent.render(modelViewProjMatrixLocation, modelViewProj, textureId);
 	}
 
-	int calculateNumFaces() {
-		int numFaces = 0;
-		int c = 0;
+	void calculateNumFaces() {
+		num_faces = 0;
+		num_faces_transparent = 0;
 		for (int x = 0; x < CX; x++) {
 			for (int y = 0; y < CY; y++) {
 				for (int z = 0; z < CZ; z++) {
-					if (blocks[x][y][z].getId() != 0) {
-						c++;
-						if (getBlockTypeInt(x - 1, y, z) == 0) { // Todo: check for opeaqeness
-							numFaces++;
-							//std::cout << "x - 1 "<<  std::endl;
+					int id = blocks[x][y][z].getId();
+					if (id != 0) {
+						if (btm.GetBlockType(id)->isOpaque()){
+							if (getBlockTypeInt(x - 1, y, z) == 0) { // Todo: check for opeaqeness
+								num_faces++;
+								//std::cout << "x - 1 "<<  std::endl;
+							}
+							if (getBlockTypeInt(x + 1, y, z) == 0) { // Todo: check for opeaqeness
+								num_faces++;
+								//std::cout << "x + 1" << std::endl;
+							}
+							if (getBlockTypeInt(x, y - 1, z) == 0) { // Todo: check for opeaqeness
+								num_faces++;
+								//std::cout << "y - 1" << std::endl;
+							}
+							if (getBlockTypeInt(x, y + 1, z) == 0) { // Todo: check for opeaqeness
+								num_faces++;
+								//std::cout << "y + 1" << std::endl;
+							}
+							if (getBlockTypeInt(x, y, z - 1) == 0) { // Todo: check for opeaqeness
+								num_faces++;
+								//std::cout << "z - 1" << std::endl;
+							}
+							if (getBlockTypeInt(x, y, z + 1) == 0) { // Todo: check for opeaqeness
+								num_faces++;
+								//std::cout << "z + 1" << std::endl;
+							}
 						}
-						if (getBlockTypeInt(x + 1, y, z) == 0) { // Todo: check for opeaqeness
-							numFaces++;
-							//std::cout << "x + 1" << std::endl;
+						else{
+							num_faces_transparent += 6;
 						}
-						if (getBlockTypeInt(x, y - 1, z) == 0) { // Todo: check for opeaqeness
-							numFaces++;
-							//std::cout << "y - 1" << std::endl;
-						}
-						if (getBlockTypeInt(x, y + 1, z) == 0) { // Todo: check for opeaqeness
-							numFaces++;
-							//std::cout << "y + 1" << std::endl;
-						}
-						if (getBlockTypeInt(x, y, z - 1) == 0) { // Todo: check for opeaqeness
-							numFaces++;
-							//std::cout << "z - 1" << std::endl;
-						}
-						if (getBlockTypeInt(x, y, z + 1) == 0) { // Todo: check for opeaqeness
-							numFaces++;
-							//std::cout << "z + 1" << std::endl;
-						}
-						
 					}
 				}
 			}
 		}
-		return numFaces;
 	}
 
 	int getNumMeshIndices() { // remove this fuction?
@@ -387,7 +390,7 @@ struct Chunk{
 		return &mesh;
 	}
 
-	ChunkVertexBuffer* getVertexBuffer() {
+	/* ChunkVertexBuffer* getVertexBuffer() {
 		return &vertexBuffer;
 	}
 	IndexBuffer* getIndexBuffer() {
@@ -399,7 +402,7 @@ struct Chunk{
 	}
 	void setIndexBuffer(IndexBuffer ib) {
 		indexBuffer = ib;
-	}
+	} */
 
 	glm::vec3 getPos() {
 		return pos;
@@ -419,10 +422,13 @@ private:
 	glm::vec3 pos;
 	unsigned int numBlocks;
 	bool changed;
-	int num_faces;
 
+	int num_faces;
 	ChunkMesh mesh;
-	ChunkVertexBuffer vertexBuffer;
-	IndexBuffer indexBuffer;
+
+	int num_faces_transparent;
+	ChunkMesh mesh_transparent;
+
+
 }; 
 //Chunk NullChunk = *new Chunk(glm::vec3(0,0,0));

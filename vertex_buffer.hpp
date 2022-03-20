@@ -2,6 +2,7 @@
 #include <glew.h>
 
 #include "definitions.hpp"
+#include <iostream>
 
 struct ChunkVertexBuffer {
 	ChunkVertexBuffer() {
@@ -9,6 +10,8 @@ struct ChunkVertexBuffer {
 		glBindVertexArray(vao);
 
 		glGenBuffers(1, &bufferId);
+		glBindVertexArray(0);
+		//std::cout << vao << "  " << bufferId << std::endl;
 	}
 	ChunkVertexBuffer(void* data, int numVertices) {
 		glGenVertexArrays(1, &vao);
@@ -33,6 +36,7 @@ struct ChunkVertexBuffer {
 		glBindVertexArray(vao);
 
 		glGenBuffers(1, &bufferId);*/
+		glBindVertexArray(vao);
 		glBindBuffer(GL_ARRAY_BUFFER, bufferId);
 		glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(Vertex), data, GL_STATIC_DRAW);
 

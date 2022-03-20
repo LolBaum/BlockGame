@@ -27,11 +27,22 @@ void main()
     float z = gl_FragCoord.z / gl_FragCoord.w;
     float fog = clamp(exp(-fogdensity * z * z)+0.1, 0.0, 1);
 
-	f_color = mix(fogcolor, texColor * v_lightValue, fog);
+	f_color = mix(fogcolor, vec4(texColor.xyz * v_lightValue, texColor.w), fog);
+    //f_color = vec4(texColor.xyz * v_lightValue, texColor.w);
+    
+    
+    float test = (gl_FragCoord.z-0.75)*4;
+    //f_color = vec4(test,test,test, 1);
+    
     
     // this is a tempory solution to make tranparancy work
-    if(f_color.a < 0.5)
-        discard;
+
+    /* if(f_color.a > 0.9){
+        gl_FragDepth = gl_FragCoord.z;
+    }
+    else{
+        gl_FragDepth = 0.9;
+    }  */
 
 
 	//float depth = LinearizeDepth(gl_FragCoord.z)/far;

@@ -13,30 +13,41 @@
 
 
 class ChunkMesh {
+private:
+	uint32 numMaxVertices = 16 * 16 * 16 * 24;
+	std::vector<Vertex> vertices;
+	uint32 usedVertices = 0;
+
+	uint32 numMaxIndices = 16 * 16 * 16 * 36;
+	std::vector<uint32> indices;
+	uint32 usedIndices = 0;
+
+	int textureAtlasSize = 4;
+	float tex_factor = 1.0f / textureAtlasSize;
+
 public:
 	std::vector<Vertex> obj;
-	
+	ChunkVertexBuffer vertexBuffer;
+	IndexBuffer indexBuffer;
+
 	ChunkMesh() {
+		
+		vertexBuffer = *new ChunkVertexBuffer();
+		indexBuffer = *new IndexBuffer();
 		
 	}
 	~ChunkMesh() {
 		std::vector<Vertex>().swap(vertices);
 		std::vector<uint32>().swap(indices);
+		vertexBuffer.~ChunkVertexBuffer();
+		indexBuffer.~IndexBuffer();
 	}
 
-	uint32 getNumIndices() {
-		return usedIndices;
-	}
-	uint32 getNumVertices() {
-		return usedVertices;
-	}
-	Vertex* getVertices() {
-		return vertices.data();
-	}
+	uint32 getNumIndices() {return usedIndices;}
+	uint32 getNumVertices() {return usedVertices;}
+	Vertex* getVertices() {return vertices.data();}
+	uint32* getIndices() {return indices.data();}
 	
-	uint32* getIndices() {
-		return indices.data();
-	}
 	void reserveVertices(int numVertices) {
 		vertices.reserve(numVertices);
 	}
@@ -48,6 +59,35 @@ public:
 		reserveIndices(numFaces * 6);
 		// could return Int as Warning
 	}
+
+	void render(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId) {
+		//makes fully transparent images work
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glAlphaFunc (GL_GREATER, 0.1);
+		glEnable(GL_ALPHA_TEST);
+		
+		vertexBuffer.bind();
+		indexBuffer.bind();
+
+		GLCALL(glUniformMatrix4fv(modelViewProjMatrixLocation, 1, GL_FALSE, modelViewProj));
+		GLCALL(glActiveTexture(GL_TEXTURE0));
+		GLCALL(glBindTexture(GL_TEXTURE_2D, textureId));
+		GLCALL(glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, 0));
+
+		indexBuffer.unbind();
+		vertexBuffer.unbind();
+	}
+
+	void update(){
+		//Vertex* vertices = getVertices();
+		//uint32* indices = getIndices();
+		indexBuffer.update(getIndices(), usedIndices, sizeof(getIndices()[0])); // fix sizeof
+		vertexBuffer.update(&getVertices()[0], usedVertices);
+
+	}
+
 	
 	// rotation: front-0, right-1, back-2, left-3, buttom-4, top-5,
 	void addPlane(glm::vec3 position, int rotation = 0, int tex_x = 0, int tex_y = 1, int size = 1) {
@@ -303,18 +343,6 @@ public:
 		usedIndices = 0;
 		usedVertices = 0;
 	}
-
-private:
-	uint32 numMaxVertices = 16 * 16 * 16 * 24;
-	std::vector<Vertex> vertices;
-	uint32 usedVertices = 0;
-
-	uint32 numMaxIndices = 16 * 16 * 16 * 36;
-	std::vector<uint32> indices;
-	uint32 usedIndices = 0;
-
-	int textureAtlasSize = 4;
-	float tex_factor = 1.0f / textureAtlasSize;
 };
 
 
