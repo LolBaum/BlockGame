@@ -18,7 +18,7 @@ struct Shader {
 
 private:
 
-	GLuint compile(std::string shaderSource, GLenum type);
+	GLuint compile(std::string shaderSource, GLenum type, std::string name);
 	std::string parse(const char* filename);
 	GLuint createShader(const char* ColorVertexShaderFilename, const char* fragmentShaderFilename);
 

@@ -25,6 +25,7 @@ public:
 
 	void initialize(){
 		shader.initialize("shaders/basic.vs", "shaders/basic.fs");
+		transparent_shader.initialize("shaders/basic.vs", "shaders/basic_transparent.fs");
 		colorUniformLocation = glGetUniformLocation(shader.getShaderId(), "u_color");
 		if (colorUniformLocation != -1) {
 			GLCALL(glUniform4f(colorUniformLocation, 1.0f, 0.0f, 1.0f, 1.0f));
@@ -174,12 +175,34 @@ public:
 	}
 
 	void render(const GLfloat* modelViewProj) {
+		//glDepthMask(GL_TRUE);
+		//glDisable(GL_MULTISAMPLE);
+/* 		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+		glDepthMask(GL_TRUE);
+		glDisable(GL_BLEND); */
+		
 		shader.bind();
 		for (int i = 0; i < chunks.size(); i++) {
 			chunks.at(i)->render(modelViewProjMatrixLocation, modelViewProj, tile_atlas.get_textureId());
 			//std::cout << "renderd Chunk NR " << i << " at " << chunks.at(i)->getPos().x << ", " << chunks.at(i)->getPos().y << ", " << chunks.at(i)->getPos().z << ", " << std::endl;
 		}
 		shader.unbind();
+	}
+
+	void render_transparent(const GLfloat* modelViewProj) {
+/* 		glDepthMask(GL_FALSE);
+		glEnable(GL_BLEND);
+		//glBlendEquation(GL_FUNC_ADD);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); */
+		transparent_shader.bind();
+		for (int i = 0; i < chunks.size(); i++) {
+			chunks.at(i)->render_transparent(modelViewProjMatrixLocation, modelViewProj, tile_atlas.get_textureId());
+			//std::cout << "renderd Chunk NR " << i << " at " << chunks.at(i)->getPos().x << ", " << chunks.at(i)->getPos().y << ", " << chunks.at(i)->getPos().z << ", " << std::endl;
+		}
+		transparent_shader.unbind();
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDepthMask(GL_TRUE);
 	}
 
 	Chunk* getChunk(glm::vec3 pos) {
@@ -396,6 +419,7 @@ private:
 	int TextureUniformLocation;
 	int modelViewProjMatrixLocation;
 	Shader shader = Shader();
+	Shader transparent_shader = Shader();
 	Texture tile_atlas;
 };
 

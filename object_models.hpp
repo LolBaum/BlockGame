@@ -62,11 +62,11 @@ public:
 
 	void render(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId) {
 		//makes fully transparent images work
-		glEnable(GL_DEPTH_TEST);
+		/* glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glAlphaFunc (GL_GREATER, 0.1);
-		glEnable(GL_ALPHA_TEST);
+		glEnable(GL_ALPHA_TEST); */
 		
 		vertexBuffer.bind();
 		indexBuffer.bind();
@@ -709,4 +709,23 @@ private:
 
 	
 };
+
+
+class ScreenQuad{
+	Vertex2D vertices[4] = {Vertex2D{0.0f, 1.0f, 0.0f, 1.0f},
+				   			Vertex2D{1.0f, 1.0f, 1.0f, 1.0f},
+				   			Vertex2D{0.0f, 0.0f, 0.0f, 0.0f},
+				   			Vertex2D{1.0f, 0.0f, 1.0f, 0.0f}};
+
+	uint32 indices[6] = {0, 1, 2,
+						 1, 3, 2};
+
+public:
+	uint32 getNumIndices() {return 6;}
+	uint32 getNumVertices() {return 4;}
+	Vertex2D* getVertices() {return &vertices[0];}
+	uint32* getIndices() {return &indices[0];}
+
+};
+
 

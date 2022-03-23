@@ -11,7 +11,6 @@ struct ChunkVertexBuffer {
 
 		glGenBuffers(1, &bufferId);
 		glBindVertexArray(0);
-		//std::cout << vao << "  " << bufferId << std::endl;
 	}
 	ChunkVertexBuffer(void* data, int numVertices) {
 		glGenVertexArrays(1, &vao);
@@ -32,10 +31,6 @@ struct ChunkVertexBuffer {
 	}
 
 	void update(void* data, int numVertices) {
-		/*glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
-
-		glGenBuffers(1, &bufferId);*/
 		glBindVertexArray(vao);
 		glBindBuffer(GL_ARRAY_BUFFER, bufferId);
 		glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(Vertex), data, GL_STATIC_DRAW);
@@ -51,6 +46,61 @@ struct ChunkVertexBuffer {
 	}
 
 	~ChunkVertexBuffer() {
+		glDeleteBuffers(1, &bufferId);
+	}
+
+	void bind() {
+		glBindVertexArray(vao);
+	}
+
+	void unbind() {
+		glBindVertexArray(0);
+	}
+
+private:
+	GLuint bufferId;
+	GLuint vao;
+};
+
+
+struct Vertex2DBuffer {
+	Vertex2DBuffer() {
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
+
+		glGenBuffers(1, &bufferId);
+		glBindVertexArray(0);
+	}
+	Vertex2DBuffer(void* data, int numVertices) {
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
+
+		glGenBuffers(1, &bufferId);
+		glBindBuffer(GL_ARRAY_BUFFER, bufferId);
+		glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(Vertex2D), data, GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)offsetof(struct Vertex, x));
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)offsetof(struct Vertex, u));
+
+		glBindVertexArray(0);
+	}
+
+	void update(void* data, int numVertices) {
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, bufferId);
+		glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(Vertex2D), data, GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)offsetof(struct Vertex, x));
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)offsetof(struct Vertex, u));
+
+		glBindVertexArray(0);
+	}
+
+	~Vertex2DBuffer() {
 		glDeleteBuffers(1, &bufferId);
 	}
 

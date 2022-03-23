@@ -29,6 +29,16 @@ struct Vertex {
 	float32 i; // light level / intensity
 };
 
+struct Vertex2D {
+	~Vertex2D() {
+	}
+	float32 x; // 2D-Space coordinates
+	float32 y;
+
+	float32 u; // 2D UV Mapping coordinates
+	float32 v;
+};
+
 struct TexCoords {
 	~TexCoords() {}
 	int x; 

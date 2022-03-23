@@ -24,7 +24,7 @@ void Shader::unbind() {
 }
 
 
-GLuint Shader::compile(std::string shaderSource, GLenum type) {
+GLuint Shader::compile(std::string shaderSource, GLenum type, std::string name) {
 	GLuint id = glCreateShader(type);
 	const char* src = shaderSource.c_str();
 	glShaderSource(id, 1, &src, 0);
@@ -37,7 +37,7 @@ GLuint Shader::compile(std::string shaderSource, GLenum type) {
 		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 		char* message = new char[length];
 		glGetShaderInfoLog(id, length, &length, message);
-		std::cout << "Shader compilation error: " << message << std::endl;
+		std::cout << "Shader compilation error: " << name << ": " << message << std::endl;
 		delete[] message;
 		return 0;
 	}
@@ -76,8 +76,8 @@ GLuint Shader::createShader(const char* ColorVertexShaderFilename, const char* f
 	std::string fragmentShaderSource = parse(fragmentShaderFilename);
 
 	GLuint program = glCreateProgram();
-	GLuint vs = compile(ColorVertexShaderSource, GL_VERTEX_SHADER);
-	GLuint fs = compile(fragmentShaderSource, GL_FRAGMENT_SHADER);
+	GLuint vs = compile(ColorVertexShaderSource, GL_VERTEX_SHADER, ColorVertexShaderFilename);
+	GLuint fs = compile(fragmentShaderSource, GL_FRAGMENT_SHADER, fragmentShaderFilename);
 
 	glAttachShader(program, vs);
 	glAttachShader(program, fs);
