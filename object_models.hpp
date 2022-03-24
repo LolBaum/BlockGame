@@ -553,15 +553,21 @@ private:
 
 class Box {
 public:
-	Box()  {
-		shader.initialize("shaders/selection_box.vs", "shaders/selection_box.fs");
+	Box(const char* VertexShaderFilename, const char* fragmentShaderFilename,  const char* TextureFilename)  {
+		shader.initialize(VertexShaderFilename, fragmentShaderFilename);
 		PositionUniformLocation = glGetUniformLocation(shader.getShaderId(), "u_pos");
 		if (PositionUniformLocation != -1) {
 			//std::cout << "cloudn't create PositionUniformLocation for selection box" << std::endl;
 			GLCALL(glUniform3f(PositionUniformLocation, 1.0f, 0.0f, 1.0f));
 		}
 		modelViewProjMatrixLocation = GLCALL(glGetUniformLocation(shader.getShaderId(), "u_modelViewProj"));
-		texture.load("graphics/selection_box_64_2.png");
+		texture.load(TextureFilename);
+		glBindTexture(1, texture.get_textureId());
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glBindTexture(1, 0);
 	}
 	int getNumIndices() {
 		return numIndices;
@@ -591,10 +597,10 @@ public:
 		shader.unbind();
 	}
 
-private:
+protected:
 	uint32 numVertices = 24;
 	ColorVertex vertices[24] = {
-		ColorVertex{-0.0001f, -0.001f, 1.0f, // front
+		ColorVertex{0.0f, -0.001f, 1.0f, // front
 		0.0f, 0.0f,
 		1.0f, 0.0f, 0.0f, 1.0f},
 		ColorVertex{1.0f, -0.001f, 1.0f,
@@ -705,10 +711,122 @@ private:
 	int PositionUniformLocation;
 	int modelViewProjMatrixLocation;
 	Shader shader = Shader();
-	Texture texture;
-
-	
+	Texture texture;	
 };
+
+class Skybox:Box{
+protected:
+	ColorVertex vertices[24] = {
+		ColorVertex{-0.1f, 0.0f, 1.0f, // front
+		0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f, 1.0f},
+		ColorVertex{1.0f, 0.0f, 1.0f,
+		1.0f, 0.0f,
+		1.0f, 0.0f, 0.0f, 1.0f},
+		ColorVertex{1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f,
+		1.0f, 0.0f, 0.0f, 1.0f},
+		ColorVertex{-0.1f, 1.0f, 1.0f,
+		0.0f, 1.0f,
+		1.0f, 0.0f, 0.0f, 1.0f},
+
+		
+		ColorVertex{1.0f, 0.0f, 1.0f, // right
+		0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 1.0f},
+		ColorVertex{1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 1.0f},
+		ColorVertex{1.0f, 1.0f, 0.0,
+		1.0f, 1.0f,
+		0.0f, 0.0f, 1.0f, 1.0f},
+		ColorVertex{1.0f, 1.0f, 1.0,
+		0.0f, 1.0f,
+		0.0f, 0.0f, 1.0f, 1.0f},
+		
+		
+		ColorVertex{1.0f, 0.0f, 0.0f, // back
+		0.0f, 0.0f,
+		0.0f, 1.0f, 1.0f, 1.0f},
+		ColorVertex{0.0f, 0.0f, 0.0,
+		1.0f, 0.0f,
+		0.0f, 1.0f, 1.0f, 1.0f},
+		ColorVertex{0.0f, 1.0f, 0.0,
+		1.0f, 1.0f,
+		0.0f, 1.0f, 1.0f, 1.0f},
+		ColorVertex{1.0f, 1.0f, 0.0,
+		0.0f, 1.0f,
+		0.0f, 1.0f, 1.0f, 1.0f},
+		
+		ColorVertex{0.0f, 0.0f, 0.0f, // left
+		0.0f, 0.0f,
+		0.0, 1.0f, 0.0f, 1.0f},
+		ColorVertex{0.0f, 0.0f, 1.0f,
+		1.0f, 0.0f,
+		0.0, 1.0f, 0.0f, 1.0f},
+		ColorVertex{0.0f, 1.0f, 1.0f,
+		1.0f, 1.0f,
+		0.0, 1.0f, 0.0f, 1.0f},
+		ColorVertex{0.0f, 1.0f, 0.0,
+		0.0f, 1.0f,
+		0.0, 1.0f, 0.0f, 1.0f},
+		
+		ColorVertex{0.0f, 0.0f, 0.0f, // bottom
+		0.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f},
+		ColorVertex{1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f},
+		ColorVertex{1.0f, 0.0f, 1.0f,
+		1.0f, 1.0f,
+		0.0f, 0.0f, 0.0f, 1.0f},
+		ColorVertex{0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f, 0.0f, 1.0f},
+		
+		ColorVertex{0.0f, 1.0f, 1.0f, // top
+		0.0f, 0.0f,
+		1.0, 1.0f, 1.0f, 1.0f},
+		ColorVertex{1.0f, 1.0f, 1.0f,
+		1.0f, 0.0f,
+		1.0, 1.0f, 1.0f, 1.0f},
+		ColorVertex{1.0f, 1.0f, 0.0,
+		1.0f, 1.0f,
+		1.0, 1.0f, 1.0f, 1.0f},
+		ColorVertex{0.0f, 1.0f, 0.0,
+		0.0f, 1.0f,
+		1.0, 1.0f, 1.0f, 1.0f},	
+		
+	};
+	
+
+public:
+	Skybox(const char* VertexShaderFilename, const char* fragmentShaderFilename,  
+	const char* TextureFilename) : Box(VertexShaderFilename, fragmentShaderFilename, TextureFilename){
+		vertex_buffer.update(vertices, numVertices);
+		index_buffer.update(indices, numIndices, sizeof(indices[0]));
+	}
+
+	void render(float x, float y, float z, const GLfloat* modelViewProj){
+		glDisable(GL_DEPTH_TEST);
+		shader.bind();
+		GLCALL(glUniform3f(PositionUniformLocation, x, y, z));
+		vertex_buffer.bind();
+		index_buffer.bind();
+		GLCALL(glUniformMatrix4fv(modelViewProjMatrixLocation, 1, GL_FALSE, modelViewProj));
+		GLCALL(glActiveTexture(GL_TEXTURE0));
+		GLCALL(glBindTexture(GL_TEXTURE_2D, texture.get_textureId()));
+		glDisable(GL_CULL_FACE);
+		GLCALL(glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0));
+		glEnable(GL_CULL_FACE);
+		index_buffer.unbind();
+		vertex_buffer.unbind();
+		shader.unbind();
+		glEnable(GL_DEPTH_TEST);
+	}
+};
+
+
 
 
 class ScreenQuad{

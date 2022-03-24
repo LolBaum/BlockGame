@@ -138,6 +138,21 @@ struct ColorVertexBuffer {
 		glBindVertexArray(0);
 	}
 
+	void update(void* data, int numVertices){
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, bufferId);
+		glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(ColorVertex), data, GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ColorVertex), (void*)offsetof(struct ColorVertex, x));
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(ColorVertex), (void*)offsetof(struct ColorVertex, u));
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(ColorVertex), (void*)offsetof(struct ColorVertex, r));
+
+		glBindVertexArray(0);
+	}
+
 	~ColorVertexBuffer(){
 		glDeleteBuffers(1, &bufferId);
 	}

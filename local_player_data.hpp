@@ -17,6 +17,7 @@
 #include "SuperChunk.hpp"
 
 #define MAX_HEIGHT 128
+#define MAX_HEIGHT_IN_CHUNKS MAX_HEIGHT/16
 #define MIN_HEIGHT 0
 
 #define PLAYER_ACTION_RANGE 5
@@ -294,7 +295,7 @@ public:
 		chunksInSight.clear();
 
 		for (int x = -sightDistance; x <= sightDistance; x++) {
-			for (int y = -sightDistance; y <= sightDistance; y++) {
+			for (int y = -MAX_HEIGHT_IN_CHUNKS; y <= MAX_HEIGHT_IN_CHUNKS; y++) {
 				for (int z = -sightDistance; z <= sightDistance; z++) {
 					int pos_x = currentChunkPos.x + x * 16;
 					int pos_y = currentChunkPos.y + y * 16;
@@ -389,6 +390,10 @@ public:
 		}
 	}
 
+	void render_skybox(){
+		skybox.render(position.x - player_radius, position.y + player_height-0.5, position.z - player_radius, getModelViewProj_GL());
+	}
+
 
 private:
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -423,7 +428,8 @@ private:
 
 	// still WIP
 	int selected_block_type = 4;
-	Box selection_box = Box();
+	Box selection_box = Box("shaders/selection_box.vs", "shaders/selection_box.fs", "graphics/selection_box_64_2.png");
+	Skybox skybox = Skybox("shaders/skybox.vs", "shaders/skybox.fs", "graphics/HA_logo_saved.jpg");
 	glm::vec3 selection_box_pos;
 	bool selection_box_is_focussed = false;
 

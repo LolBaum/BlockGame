@@ -4,74 +4,71 @@
 #include "definitions.hpp"
 #include <iostream>
 #include "SDL_handler.hpp"
+#include "glm/glm.hpp"
+
+// from: https://learnopengl.com/Advanced-OpenGL/Framebuffers
 
 class FrameBuffer{
 private:
-    unsigned int opaqueFBO;
-    unsigned int transparentFBO;
-    unsigned int opaqueTexture, depthTexture;
-    unsigned int accumTexture, revealTexture;
-    unsigned int rbo;
-
-
-/*     unsigned int quadVAO, quadVBO;
-
-    float quadVertices[24] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-        // positions   // texCoords
-        -1.0f,  1.0f,  0.0f, 1.0f,
-        -1.0f, -1.0f,  0.0f, 0.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-
-        -1.0f,  1.0f,  0.0f, 1.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f, 1.0f
-    }; */
-
-	
-
+    unsigned int FBO;
+    unsigned int opaqueTexture;
+    unsigned int depthTexture;
 public:
-    FrameBuffer(){
-        glGenFramebuffers(1, &opaqueFBO);
-	    glBindFramebuffer(GL_FRAMEBUFFER, opaqueFBO); 
+    FrameBuffer(unsigned int opaqueTexture, unsigned int depthTexture){
+        init(opaqueTexture, depthTexture);
+    }
+    FrameBuffer(){}
 
-        glGenTextures(1, &opaqueTexture);
-        glBindTexture(GL_TEXTURE_2D, opaqueTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1440, 900, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, opaqueTexture, 0);  
+    void init(unsigned int opaqueTexture, unsigned int depthTexture){
+        glGenFramebuffers(1, &FBO);
 
-        glGenTextures(1, &depthTexture);
-        glBindTexture(GL_TEXTURE_2D, depthTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, sdl_handler.getWidth(), sdl_handler.getHeight(), 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-        glBindTexture(GL_TEXTURE_2D, 0);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, transparentFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, FBO);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, opaqueTexture, 0);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+        
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            std::cout << "ERROR::FRAMEBUFFER:: framebuffer is not complete!" << std::endl;
 
-        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
-            std::cout << "ERROR::FRAMEBUFFER:: opaque Framebuffer is not complete!" << std::endl;
-        }
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);  
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void bind(){
+        // glEnable(GL_DEPTH_TEST);
+		// glDepthFunc(GL_LESS);
+		// glDepthMask(GL_TRUE);
+		// glDisable(GL_BLEND);
+
+		// bind opaque framebuffer to render solid objects
+		glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+    unsigned int get_opaque_texture(){
+        return opaqueTexture;
+    }
+    unsigned int get_depth_texture(){
+        return depthTexture;
+    }
 
 
-        unsigned int accumTexture;
-        glGenTextures(1, &accumTexture);
-        glBindTexture(GL_TEXTURE_2D, accumTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, sdl_handler.getWidth(), sdl_handler.getHeight(), 0, GL_RGBA, GL_HALF_FLOAT, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
+};
 
-        unsigned int revealTexture;
-        glGenTextures(1, &revealTexture);
-        glBindTexture(GL_TEXTURE_2D, revealTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, sdl_handler.getWidth(), sdl_handler.getHeight(), 0, GL_RED, GL_FLOAT, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
+
+class TransparentFrameBuffer{
+private:
+    unsigned int transparentFBO;
+    unsigned int accumTexture;
+    unsigned int revealTexture;
+    unsigned int depthTexture;
+    glm::vec4 zeroFillerVec = glm::vec4(0.0f);
+	glm::vec4 oneFillerVec = glm::vec4(1.0f);
+public:
+    TransparentFrameBuffer(unsigned int accumTexture, unsigned int revealTexture, unsigned int depthTexture){
+        init(accumTexture, revealTexture, depthTexture);
+    }
+    TransparentFrameBuffer(){}
+
+    void init(unsigned int accumTexture, unsigned int revealTexture, unsigned int depthTexture){
+        glGenFramebuffers(1, &transparentFBO);
 
         glBindFramebuffer(GL_FRAMEBUFFER, transparentFBO);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, accumTexture, 0);
@@ -79,48 +76,37 @@ public:
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
 
         const GLenum transparentDrawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-        glDrawBuffers(2, transparentDrawBuffers);
+	    glDrawBuffers(2, transparentDrawBuffers);
 
+        
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            std::cout << "ERROR::FRAMEBUFFER:: Transparent framebuffer is not complete!" << std::endl;
+            std::cout << "ERROR::FRAMEBUFFER:: framebuffer is not complete!" << std::endl;
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
     }
 
     void bind(){
-        glBindFramebuffer(GL_FRAMEBUFFER, opaqueFBO);
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
-		//glEnable(GL_DEPTH_TEST);
+        // configure render states
+		// glDepthMask(GL_FALSE);
+		// glEnable(GL_BLEND);
+		// glBlendFunci(0, GL_ONE, GL_ONE);
+		// glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+		// glBlendEquation(GL_FUNC_ADD);
+
+		// // bind transparent framebuffer to render transparent objects
+		glBindFramebuffer(GL_FRAMEBUFFER, transparentFBO);
+		// glClearBufferfv(GL_COLOR, 0, &zeroFillerVec[0]);
+		// glClearBufferfv(GL_COLOR, 1, &oneFillerVec[0]);
     }
-
-    void bind_transparent(){
-        glBindFramebuffer(GL_FRAMEBUFFER, transparentFBO);
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
-		//glEnable(GL_DEPTH_TEST);
+    unsigned int get_accum_texture(){
+        return accumTexture;
     }
-
-    void unbind(){
-        glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
-		glClear(GL_COLOR_BUFFER_BIT);
-
-        // glBindVertexArray(quadVAO);
-        // glDisable(GL_DEPTH_TEST);
-		// glBindTexture(GL_TEXTURE_2D, get_texture_id());
-		// glDrawArrays(GL_TRIANGLES, 0, 6); 
+    unsigned int get_reveal_texture(){
+        return revealTexture;
     }
-
-    
-
-    unsigned int get_texture_id(){
-        return opaqueTexture;
-    }
-
-    unsigned int get_texture_id1(){
+    unsigned int get_depth_texture(){
         return depthTexture;
     }
+
 
 };
