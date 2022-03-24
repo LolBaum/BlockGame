@@ -10,6 +10,7 @@ web_material/
 !build/fonts
 !build/graphics
 !build/screenshots
+!build/screenshots/.gitkeep
 !build/shaders
 !build/main.exe
 
