@@ -48,6 +48,8 @@
 #include "Chunk.hpp"
 #include "SuperChunk.hpp"
 
+#include "item.hpp"
+
 #include "SDL_handler.hpp"
 //#include <filesystem>
 #include <sstream>
@@ -89,10 +91,16 @@ int main_function() {
 	btm.AddBlockType(BlockType(4, "Cobblestone", SingleTexture, 1, 1));
 	btm.AddBlockType(BlockType(5, SpecialBlockTexture(0,2, 0,2, 0,2, 0,2, 1,2, 1,2), "Wood Log", MultiTexture));
 	//btm.AddBlockType(BlockType(6, "Wooden Planks", SingleTexture, 0, 3));
-	btm.AddBlockType(BlockType(6, "Withe Test - no collision", SingleTexture, 3, 1, Solid, false));
+	//btm.AddBlockType(BlockType(6, "Withe Test - no collision", SingleTexture, 3, 1, Solid, false));
 	btm.AddBlockType(BlockType(7, "Leafs", SingleTexture, 2, 3, Transparent_opaque));
 	btm.AddBlockType(BlockType(8, "Glass", SingleTexture, 3, 2, Transparent_opaque));
 	btm.AddBlockType(BlockType(9, "Ice", SingleTexture, 3, 3, Transparent));
+
+
+	itm.AddItemType(new ItemType(10, "Stick"));
+
+
+
 	//BlockType b = *btm.GetBlockType(0);
 	//b.printInfo();
 	
@@ -225,31 +233,31 @@ int main_function() {
 					saveScreenshotToFile(numerate_name("screenshots/screenshot_", ".png"), sdl_handler.getWidth(), sdl_handler.getHeight());
 					break;
 				case SDLK_1:
-					player.set_selected_block_type(1);
+					player.set_inventory_slot(1);
 					break;
 				case SDLK_2:
-					player.set_selected_block_type(2);
+					player.set_inventory_slot(2);
 					break;
 				case SDLK_3:
-					player.set_selected_block_type(3);
+					player.set_inventory_slot(3);
 					break;
 				case SDLK_4:
-					player.set_selected_block_type(4);
+					player.set_inventory_slot(4);
 					break;
 				case SDLK_5:
-					player.set_selected_block_type(5);
+					player.set_inventory_slot(5);
 					break;
 				case SDLK_6:
-					player.set_selected_block_type(6);
+					player.set_inventory_slot(6);
 					break;
 				case SDLK_7:
-					player.set_selected_block_type(7);
+					player.set_inventory_slot(7);
 					break;
 				case SDLK_8:
-					player.set_selected_block_type(8);
+					player.set_inventory_slot(8);
 					break;
 				case SDLK_9:
-					player.set_selected_block_type(9);
+					player.set_inventory_slot(9);
 					break;
 				}
 			}
@@ -479,8 +487,11 @@ int main_function() {
 			ss << "Number of Chunks: "<< chunkManager.getNumChunks() << ",  " << chunkManager.getNumFilledChunks() << std::endl;
 			ss << vec3_toString(player.getPosition(), "pos ") << std::endl;
 			ss << vec3_toString(player.getCamera()->getViewPos(), "cam ") << std::endl;
-			ss << btm.GetBlockType(player.get_selected_block_type())->info_srting() << std::endl;
+			ss << itm.GetItemType(player.get_selected_item_type())->info_string() << std::endl;
 			ss << "Number of Faces: " << chunkManager.get_num_all_faces() << std::endl;
+			ss << player.inventory_as_string() << std::endl;
+			//ss << "can this (╯°□°)╯︵ ┻━┻ be rendered?" << std::endl; // no currently it wont be displayed
+			//player.debug_print_inventory();
 			text = ss.str();
 			time_since_slow_tick = 0;
 		}

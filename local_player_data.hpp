@@ -16,6 +16,9 @@
 
 #include "SuperChunk.hpp"
 
+#include "item.hpp"
+#include "inventory.hpp"
+
 #define MAX_HEIGHT 128
 #define MAX_HEIGHT_IN_CHUNKS MAX_HEIGHT/16
 #define MIN_HEIGHT 0
@@ -323,6 +326,8 @@ public:
 			float factor = i * APROX_STEP_SIZE;
 			stepPos = viewpos + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
 			if (chunkManager.getBlockTypeInt(stepPos)) {
+				int block_to_remove = chunkManager.getBlockTypeInt(stepPos);
+				inventory.add_item(block_to_remove, 1);
 				chunkManager.setBlock(stepPos, 0);
 				found = true;
 				//selection_box_pos = floor(stepPos);
@@ -344,7 +349,9 @@ public:
 			stepPos = viewpos + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
 			if (chunkManager.getBlockTypeInt(stepPos)) {
 				if (!block_collision(previousPos)){
-					chunkManager.setBlock(previousPos, selected_block_type);
+					int block_type = inventory.get_item(selected_inventory_slot)->getId();
+					inventory.pop_item(selected_inventory_slot);
+					chunkManager.setBlock(previousPos, block_type);
 					found = true;
 				}
 				break;
@@ -356,13 +363,14 @@ public:
 
 
 	// Work in Progress Functions:
+	// --- RENDERING ---
 
-	void set_selected_block_type(int id){
+	/* void set_selected_block_type(int id){
 		selected_block_type = id;
 	}
 	int get_selected_block_type(){
 		return selected_block_type;
-	}
+	} */
 
 	void render_selection_box(){
 		if (selection_box_is_focussed){
@@ -392,6 +400,24 @@ public:
 
 	void render_skybox(){
 		skybox.render(position.x - player_radius, position.y + player_height-0.5, position.z - player_radius, getModelViewProj_GL());
+	}
+
+	// --- INVENTORY ---
+
+	void debug_print_inventory(){
+		inventory.printInfo();
+	}
+
+	std::string inventory_as_string(){
+		//return inventory.info_string();
+		return inventory.improved_info_string(selected_inventory_slot);
+	}
+
+	void set_inventory_slot(int slot){
+		selected_inventory_slot = slot;
+	}
+	int get_selected_item_type(){
+		return inventory.get_item(selected_inventory_slot)->getId();
 	}
 
 
@@ -426,12 +452,17 @@ private:
 	
 
 
-	// still WIP
-	int selected_block_type = 4;
+	// still WIP --- RENDERING
+	
 	Box selection_box = Box("shaders/selection_box.vs", "shaders/selection_box.fs", "graphics/selection_box_64_2.png");
 	Skybox skybox = Skybox("shaders/skybox.vs", "shaders/skybox.fs", "graphics/HA_logo_saved.jpg");
 	glm::vec3 selection_box_pos;
 	bool selection_box_is_focussed = false;
+
+	// more WIP --- INVENTORY
+	//int selected_block_type = 4;
+	int selected_inventory_slot = 4;
+	Inventory inventory;
 
 };
 

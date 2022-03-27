@@ -1,8 +1,10 @@
 #pragma once
 #include <vector>
 #include <string>
-#include "textures.hpp"
 #include <sstream>
+#include "textures.hpp"
+#include "item.hpp"
+
 
 enum TextureType { SingleTexture, MultiTexture, blue };
 enum TransparencyType { Solid, Transparent_opaque, Transparent };
@@ -113,6 +115,9 @@ public:
 		output = ss.str();
 		return output;
 	}
+	std::string get_name(){
+		return name;
+	}
 
 private:
 	int id;
@@ -144,6 +149,7 @@ public:
 
 	void AddBlockType(BlockType type) {
 		BlockTypeList.push_back(type);
+		itm.AddItemType(new BlockItemType(type.GetId(), type.get_name().append(" block"), type.GetId())); // add a function to itm that returns the next free item id
 	}
 
 
