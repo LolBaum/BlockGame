@@ -2,8 +2,10 @@
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
 #include <iostream>
+#include <sstream>
 
 #include "definitions.hpp"
+#include "version.hpp"
 
 class SDL_handler {
 public:
@@ -31,7 +33,10 @@ public:
 
 		uint32 flags = SDL_WINDOW_OPENGL;
 
-		window = SDL_CreateWindow("C++ OpenGL Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
+		std::stringstream Window_title;
+		Window_title << GAME_NAME << "   version: " << GAME_VERSION_MAJOR << "." << GAME_VERSION_MINOR << std::endl;
+
+		window = SDL_CreateWindow(Window_title.str().c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
 		SDL_GLContext glContext = SDL_GL_CreateContext(window);
 	}
 

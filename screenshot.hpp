@@ -10,7 +10,7 @@ inline bool exists (const std::string& name) {
   return (stat (name.c_str(), &buffer) == 0); 
 }
 
-std::string numerate_name(std::string name, std::string ending=".png", int max_tests=100){
+std::string numerate_name(std::string name, std::string ending=".png", int max_tests=200){
 	int i = 0;
 	std::string new_name = name;
 	new_name.append(ending);
@@ -21,6 +21,9 @@ std::string numerate_name(std::string name, std::string ending=".png", int max_t
 		new_name.append(ending);
 		i++;
 	}
+    if (i==max_tests){
+        std::cout << "numerate_name exceeded maximum of " << max_tests << "Iterations (" << name << "*" << ending << ")" << std::endl;
+    }
 	return new_name;
 }
 
