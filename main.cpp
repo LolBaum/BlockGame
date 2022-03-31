@@ -63,19 +63,22 @@
 // WIP
 
 //FontSystem *Fs;
-glm::mat4 calculate_model_matrix(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
-{
-	glm::mat4 trans = glm::mat4(1.0f);
 
-	trans = glm::translate(trans, position);
-	trans = glm::rotate(trans, glm::radians(rotation.x), glm::vec3(1.0, 0.0, 0.0));
-	trans = glm::rotate(trans, glm::radians(rotation.y), glm::vec3(0.0, 1.0, 0.0));
-	trans = glm::rotate(trans, glm::radians(rotation.z), glm::vec3(0.0, 0.0, 1.0));
-	trans = glm::scale(trans, scale);
-
-	return trans;
+void Update_Inventory_Items(Inventory* inv, InventoryMesh* invMesh){
+	int x=0;
+	int y=0;
+	invMesh->items.clearMesh();
+	for (int i=0; i<9; i++){
+		int id = inv->get_item(i+1)->getId();
+		if (id!=0){
+			ItemType* item = itm.GetItemType(id);
+			glm::vec3 pos = calculate_slot_position(i);
+			item->get_tex_coords(&x, &y);
+			invMesh->items.addQuad(pos, 0, x, y, 0.11);
+		}
+	}
+	invMesh->items.update();
 }
-
 
 
 // Main Program
@@ -137,7 +140,7 @@ int main_function() {
 	LocalPlayer player = LocalPlayer();
 
 	Shader shader = chunkManager.get_shader();//shader("shaders/basic.vs", "shaders/basic.fs");
-	Texture texture = chunkManager.get_tile_atlas();
+	Texture texture = *chunkManager.get_tile_atlas();
 	shader.bind();
 
 	uint64 perfCounterFrequency = SDL_GetPerformanceFrequency();
@@ -157,6 +160,22 @@ int main_function() {
 	Shader screenShader("shaders/frame.vs", "shaders/frame.fs");
 
 	Renderer renderer = Renderer();
+
+	Shader UIShader("shaders/UI.vs", "shaders/UI.fs");
+	Texture UItexture = Texture("graphics/UI.png");
+	
+	//UImesh ui = ItemBarMesh();
+	InventoryMesh ui = InventoryMesh();
+
+
+
+
+	/* glm::vec3 ptest = glm::vec3(0.1, 0.1, 0.1);
+
+
+	ui.addQuad(ptest);*/
+	ui.update(); 
+
 
 
 
@@ -389,6 +408,9 @@ int main_function() {
 
 		player.update();
 
+		ui.setSlot(player.get_inventory_slot()-1);
+		Update_Inventory_Items(player.get_inventory(), &ui);
+
 
 		std::stringstream ss;
 		string output;
@@ -431,10 +453,14 @@ int main_function() {
 		player.render_skybox();
 		// rendering all opaque blocks
 		chunkManager.render(player.getModelViewProj_GL());
+
+		UIShader.bind();
+		ui.render(UItexture.get_textureId(), texture.get_textureId());
 		// rendering the info text
 		if (show_text){
 			Fontsys.render_multiline_text(text, font, 25, sdl_handler.getHeight()-50, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f)); 
 		}
+		
 		
 
 		// Second rendering stage: transparent surfaces

@@ -93,3 +93,11 @@ GLuint Shader::createShader(const char* ColorVertexShaderFilename, const char* f
 
 	return program;
 }
+
+void Shader::setVec2(const std::string &name, const glm::vec2 &value) const{ 
+        glUniform2fv(glGetUniformLocation(shaderId, name.c_str()), 1, &value[0]); 
+    }
+
+void Shader::setVec2(const char* name, const glm::vec2 &value) const{
+	glUniform2fv(glGetUniformLocation(shaderId, name), 1, &value[0]); 
+}

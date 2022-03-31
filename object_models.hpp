@@ -9,6 +9,8 @@
 #include "util_funcs.hpp"
 #include "shader.hpp"
 #include "textures.hpp" 
+#include "SDL_handler.hpp"
+//#include "Block.hpp"
 
 
 
@@ -825,6 +827,215 @@ public:
 		glEnable(GL_DEPTH_TEST);
 	}
 };
+
+struct Quad{
+	 float vertices[30] = {
+		// positions		// uv
+		-1.0f, -1.0f, 0.0f,	0.0f, 0.0f,
+		 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+		 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+
+		 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+		-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+		-1.0f, -1.0f, 0.0f, 0.0f, 0.0f
+	};
+    unsigned int quadVAO, quadVBO;
+
+	Quad(){
+		glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glBindVertexArray(0);
+	}
+	void draw(){
+		glBindVertexArray(quadVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+};
+/* struct UIQuad : Quad{
+	UIQuad():Quad(){
+
+	}
+
+}; */
+
+struct UImesh{
+	std::vector<Vertex> vertices;
+	uint32 usedVertices = 0;
+
+	std::vector<uint32> indices;
+	uint32 usedIndices = 0;
+
+	int textureAtlasSize = 4;
+	float tex_factor = 1.0f / textureAtlasSize;
+	ChunkVertexBuffer vertexBuffer;
+	IndexBuffer indexBuffer;
+
+	float aspect_ratio;
+	float inv_aspect_ratio;
+/////////////////////////////////////////////////////
+	UImesh() {
+		vertexBuffer = *new ChunkVertexBuffer();
+		indexBuffer = *new IndexBuffer();
+
+		reserveVertices(100*4);
+		reserveIndices(100 * 6);
+
+		aspect_ratio = (float)sdl_handler.getHeight() / (float)sdl_handler.getWidth();
+		
+	}
+	void reserveVertices(int numVertices) {
+		vertices.reserve(numVertices);
+	}
+	void reserveIndices(int numIndices) {
+		indices.reserve(numIndices);
+	}
+	~UImesh() {
+		std::vector<Vertex>().swap(vertices);
+		std::vector<uint32>().swap(indices);
+		vertexBuffer.~ChunkVertexBuffer();
+		indexBuffer.~IndexBuffer();
+	}
+	uint32 getNumIndices() {return usedIndices;}
+	uint32 getNumVertices() {return usedVertices;}
+	Vertex* getVertices() {return vertices.data();}
+	uint32* getIndices() {return indices.data();}
+
+	void update(){
+		//Vertex* vertices = getVertices();
+		//uint32* indices = getIndices();
+		indexBuffer.update(getIndices(), usedIndices, sizeof(getIndices()[0])); // fix sizeof
+		vertexBuffer.update(&getVertices()[0], usedVertices);
+		//std::cout << "Updating UI: indices:" << usedIndices << std::endl;
+	}
+	void addQuad(glm::vec3 position, int rotation = 0, int tex_x = 0, int tex_y = 0, float scale = 1) {
+
+		float uv_x_1 = tex_x * tex_factor;
+		float uv_x_2 = tex_x * tex_factor + tex_factor;
+		float uv_y_1 = 1.0f - tex_y * tex_factor - tex_factor;
+		float uv_y_2 = 1.0f - tex_y * tex_factor;
+
+		indices.push_back(usedVertices + 0);
+		indices.push_back(usedVertices + 1);
+		indices.push_back(usedVertices + 2);
+		indices.push_back(usedVertices + 0);
+		indices.push_back(usedVertices + 2);
+		indices.push_back(usedVertices + 3);
+		usedIndices += 6;
+		vertices.push_back(Vertex{ (position.x - 0.5f*scale)*aspect_ratio, position.y - 0.5f*scale, position.z + 0.5f,
+						uv_x_1, uv_y_1,
+						1.0});
+		vertices.push_back(Vertex{ (position.x + 0.5f*scale)*aspect_ratio, position.y - 0.5f*scale, position.z + 0.5f,
+						uv_x_2, uv_y_1,
+						1.0 });
+		vertices.push_back(Vertex{ (position.x + 0.5f*scale)*aspect_ratio, position.y + 0.5f*scale, position.z + 0.5f,
+						uv_x_2, uv_y_2,
+						1.0 });
+		vertices.push_back(Vertex{ (position.x - 0.5f*scale)*aspect_ratio, position.y + 0.5f*scale, position.z + 0.5f,
+						uv_x_1, uv_y_2,
+						1.0 });
+		usedVertices += 4; 
+	}
+
+	void clearMesh() {
+		vertices.clear();
+		indices.clear();
+		usedIndices = 0;
+		usedVertices = 0;
+	}
+
+	void render(GLuint textureId) {  // disable Depth testing
+		//makes fully transparent images work
+		/* glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glAlphaFunc (GL_GREATER, 0.1);
+		glEnable(GL_ALPHA_TEST); */
+
+		glDisable(GL_DEPTH_TEST);
+		vertexBuffer.bind();
+		indexBuffer.bind();
+
+		//GLCALL(glUniformMatrix4fv(modelViewProjMatrixLocation, 1, GL_FALSE, modelViewProj));
+		//std::cout << usedIndices << std::endl;
+		GLCALL(glActiveTexture(GL_TEXTURE0));
+		GLCALL(glBindTexture(GL_TEXTURE_2D, textureId));
+		GLCALL(glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, 0));
+
+		indexBuffer.unbind();
+		vertexBuffer.unbind();
+		glEnable(GL_DEPTH_TEST);
+	}
+};
+
+
+glm::vec3 calculate_slot_position(int slot_number){
+	return glm::vec3((float)slot_number/6.5 -0.7, -0.9, 0.09);
+}
+
+
+
+
+struct ItemBarMesh:UImesh{
+	ItemBarMesh():UImesh(){
+		glm::vec3 pos;
+		for(int i=0; i<9; i++){
+			pos = calculate_slot_position(i);
+			addQuad(pos, 0, 0, 0, 0.15);
+
+		}
+		//pos = glm::vec3((float)5/6.5 -0.7, -0.9, 0.09);
+		//addQuad(pos, 0, 0, 0, 0.15);
+		update();
+	}
+};
+struct InventoryMesh{
+	ItemBarMesh itemBar;
+	UImesh slotSelector;
+	UImesh items;
+	int last_selected_slot=5;
+	InventoryMesh(){
+		/* glm::vec3 pos = calculate_slot_position(1);
+		items.addQuad(pos, 0, 1, 0, 0.11);
+		items.update(); */
+	}
+
+	void update(){
+		itemBar.update();
+		//glm::vec3 pos = glm::vec3((float)5/6.5 -0.7, -0.9, 0.09);
+		//slotSelector.addQuad(pos, 0, 1, 0, 0.16);
+		setSlot(last_selected_slot);
+		slotSelector.update();
+		items.update();
+	}
+	
+
+	void setSlot(int slot_number){ // IMPORTANT: if the slot number comes from the player one smaller (number -1), so this function ranges from 0 to 8
+		if (slot_number != last_selected_slot && slot_number>=0 && slot_number<9){
+			//std::cout << "test: SetSlot" << std::endl;
+			slotSelector.clearMesh();
+			glm::vec3 pos = calculate_slot_position(slot_number);
+			slotSelector.addQuad(pos, 0, 1, 0, 0.16);
+			slotSelector.update();
+			last_selected_slot = slot_number;
+		}
+	}
+	
+
+	void render(GLuint UItextureId, GLuint BlocktextureId){
+		itemBar.render(UItextureId);
+		slotSelector.render(UItextureId);
+		items.render(BlocktextureId);
+	}
+
+};
+
 
 
 

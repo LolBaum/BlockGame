@@ -11,14 +11,18 @@ public:
 };
 
 
+
+
+
+
 class Inventory
 {
 private:
     unsigned int size = 9;
     /* Item items[9] = {Item(0), Item(0), Item(0), Item(0), Item(0), 
                Item(0), Item(0), Item(0), Item(0), }; */
-    Item items[9] = {Item(0,0), Item(0,0), Item(3), Item(4), Item(5), 
-               Item(0,0), Item(7), Item(8), Item(9)};
+    Item items[9] = {Item(0,0), Item(0,0), Item(3, 64), Item(4, 64), Item(5, 64), 
+               Item(0,0), Item(7, 64), Item(8, 64), Item(9, 64)};
     int first_empty_slot = 0;
 public:
     Inventory(/* args */){}

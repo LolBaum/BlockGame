@@ -82,6 +82,7 @@ public:
         return name;
     }
     virtual void leftClickFunc(){}
+    virtual void get_tex_coords(int* uv_x, int* uv_y){}
     virtual void rightClickFunc(glm::vec3 position, int* return_id){}
 };
 
@@ -89,10 +90,12 @@ class BlockItemType : public ItemType
 {
 protected:
     int blockTypeId;
+    StadardBlockTexture* texture;
 public:
-    BlockItemType(int TypeID, std::string TypeName, int BlockTypeId) : ItemType(TypeID, TypeName){
+    BlockItemType(int TypeID, std::string TypeName, int BlockTypeId, StadardBlockTexture* tex) : ItemType(TypeID, TypeName){
         blockTypeId = BlockTypeId;
         group = BlockItem;
+        texture = tex;
     }
     void printInfo() {
 		std::cout << "BlockItemType: " << id << ", " << name << ", " << blockTypeId << std::endl;
@@ -101,6 +104,9 @@ public:
         *return_id = blockTypeId;
         //chunkManager.setBlock(position, blockTypeId);
     }
+    void get_tex_coords(int* uv_x, int* uv_y){
+		texture->get_coords(uv_x, uv_y);
+	}
 };
 
 

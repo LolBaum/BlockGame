@@ -416,8 +416,15 @@ public:
 	void set_inventory_slot(int slot){
 		selected_inventory_slot = slot;
 	}
+
+	int get_inventory_slot(){
+		return selected_inventory_slot;
+	}
 	int get_selected_item_type(){
 		return inventory.get_item(selected_inventory_slot)->getId();
+	}
+	Inventory* get_inventory(){
+		return &inventory;
 	}
 
 

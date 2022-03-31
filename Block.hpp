@@ -49,6 +49,10 @@ public:
 		      TransparencyType opaqueness = Solid, bool collision=true) {
 		//std::cout << "adding Blocktype: " << blocktypename << std::endl;
 		initialize_basic(TypeId, blocktypename, tex_type, opaqueness, collision);
+		int tex_cord_x = 0;
+		int tex_cord_y = 0;
+		tex.get_front(&tex_cord_x, &tex_cord_y);
+		texture = StadardBlockTexture(tex_cord_x, tex_cord_y);
 		multi_texture = tex;
 		texture_type = tex_type;
 		printInfo();
@@ -149,7 +153,7 @@ public:
 
 	void AddBlockType(BlockType type) {
 		BlockTypeList.push_back(type);
-		itm.AddItemType(new BlockItemType(type.GetId(), type.get_name().append(" block"), type.GetId())); // add a function to itm that returns the next free item id
+		itm.AddItemType(new BlockItemType(type.GetId(), type.get_name().append(" block"), type.GetId(), type.get_texture())); // add a function to itm that returns the next free item id
 	}
 
 

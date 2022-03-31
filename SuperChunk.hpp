@@ -407,8 +407,8 @@ public:
 	Shader get_shader(){
 		return shader;
 	} 
-	Texture get_tile_atlas(){
-		return tile_atlas;
+	Texture* get_tile_atlas(){
+		return &tile_atlas;
 	} 
 private:
 	std::vector<Chunk*> chunks;

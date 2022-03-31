@@ -5,12 +5,13 @@
 #include "frame_buffer.hpp"
 #include "SDL_handler.hpp"
 #include "shader.hpp"
+#include "object_models.hpp"
 //#include "util_funcs.hpp"
 #include <iostream>
 
 class Renderer{
 private:
-    float screenQuad[30] = {
+/*     float screenQuad[30] = {
 		// positions		// uv
 		-1.0f, -1.0f, 0.0f,	0.0f, 0.0f,
 		 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
@@ -20,7 +21,8 @@ private:
 		-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
 		-1.0f, -1.0f, 0.0f, 0.0f, 0.0f
 	};
-    unsigned int quadVAO, quadVBO;
+    unsigned int quadVAO, quadVBO; */
+    Quad screenQuad;
     unsigned int opaqueTexture;
     unsigned int depthTexture;
 
@@ -35,7 +37,7 @@ private:
 
 public:
     Renderer(){
-        glGenVertexArrays(1, &quadVAO);
+        /* glGenVertexArrays(1, &quadVAO);
         glGenBuffers(1, &quadVBO);
         glBindVertexArray(quadVAO);
         glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
@@ -44,7 +46,8 @@ public:
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-        glBindVertexArray(0);
+        glBindVertexArray(0); */
+        screenQuad = Quad();
 
         unsigned int SCR_WIDTH = sdl_handler.getWidth();
         unsigned int SCR_HEIGHT = sdl_handler.getHeight();
@@ -80,8 +83,10 @@ public:
     }
 
     void drawScreen(){
-        glBindVertexArray(quadVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+        /* glBindVertexArray(quadVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6); */
+        //GLCALL(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
+        screenQuad.draw();
     }
 
     void setModeSolid(){

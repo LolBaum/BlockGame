@@ -66,7 +66,7 @@ public:
 		y = uv_y;
 	}
 
-	void get_coords(int* uv_x, int* uv_y){
+	virtual void get_coords(int* uv_x, int* uv_y){
 		*uv_x = x;
 		*uv_y = y;
 	}
@@ -102,6 +102,11 @@ public:
 		right = {right_x, right_y};
 		top = {top_x, top_y};
 		bottom = {bottom_x, bottom_y};
+	}
+
+	void get_coords(int* uv_x, int* uv_y) {
+		*uv_x = front.x;
+		*uv_y = front.y;
 	}
 
 	void get_front(int* uv_x, int* uv_y){
