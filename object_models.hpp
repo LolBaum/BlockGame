@@ -12,84 +12,82 @@
 #include "SDL_handler.hpp"
 //#include "Block.hpp"
 
-
-
-class ChunkMesh {
-private:
-	uint32 numMaxVertices = 16 * 16 * 16 * 24;
+class Mesh{
+protected:
 	std::vector<Vertex> vertices;
 	uint32 usedVertices = 0;
 
-	uint32 numMaxIndices = 16 * 16 * 16 * 36;
 	std::vector<uint32> indices;
 	uint32 usedIndices = 0;
 
-	int textureAtlasSize = 4;
-	float tex_factor = 1.0f / textureAtlasSize;
-
 public:
-	std::vector<Vertex> obj;
 	ChunkVertexBuffer vertexBuffer;
 	IndexBuffer indexBuffer;
-
-	ChunkMesh() {
-		
+	Mesh() {
 		vertexBuffer = *new ChunkVertexBuffer();
 		indexBuffer = *new IndexBuffer();
-		
 	}
-	~ChunkMesh() {
+	~Mesh() {
 		std::vector<Vertex>().swap(vertices);
 		std::vector<uint32>().swap(indices);
 		vertexBuffer.~ChunkVertexBuffer();
 		indexBuffer.~IndexBuffer();
 	}
-
 	uint32 getNumIndices() {return usedIndices;}
 	uint32 getNumVertices() {return usedVertices;}
 	Vertex* getVertices() {return vertices.data();}
 	uint32* getIndices() {return indices.data();}
-	
+
 	void reserveVertices(int numVertices) {
 		vertices.reserve(numVertices);
 	}
 	void reserveIndices(int numIndices) {
 		indices.reserve(numIndices);
 	}
+
+	virtual void initialize(){
+
+	}
+
+	virtual void render(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId) {
+		vertexBuffer.bind();
+		indexBuffer.bind();
+		GLCALL(glUniformMatrix4fv(modelViewProjMatrixLocation, 1, GL_FALSE, modelViewProj));
+		GLCALL(glActiveTexture(GL_TEXTURE0));
+		GLCALL(glBindTexture(GL_TEXTURE_2D, textureId));
+		GLCALL(glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, 0));
+		indexBuffer.unbind();
+		vertexBuffer.unbind();
+	}
+
+	virtual void update(){
+		indexBuffer.update(getIndices(), usedIndices, sizeof(getIndices()[0]));
+		vertexBuffer.update(&getVertices()[0], usedVertices);
+	}
+
+	virtual void clearMesh() {
+		vertices.clear();
+		indices.clear();
+		usedIndices = 0;
+		usedVertices = 0;
+	}
+
+};
+
+class ChunkMesh: public Mesh {
+private:
+	int textureAtlasSize = 4;
+	float tex_factor = 1.0f / textureAtlasSize;
+
+public:
+	ChunkMesh():Mesh() {}
+	~ChunkMesh() {}
+
 	void reserveFaces(int numFaces) {
 		reserveVertices(numFaces*4);
 		reserveIndices(numFaces * 6);
 		// could return Int as Warning
 	}
-
-	void render(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId) {
-		//makes fully transparent images work
-		/* glEnable(GL_DEPTH_TEST);
-		glEnable(GL_BLEND);
-		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glAlphaFunc (GL_GREATER, 0.1);
-		glEnable(GL_ALPHA_TEST); */
-		
-		vertexBuffer.bind();
-		indexBuffer.bind();
-
-		GLCALL(glUniformMatrix4fv(modelViewProjMatrixLocation, 1, GL_FALSE, modelViewProj));
-		GLCALL(glActiveTexture(GL_TEXTURE0));
-		GLCALL(glBindTexture(GL_TEXTURE_2D, textureId));
-		GLCALL(glDrawElements(GL_TRIANGLES, usedIndices, GL_UNSIGNED_INT, 0));
-
-		indexBuffer.unbind();
-		vertexBuffer.unbind();
-	}
-
-	void update(){
-		//Vertex* vertices = getVertices();
-		//uint32* indices = getIndices();
-		indexBuffer.update(getIndices(), usedIndices, sizeof(getIndices()[0])); // fix sizeof
-		vertexBuffer.update(&getVertices()[0], usedVertices);
-
-	}
-
 	
 	// rotation: front-0, right-1, back-2, left-3, buttom-4, top-5,
 	void addPlane(glm::vec3 position, int rotation = 0, int tex_x = 0, int tex_y = 1, int size = 1) {
@@ -322,236 +320,50 @@ public:
 		usedVertices += 4;
 	}
 
-	void add_Block(glm::vec3 position) {
+	void add_Block(glm::vec3 position, int tex_x = 0, int tex_y = 1) {
 		addPlane(glm::vec3(0, 0, 0) + position);
-		addPlane(glm::vec3(0, 0, 0) + position, 1);
-		addPlane(glm::vec3(0, 0, 0) + position, 2);
-		addPlane(glm::vec3(0, 0, 0) + position, 3);
-		addPlane(glm::vec3(0, 0, 0) + position, 4);
-		addPlane(glm::vec3(0, 0, 0) + position, 5);
+		addPlane(glm::vec3(0, 0, 0) + position, 1, tex_x, tex_y);
+		addPlane(glm::vec3(0, 0, 0) + position, 2, tex_x, tex_y);
+		addPlane(glm::vec3(0, 0, 0) + position, 3, tex_x, tex_y);
+		addPlane(glm::vec3(0, 0, 0) + position, 4, tex_x, tex_y);
+		addPlane(glm::vec3(0, 0, 0) + position, 5, tex_x, tex_y);
 	}
-	void add_grass_Block(glm::vec3 position) {
+/* 	void add_grass_Block(glm::vec3 position) {
 		addPlane(glm::vec3(0, 0, 0) + position, 0, 2, 0);
 		addPlane(glm::vec3(0, 0, 0) + position, 1, 2, 0);
 		addPlane(glm::vec3(0, 0, 0) + position, 2, 2, 0);
 		addPlane(glm::vec3(0, 0, 0) + position, 3, 2, 0);
 		addPlane(glm::vec3(0, 0, 0) + position, 4, 1, 0);
 		addPlane(glm::vec3(0, 0, 0) + position, 5, 3, 0);
-	}
-
-	void clearMesh() {
-		vertices.clear();
-		indices.clear();
-		usedIndices = 0;
-		usedVertices = 0;
-	}
+	} */
 };
 
-
-class SimpleChunkMesh {
+/* class Plane: public Mesh {
 public:
-	SimpleChunkMesh() {
-
+	Plane():Mesh() {
+		usedVertices = 4;
+		vertices.push_back(Vertex{-1.0f, -1.0f, -1.0f,
+				0.0f, 0.0f,
+				1.0f});
+		vertices.push_back(Vertex{1.0f, -1.0f, -1.0f,
+				1.0f, 0.0f,
+				1.0f});
+		vertices.push_back(Vertex{1.0f, 1.0f, -1.0f,
+				1.0f, 1.0f,
+				1.0f});
+		vertices.push_back(Vertex{-1.0f, 1.0f, -1.0f,
+				0.0f, 1.0f,
+				1.0f});
+		usedIndices = 6;
+		indices.push_back(0);
+		indices.push_back(1);
+		indices.push_back(2);
+		indices.push_back(0);
+		indices.push_back(2);
+		indices.push_back(3);
 	}
-	uint32 getNumIndices() {
-		return usedIndices;
-	}
-	uint32 getNumVertices() {
-		return usedVertices;
-	}
-	ColorVertex* getVertices() {
-		return vertices;
-	}
-	uint32* getIndices() {
-		return indices;
-	}
-
-	void addPlane(glm::vec3 position, int rotation = 0, int tex_x = 0, int tex_y=1, int size = 1) {
-		float uv_x_1 = tex_x * tex_factor;
-		float uv_x_2 = tex_x * tex_factor + tex_factor;
-		float uv_y_1 = 1.0f - tex_y * tex_factor - tex_factor;
-		float uv_y_2 = 1.0f - tex_y * tex_factor;
-
-		indices[usedIndices + 0] = usedVertices + 0;
-		indices[usedIndices + 1] = usedVertices + 1;
-		indices[usedIndices + 2] = usedVertices + 2;
-		indices[usedIndices + 3] = usedVertices + 0;
-		indices[usedIndices + 4] = usedVertices + 2;
-		indices[usedIndices + 5] = usedVertices + 3;
-		usedIndices += 6;
-
-		switch (rotation)
-		{
-		case 0:{
-
-			vertices[usedVertices] = ColorVertex{ position.x + -0.5f, position.y + -0.5f, position.z + 0.5f,
-						uv_x_1, uv_y_1,
-						0.5f, 0.0f, 0.0f, 0.5f };
-			vertices[usedVertices + 1] = ColorVertex{ position.x + 0.5f, position.y + -0.5f, position.z + 0.5f,
-							uv_x_2, uv_y_1,
-							0.0f, 0.0f, 0.5f, 0.5f };
-			vertices[usedVertices + 2] = ColorVertex{ position.x + 0.5f, position.y + 0.5f, position.z + 0.5f,
-							uv_x_2, uv_y_2,
-							0.0f, 0.5f, 0.5f, 0.5f };
-			vertices[usedVertices + 3] = ColorVertex{ position.x + -0.5f, position.y + 0.5f, position.z + 0.5f,
-							uv_x_1, uv_y_2,
-							0.0, 0.5f, 0.0f, 0.5f };
-			break;
-		}
-		case 1: {
-			vertices[usedVertices] = ColorVertex{ position.x + 0.5f, position.y + -0.5f, position.z + 0.5f,
-						uv_x_1, uv_y_1,
-						0.5f, 0.0f, 0.0f, 0.5f };
-			vertices[usedVertices + 1] = ColorVertex{ position.x + 0.5f, position.y + -0.5f, position.z + -0.5f,
-							uv_x_2, uv_y_1,
-							0.0f, 0.0f, 0.5f, 0.5f };
-			vertices[usedVertices + 2] = ColorVertex{ position.x + 0.5f, position.y + 0.5f, position.z + -0.5f,
-							uv_x_2, uv_y_2,
-							0.0f, 0.5f, 0.5f, 0.5f };
-			vertices[usedVertices + 3] = ColorVertex{ position.x + 0.5f, position.y + 0.5f, position.z + 0.5f,
-							uv_x_1, uv_y_2,
-							0.0, 0.5f, 0.0f, 0.5f };
-			break;
-		}
-		case 2: {
-			vertices[usedVertices] = ColorVertex{ position.x + 0.5f, position.y + -0.5f, position.z + -0.5f,
-						uv_x_1, uv_y_1,
-						0.5f, 0.0f, 0.0f, 0.5f };
-			vertices[usedVertices + 1] = ColorVertex{ position.x + -0.5f, position.y + -0.5f, position.z + -0.5f,
-							uv_x_2, uv_y_1,
-							0.0f, 0.0f, 0.5f, 0.5f };
-			vertices[usedVertices + 2] = ColorVertex{ position.x + -0.5f, position.y + 0.5f, position.z + -0.5f,
-							uv_x_2, uv_y_2,
-							0.0f, 0.5f, 0.5f, 0.5f };
-			vertices[usedVertices + 3] = ColorVertex{ position.x + 0.5f, position.y + 0.5f, position.z + -0.5f,
-							uv_x_1, uv_y_2,
-							0.0, 0.5f, 0.0f, 0.5f };
-			break;
-		}
-		case 3: {
-			vertices[usedVertices] = ColorVertex{ position.x + -0.5f, position.y + -0.5f, position.z + -0.5f,
-						uv_x_1, uv_y_1,
-						0.5f, 0.0f, 0.0f, 0.5f };
-			vertices[usedVertices + 1] = ColorVertex{ position.x + -0.5f, position.y + -0.5f, position.z + 0.5f,
-							uv_x_2, uv_y_1,
-							0.0f, 0.0f, 0.5f, 0.5f };
-			vertices[usedVertices + 2] = ColorVertex{ position.x + -0.5f, position.y + 0.5f, position.z + 0.5f,
-							uv_x_2, uv_y_2,
-							0.0f, 0.5f, 0.5f, 0.5f };
-			vertices[usedVertices + 3] = ColorVertex{ position.x + -0.5f, position.y + 0.5f, position.z + -0.5f,
-							uv_x_1, uv_y_2,
-							0.0, 0.5f, 0.0f, 0.5f };
-			break;
-		}
-		case 4: {
-			vertices[usedVertices] = ColorVertex{ position.x + -0.5f, position.y + -0.5f, position.z + -0.5f,
-						uv_x_1, uv_y_1,
-						0.5f, 0.0f, 0.0f, 0.5f };
-			vertices[usedVertices + 1] = ColorVertex{ position.x + 0.5f, position.y + -0.5f, position.z + -0.5f,
-							uv_x_2, uv_y_1,
-							0.0f, 0.0f, 0.5f, 0.5f };
-			vertices[usedVertices + 2] = ColorVertex{ position.x + 0.5f, position.y + -0.5f, position.z + 0.5f,
-							uv_x_2, uv_y_2,
-							0.0f, 0.5f, 0.5f, 0.5f };
-			vertices[usedVertices + 3] = ColorVertex{ position.x + -0.5f, position.y + -0.5f, position.z + 0.5f,
-							uv_x_1, uv_y_2,
-							0.0, 0.5f, 0.0f, 0.5f };
-			break;
-		}
-		case 5: {
-			vertices[usedVertices] = ColorVertex{ position.x + -0.5f, position.y + 0.5f, position.z + 0.5f,
-						uv_x_1, uv_y_1,
-						0.5f, 0.0f, 0.0f, 0.5f };
-			vertices[usedVertices + 1] = ColorVertex{ position.x + 0.5f, position.y + 0.5f, position.z + 0.5f,
-							uv_x_2, uv_y_1,
-							0.0f, 0.0f, 0.5f, 0.5f };
-			vertices[usedVertices + 2] = ColorVertex{ position.x + 0.5f, position.y + 0.5f, position.z + -0.5f,
-							uv_x_2, uv_y_2,
-							0.0f, 0.5f, 0.5f, 0.5f };
-			vertices[usedVertices + 3] = ColorVertex{ position.x + -0.5f, position.y + 0.5f, position.z + -0.5f,
-							uv_x_1, uv_y_2,
-							0.0, 0.5f, 0.0f, 0.5f };
-			break;
-		}
-
-		default:
-			break;
-		}
-		usedVertices += 4;
-		
-	}
-
-	void add_Block(glm::vec3 position) {
-		addPlane(glm::vec3(0, 0, 0) + position);
-		addPlane(glm::vec3(0, 0, 0) + position, 1);
-		addPlane(glm::vec3(0, 0, 0) + position, 2);
-		addPlane(glm::vec3(0, 0, 0) + position, 3);
-		addPlane(glm::vec3(0, 0, 0) + position, 4);
-		addPlane(glm::vec3(0, 0, 0) + position, 5);
-	}
-	void add_grass_Block(glm::vec3 position) {
-		addPlane(glm::vec3(0, 0, 0) + position, 0, 2, 0);
-		addPlane(glm::vec3(0, 0, 0) + position, 1, 2, 0);
-		addPlane(glm::vec3(0, 0, 0) + position, 2, 2, 0);
-		addPlane(glm::vec3(0, 0, 0) + position, 3, 2, 0);
-		addPlane(glm::vec3(0, 0, 0) + position, 4, 1, 0);
-		addPlane(glm::vec3(0, 0, 0) + position, 5, 3, 0);
-	}
-
-	void clearMesh() {
-
-	}
-
-private:
-	uint32 numMaxVertices = 16*16*16*24;
-	ColorVertex *vertices =  new ColorVertex[16 * 16 * 16 * 24];
-	uint32 usedVertices = 0;
-
-	uint32 numMaxIndices = 16 * 16 * 16 * 36;
-	uint32 *indices = new uint32[16 * 16 * 16 * 36];
-	uint32 usedIndices = 0;
-
-	int textureAtlasSize = 4;
-	float tex_factor = 1.0f / textureAtlasSize;
 };
-
-class Plane {
-public:
-	Plane() {}
-	uint32 getNumIndices() {
-		return numIndices;
-	}
-	uint32 getNumVertices() {
-		return numVertices;
-	}
-	ColorVertex* getVertices() {
-		return vertices;
-	}
-	uint32* getIndices() {
-		return indices;
-	}
-private:
-	uint32 numVertices = 4;
-	ColorVertex vertices[4] = {
-		ColorVertex{-1.0f, -1.0f, -1.0f,
-		0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f, 1.0f},
-		ColorVertex{1.0f, -1.0f, -1.0f,
-		1.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 1.0f},
-		ColorVertex{1.0f, 1.0f, -1.0f,
-		1.0f, 1.0f,
-		0.0f, 1.0f, 1.0f, 1.0f},
-		ColorVertex{-1.0f, 1.0f, -1.0f,
-		0.0f, 1.0f,
-		0.0, 1.0f, 0.0f, 1.0f},
-	};
-	uint32 numIndices = 6;
-	uint32 indices[6] = {
-		0, 1, 2,//front
-		0, 2, 3
-	};
-};
+ */
 
 class Box {
 public:
@@ -801,7 +613,6 @@ protected:
 		
 	};
 	
-
 public:
 	Skybox(const char* VertexShaderFilename, const char* fragmentShaderFilename,  
 	const char* TextureFilename) : Box(VertexShaderFilename, fragmentShaderFilename, TextureFilename){
@@ -858,12 +669,6 @@ struct Quad{
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 };
-/* struct UIQuad : Quad{
-	UIQuad():Quad(){
-
-	}
-
-}; */
 
 struct UImesh{
 	std::vector<Vertex> vertices;
@@ -979,9 +784,6 @@ glm::vec3 calculate_slot_position(int slot_number){
 	return glm::vec3((float)slot_number/6.5 -0.7, -0.9, 0.09);
 }
 
-
-
-
 struct ItemBarMesh:UImesh{
 	ItemBarMesh():UImesh(){
 		glm::vec3 pos;
@@ -1036,11 +838,7 @@ struct InventoryMesh{
 
 };
 
-
-
-
-
-class ScreenQuad{
+/* class ScreenQuad{
 	Vertex2D vertices[4] = {Vertex2D{0.0f, 1.0f, 0.0f, 1.0f},
 				   			Vertex2D{1.0f, 1.0f, 1.0f, 1.0f},
 				   			Vertex2D{0.0f, 0.0f, 0.0f, 0.0f},
@@ -1055,6 +853,6 @@ public:
 	Vertex2D* getVertices() {return &vertices[0];}
 	uint32* getIndices() {return &indices[0];}
 
-};
+}; */
 
 
