@@ -17,11 +17,11 @@ private:
 	GLuint textureId;
 	
 public:
-	Texture(const char* filename){
-		load(filename);
+	Texture(const char* filename, bool generate_mipmap=false){
+		load(filename, generate_mipmap);
 	}
     Texture(){}
-    void load(const char* filename){
+    void load(const char* filename, bool generate_mipmap=false){
         stbi_set_flip_vertically_on_load(true);
 		auto textureBuffer = stbi_load(filename, &textureWidth, &textureHeight, &bitsPerPixel, 4);
 		if (textureBuffer == NULL){
@@ -38,7 +38,15 @@ public:
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
-		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureBuffer));
+		if (textureBuffer) {
+			GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureBuffer));
+			if (generate_mipmap){
+				glGenerateMipmap(GL_TEXTURE_2D);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 4);
+			}
+		}
+
 		GLCALL(glBindTexture(GL_TEXTURE_2D, 0));
 		
 		if (textureBuffer) {

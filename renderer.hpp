@@ -90,6 +90,14 @@ public:
     }
 
     void setModeSolid(){
+
+        /* glEnable(GL_MULTISAMPLE);
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST );
+        glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST );
+        
+        glEnable(GL_LINE_SMOOTH);
+        glEnable(GL_POLYGON_SMOOTH);  */
+        
         glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 		glDepthMask(GL_TRUE);

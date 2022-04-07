@@ -6,6 +6,7 @@ build/screenshots/*
 build/*
 web_material/
 .testing_new_functions/
+build/graphics/GL_Gimps/Work_in_Progress
 
 !build/fonts
 !build/graphics

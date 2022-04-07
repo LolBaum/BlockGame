@@ -18,7 +18,7 @@ following dependencies need to be installed:
 | SDL2: | `sudo apt-get install libsdl2-dev` |
 | freetype: | `sudo apt-get install libfreetype6-dev` |
 
-**Building**
+**Building**<br>
 To build the Project (with g++), simply execute the `buildLinux` bash script.<br>
 If the compilation was sucessfull the executable game will be at `build/mainLinux`.<br>
 To run the game, the corresponding dynamic librarys of the dependencies are necessaray (the commands above should install these correctly)
@@ -32,9 +32,9 @@ following dependencies need to be installed:
 | SDL2: | `https://libsdl.org/download-2.0.php` |
 | freetype: | `https://freetype.org/download.html` |
 
-**Building**
+**Building**<br>
 The `buildWindows.sh` script can be used to build the Game for Windows. All Dependecies must be located in the `libs\` directory.
-It's important that all folders (eg.) have the same names as in the script.
+It's important that all folders have the same names as in the script.
 <br>
 The file `.vscode/tasks.json` can be used in VSCode for the compilation. <br>
 To run the game, the DLLs of the dependencies are necessaray (`SDL2.dll`, `glew32.dll`, `freetype.dll`). For windows they are aleady locted in the build directory.

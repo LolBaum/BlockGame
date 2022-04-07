@@ -13,7 +13,7 @@ uniform vec3 u_pos;
 
 void main()
 {
-	gl_Position = u_modelViewProj * vec4(a_position*1.004 + u_pos, 1.0f);
+	gl_Position = u_modelViewProj * vec4(a_position*1.01 + u_pos, 1.0f);
 	v_color = a_color;
 	v_texCoord = a_texCoord;
 }

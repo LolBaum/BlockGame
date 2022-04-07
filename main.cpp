@@ -151,7 +151,7 @@ int main_function() {
 	glCullFace(GL_BACK);
 	//glFrontFace(GL_CW);
 	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_MULTISAMPLE);
+	//glDisable(GL_MULTISAMPLE);
 	//glDepthFunc(GL_ALWAYS);
 
 	//glEnable(GL_NORMALIZE);
@@ -175,6 +175,9 @@ int main_function() {
 
 	ui.addQuad(ptest);*/
 	ui.update(); 
+
+
+
 
 
 
@@ -454,6 +457,9 @@ int main_function() {
 		// rendering all opaque blocks
 		chunkManager.render(player.getModelViewProj_GL());
 
+		// rendering the players selection box ontop of the blocks
+		player.render_selection_box(); 		
+
 		UIShader.bind();
 		ui.render(UItexture.get_textureId(), texture.get_textureId());
 		// rendering the info text
@@ -467,8 +473,7 @@ int main_function() {
 		renderer.setModeTransparent();
 		// rendering all transparent blocks
 		chunkManager.render_transparent(player.getModelViewProj_GL());
-		// rendering the players selection box ontop of the blocks
-		player.render_selection_box(); 																
+																
 
 		// TEMP: All text needs to be rendered again with the transparent FB so the transparent blocks are not showing infornt of it
 		// Idea: adding a FrameBuffer to handle drawing to all involved textures at once

@@ -36,7 +36,7 @@ public:
 		}
 		modelViewProjMatrixLocation = GLCALL(glGetUniformLocation(shader.getShaderId(), "u_modelViewProj"));
 		//tile_atlas.load("Graphics/TileAtlas64.png");
-		tile_atlas.load("graphics/TileAtlas64_Quandary_1.png");
+		tile_atlas.load("graphics/TileAtlas64_Quandary_1_1.png", true);
 	}
 
 	void addChunk(int x, int y, int z) {
@@ -157,9 +157,10 @@ public:
 					}
 					if (h<=max_y)
 					{
-						for (int i = h - gras_hight; i <= h; i++) {
-							chunk->setBlock(x, i - pos_y, z, 3);// add: check if boundings are correct
+						for (int i = h - gras_hight; i <= h-1; i++) {
+							chunk->setBlock(x, i - pos_y, z, 2);// add: check if boundings are correct
 						}
+						chunk->setBlock(x, h - pos_y, z, 3);
 						 
 					}
 					//else
