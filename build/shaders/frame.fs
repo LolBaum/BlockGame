@@ -1,10 +1,14 @@
-#version 330 core
+#version 420 core //Frame
 layout (location = 0) out vec4 FragColor;
 
   
 in vec2 TexCoords;
 
-uniform sampler2D screenTexture;
+
+layout (binding = 0) uniform sampler2D screenTexture;
+
+// revealage threshold buffer
+layout (binding = 1) uniform sampler2D u_texture_gui;
 
 vec4 kernal_sharpen(vec2 Coords, sampler2D Texture, float inverse_sharpness=3000.0){
     float offset = 1.0 / inverse_sharpness; 
@@ -56,6 +60,11 @@ void main()
 { 
     // Standard
     FragColor = texture(screenTexture, TexCoords);
+
+    if (texture(u_texture_gui, TexCoords).a > 0.1){
+        FragColor = texture(u_texture_gui, TexCoords);
+    }
+
     //FragColor1 = vec4(texture(screenTexture, TexCoords).x, 0, 0, 1);
 
     // Inverted

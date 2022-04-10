@@ -29,8 +29,12 @@ private:
     unsigned int accumTexture;
     unsigned int revealTexture;
 
+    unsigned int guiTexture;
+
     FrameBuffer solidFB;
     TransparentFrameBuffer transparentFB;
+
+    FrameBuffer guiFB;
 
     glm::vec4 zeroFillerVec = glm::vec4(0.0f);
 	glm::vec4 oneFillerVec = glm::vec4(1.0f);
@@ -49,8 +53,8 @@ public:
         glBindVertexArray(0); */
         screenQuad = Quad();
 
-        unsigned int SCR_WIDTH = sdl_handler.getWidth();
-        unsigned int SCR_HEIGHT = sdl_handler.getHeight();
+        unsigned int SCR_WIDTH = SDL_handler::getWidth();
+        unsigned int SCR_HEIGHT = SDL_handler::getHeight();
 
         glGenTextures(1, &opaqueTexture);
         glBindTexture(GL_TEXTURE_2D, opaqueTexture);
@@ -78,8 +82,16 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, 0);
 
+        glGenTextures(1, &guiTexture);
+        glBindTexture(GL_TEXTURE_2D, guiTexture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_HALF_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
         solidFB.init(opaqueTexture, depthTexture);
         transparentFB.init(accumTexture, revealTexture, depthTexture);
+        guiFB.init(guiTexture);
     }
 
     void drawScreen(){
@@ -87,6 +99,25 @@ public:
 		glDrawArrays(GL_TRIANGLES, 0, 6); */
         //GLCALL(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
         screenQuad.draw();
+    }
+
+    void clear(){
+        glClearColor(0.6, 0.7, 1.0, 1.0); // set Color to zero again and use a cubemap background
+		// bind opaque framebuffer to render solid objects
+		solidFB.bind();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        transparentFB.bind();
+        glClearBufferfv(GL_COLOR, 0, &zeroFillerVec[0]);
+		glClearBufferfv(GL_COLOR, 1, &oneFillerVec[0]);
+
+
+        guiFB.bind();
+        glClearColor(0.0, 0.0, 0.0, 0.0);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     }
 
     void setModeSolid(){
@@ -107,7 +138,7 @@ public:
 		// bind opaque framebuffer to render solid objects
 		solidFB.bind();
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
     /* void setModeText(){
         glEnable(GL_DEPTH_TEST);
@@ -122,8 +153,18 @@ public:
 		glBlendEquation(GL_FUNC_ADD);
 
 		transparentFB.bind();
-        glClearBufferfv(GL_COLOR, 0, &zeroFillerVec[0]);
-		glClearBufferfv(GL_COLOR, 1, &oneFillerVec[0]);
+        //glClearBufferfv(GL_COLOR, 0, &zeroFillerVec[0]);
+		//glClearBufferfv(GL_COLOR, 1, &oneFillerVec[0]);
+    }
+
+    void setModeGui(){
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
+
+		guiFB.bind();
+        glClearColor(0.0, 0.0, 0.0, 0.0);
+        glClear(GL_COLOR_BUFFER_BIT);
+
     }
 
     void setModeComposite(){
@@ -149,6 +190,8 @@ public:
 
         glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, opaqueTexture);
+        glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, guiTexture);
 
     }
 
@@ -174,67 +217,3 @@ public:
 
 };
 
-/* class Renderer{
-private:
-    FrameBuffer frame_buffer;
-    Shader screenShader = Shader("shaders/frame.vs", "shaders/frame.fs");
-    unsigned int quadVAO, quadVBO;
-    // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-    float quadVertices[24] = { 
-        // positions   // texCoords
-        -1.0f,  1.0f,  0.0f, 1.0f,
-        -1.0f, -1.0f,  0.0f, 0.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-
-        -1.0f,  1.0f,  0.0f, 1.0f,
-         1.0f, -1.0f,  1.0f, 0.0f,
-         1.0f,  1.0f,  1.0f, 1.0f
-    };
-
-public:
-    Renderer(){
-        glGenVertexArrays(1, &quadVAO);
-        glGenBuffers(1, &quadVBO);
-        glBindVertexArray(quadVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-
-        frame_buffer = *new FrameBuffer();
-    }
-    void render_to_frame_buffer(){
-        frame_buffer.bind();
-    }
-    void render_to_frame_buffer_transparent(){
-        frame_buffer.bind_transparent();
-    }
-
-    void render_to_screen(){
-        screenShader.bind();
-        //frame_buffer.unbind();
-        glBindVertexArray(quadVAO);
-		glDisable(GL_DEPTH_TEST);
-		glBindTexture(GL_TEXTURE_2D, frame_buffer.get_texture_id());
-		glDrawArrays(GL_TRIANGLES, 0, 6); 
-        screenShader.unbind();
-    }
-
-    
-    // temp funcs
-
-    FrameBuffer* get_fb(){
-        return &frame_buffer;
-    }
-
-    float* get_quadVertices(){
-        return quadVertices;
-    }
-    unsigned int get_vao(){
-        return quadVAO;
-    }
-
-
-}; */

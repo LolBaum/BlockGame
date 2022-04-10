@@ -454,20 +454,10 @@ int main_function() {
 		SuperChunk::render(player.getModelViewProj_GL());
 
 		// rendering the players selection box ontop of the blocks
-		player.render_selection_box(); 		
+		player.render_selection_box(); 	
 
-		UIShader.bind();
-		ui.render(UItexture.get_textureId(), texture.get_textureId());
-		// rendering the info text
-		// if (show_text){
-		// 	Fontsys.render_multiline_text(text, font, 25, SDL_handler::getHeight()-50, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f)); 
-		// }
 
-		fontShader.bind();
-		font.update();
-		glm::vec3 color = {1.0, 1.0, 1.0};
-		glUniform3f(glGetUniformLocation(fontShader.getShaderId(), "u_textColor"), color.x, color.y, color.z);
-		font.render();
+		
 		
 		
 
@@ -489,6 +479,22 @@ int main_function() {
 
 		//Fontsys.render_multiline_text(text, font, 25, SDL_handler::getHeight()-50, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f)); ///////////////////
 		//Fontsys.RenderText("Hello World :)", font0, 25, SDL_handler::getHeight()-200, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+
+		renderer.setModeGui();	
+
+		UIShader.bind();
+		ui.render(UItexture.get_textureId(), texture.get_textureId());
+		// rendering the info text
+		// if (show_text){
+		// 	Fontsys.render_multiline_text(text, font, 25, SDL_handler::getHeight()-50, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f)); 
+		// }
+
+		fontShader.bind();
+		font.update();
+		glm::vec3 color = {1.0, 1.0, 1.0};
+		glUniform3f(glGetUniformLocation(fontShader.getShaderId(), "u_textColor"), color.x, color.y, color.z);
+		font.render();
 
 
 		// Third rendering stage: Compositing

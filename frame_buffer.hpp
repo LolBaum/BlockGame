@@ -32,6 +32,18 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
+    void init(unsigned int opaqueTexture){
+        glGenFramebuffers(1, &FBO);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, opaqueTexture, 0);
+        
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            std::cout << "ERROR::FRAMEBUFFER:: framebuffer is not complete!" << std::endl;
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
     void bind(){
         // glEnable(GL_DEPTH_TEST);
 		// glDepthFunc(GL_LESS);
