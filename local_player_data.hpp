@@ -29,6 +29,28 @@
 #define APROX_STEP_SIZE 0.1
 
 
+// forward declaration
+class SuperChunk;
+
+
+void Update_Inventory_Items(Inventory* inv, InventoryMesh* invMesh){
+	int x=0;
+	int y=0;
+	invMesh->items.clearMesh();
+	for (int i=0; i<9; i++){
+		int id = inv->get_item(i+1)->getId();
+		if (id!=0){
+			ItemType* item = ItemTypeManager::GetItemType(id);
+			glm::vec3 pos = calculate_slot_position(i);
+			item->get_tex_coords(&x, &y);
+			invMesh->items.addQuad(pos, 0, x, y, 0.11);
+		}
+	}
+	invMesh->items.update();
+}
+
+
+
 class LocalPlayer
 {
 public:
@@ -165,10 +187,10 @@ public:
 		is_grounded = false;
 		collided = false;
 		if (
-			chunkManager.has_Block_collision(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z + player_radius)) ||
-			chunkManager.has_Block_collision(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z - player_radius)) ||
-			chunkManager.has_Block_collision(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z + player_radius)) ||
-			chunkManager.has_Block_collision(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z - player_radius))){
+			SuperChunk::has_Block_collision(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z + player_radius)) ||
+			SuperChunk::has_Block_collision(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z - player_radius)) ||
+			SuperChunk::has_Block_collision(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z + player_radius)) ||
+			SuperChunk::has_Block_collision(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z - player_radius))){
 			collided = true;
 		}
 		if (pos.y < MIN_HEIGHT || pos.y > MAX_HEIGHT){
@@ -189,12 +211,12 @@ public:
 		// add is_gounded to x and z to add wall Climbing
 		// check x
 		collided = false;
-		if (chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z + player_radius)) ||
-			chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z - player_radius)) ||
-			chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_half_height, position.z + player_radius)) ||
-			chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_half_height, position.z - player_radius)) ||
-			chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_height, 		position.z + player_radius)) ||
-			chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_height, 		position.z - player_radius))){
+		if (SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z + player_radius)) ||
+			SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z - player_radius)) ||
+			SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_half_height, position.z + player_radius)) ||
+			SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_half_height, position.z - player_radius)) ||
+			SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_height, 		position.z + player_radius)) ||
+			SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_height, 		position.z - player_radius))){
 			collided = true;
 		}
 		if (collided){
@@ -208,12 +230,12 @@ public:
 
 		// check z
 		collided = false;
-		if (chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius, pos.y, 					  pos.z + player_radius*sign_z)) ||
-			chunkManager.has_Block_collision(glm::vec3(pos.x - player_radius, pos.y, 					  pos.z + player_radius*sign_z)) ||
-			chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius, pos.y + player_half_height, pos.z + player_radius*sign_z)) ||
-			chunkManager.has_Block_collision(glm::vec3(pos.x - player_radius, pos.y + player_half_height, pos.z + player_radius*sign_z)) ||
-			chunkManager.has_Block_collision(glm::vec3(pos.x + player_radius, pos.y + player_height, 	  pos.z + player_radius*sign_z)) ||
-			chunkManager.has_Block_collision(glm::vec3(pos.x - player_radius, pos.y + player_height, 	  pos.z + player_radius*sign_z))){
+		if (SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius, pos.y, 					  pos.z + player_radius*sign_z)) ||
+			SuperChunk::has_Block_collision(glm::vec3(pos.x - player_radius, pos.y, 					  pos.z + player_radius*sign_z)) ||
+			SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius, pos.y + player_half_height, pos.z + player_radius*sign_z)) ||
+			SuperChunk::has_Block_collision(glm::vec3(pos.x - player_radius, pos.y + player_half_height, pos.z + player_radius*sign_z)) ||
+			SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius, pos.y + player_height, 	  pos.z + player_radius*sign_z)) ||
+			SuperChunk::has_Block_collision(glm::vec3(pos.x - player_radius, pos.y + player_height, 	  pos.z + player_radius*sign_z))){
 			collided = true;
 		}
 		if (collided){
@@ -325,10 +347,10 @@ public:
 		for (int i = 0; i * APROX_STEP_SIZE < PLAYER_ACTION_RANGE; i++) {
 			float factor = i * APROX_STEP_SIZE;
 			stepPos = viewpos + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
-			if (chunkManager.getBlockTypeInt(stepPos)) {
-				int block_to_remove = chunkManager.getBlockTypeInt(stepPos);
+			if (SuperChunk::getBlockTypeInt(stepPos)) {
+				int block_to_remove = SuperChunk::getBlockTypeInt(stepPos);
 				inventory.add_item(block_to_remove, 1);
-				chunkManager.setBlock(stepPos, 0);
+				SuperChunk::setBlock(stepPos, 0);
 				found = true;
 				//selection_box_pos = floor(stepPos);
 				break;
@@ -347,11 +369,11 @@ public:
 		for (int i = 0; i * APROX_STEP_SIZE < PLAYER_ACTION_RANGE; i++) {
 			float factor = i * APROX_STEP_SIZE;
 			stepPos = viewpos + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
-			if (chunkManager.getBlockTypeInt(stepPos)) {
+			if (SuperChunk::getBlockTypeInt(stepPos)) {
 				if (!block_collision(previousPos)){
 					int block_type = inventory.get_item(selected_inventory_slot)->getId();
 					inventory.pop_item(selected_inventory_slot);
-					chunkManager.setBlock(previousPos, block_type);
+					SuperChunk::setBlock(previousPos, block_type);
 					found = true;
 				}
 				break;
@@ -386,7 +408,7 @@ public:
 		for (int i = 0; i * APROX_STEP_SIZE < PLAYER_ACTION_RANGE; i++) {
 			float factor = i * APROX_STEP_SIZE;
 			stepPos = viewpos + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
-			if (chunkManager.getBlockTypeInt(stepPos)) {
+			if (SuperChunk::getBlockTypeInt(stepPos)) {
 				selection_box_pos = floor(stepPos);
 				found = true;
 				selection_box_is_focussed = true;

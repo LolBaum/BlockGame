@@ -1,3 +1,5 @@
+#include "main.hpp"
+
 #include <iostream>
 #include <cmath>
 #define GLEW_STATIC
@@ -9,8 +11,10 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+
+//#define STB_IMAGE_WRITE_IMPLEMENTATION
+//#define STB_IMAGE_STATIC
+//#include "core_includes.hpp"
 
 //only for Windows
 #ifdef _WIN32
@@ -64,21 +68,7 @@
 
 //FontSystem *Fs;
 
-void Update_Inventory_Items(Inventory* inv, InventoryMesh* invMesh){
-	int x=0;
-	int y=0;
-	invMesh->items.clearMesh();
-	for (int i=0; i<9; i++){
-		int id = inv->get_item(i+1)->getId();
-		if (id!=0){
-			ItemType* item = itm.GetItemType(id);
-			glm::vec3 pos = calculate_slot_position(i);
-			item->get_tex_coords(&x, &y);
-			invMesh->items.addQuad(pos, 0, x, y, 0.11);
-		}
-	}
-	invMesh->items.update();
-}
+
 
 
 // Main Program
@@ -88,26 +78,26 @@ void Update_Inventory_Items(Inventory* inv, InventoryMesh* invMesh){
 
 
 int main_function() {
-	btm.AddBlockType(BlockType(1, "Stone", SingleTexture, 0, 1));
-	btm.AddBlockType(BlockType(2, "Dirt", SingleTexture, 1, 0));
-	btm.AddBlockType(BlockType(3, SpecialBlockTexture(2,0, 2,0, 2,0, 2,0, 3,0, 1,0), "Grass", MultiTexture));
-	btm.AddBlockType(BlockType(4, "Cobblestone", SingleTexture, 1, 1));
-	btm.AddBlockType(BlockType(5, SpecialBlockTexture(0,2, 0,2, 0,2, 0,2, 1,2, 1,2), "Wood Log", MultiTexture));
-	//btm.AddBlockType(BlockType(6, "Wooden Planks", SingleTexture, 0, 3));
-	//btm.AddBlockType(BlockType(6, "Withe Test - no collision", SingleTexture, 3, 1, Solid, false));
-	btm.AddBlockType(BlockType(7, "Leafs", SingleTexture, 2, 3, Transparent_opaque));
-	btm.AddBlockType(BlockType(8, "Glass", SingleTexture, 3, 2, Transparent_opaque));
-	btm.AddBlockType(BlockType(9, "Ice", SingleTexture, 3, 3, Transparent));
+	BlockTypeManager::AddBlockType(BlockType(1, "Stone", SingleTexture, 0, 1));
+	BlockTypeManager::AddBlockType(BlockType(2, "Dirt", SingleTexture, 1, 0));
+	BlockTypeManager::AddBlockType(BlockType(3, SpecialBlockTexture(2,0, 2,0, 2,0, 2,0, 3,0, 1,0), "Grass", MultiTexture));
+	BlockTypeManager::AddBlockType(BlockType(4, "Cobblestone", SingleTexture, 1, 1));
+	BlockTypeManager::AddBlockType(BlockType(5, SpecialBlockTexture(0,2, 0,2, 0,2, 0,2, 1,2, 1,2), "Wood Log", MultiTexture));
+	//BlockTypeManager::AddBlockType(BlockType(6, "Wooden Planks", SingleTexture, 0, 3));
+	//BlockTypeManager::AddBlockType(BlockType(6, "Withe Test - no collision", SingleTexture, 3, 1, Solid, false));
+	BlockTypeManager::AddBlockType(BlockType(7, "Leafs", SingleTexture, 2, 3, Transparent_opaque));
+	BlockTypeManager::AddBlockType(BlockType(8, "Glass", SingleTexture, 3, 2, Transparent_opaque));
+	BlockTypeManager::AddBlockType(BlockType(9, "Ice", SingleTexture, 3, 3, Transparent));
 
 
-	itm.AddItemType(new ItemType(10, "Stick"));
+	ItemTypeManager::AddItemType(new ItemType(10, "Stick"));
 
 
 
-	//BlockType b = *btm.GetBlockType(0);
+	//BlockType b = *BlockTypeManager::GetBlockType(0);
 	//b.printInfo();
 	
-	sdl_handler.initialize();
+	SDL_handler::initialize();
 
 	GLenum err = glewInit();
 	if (err != GLEW_OK) {
@@ -126,21 +116,22 @@ int main_function() {
 	glDebugMessageCallback(openGLDebugCallback, 0);
 #endif
 
-	FontSystem Fontsys = FontSystem();
+	Font font = Font();
+	//FontSystem Fontsys = FontSystem();
 	//Fs = &Fontsys;
-	Fontsys.initialize();
-	Font font0 = Fontsys.create_Font("fonts/TheJewishBitmap.ttf");
-	Font font = Fontsys.create_Font("fonts/BLKCHCRY.TTF");
+	//Fontsys.initialize();
+	//Font font0 = Fontsys.create_Font("fonts/TheJewishBitmap.ttf");
+	//Font font = Fontsys.create_Font("fonts/BLKCHCRY.TTF");
 
-	chunkManager = SuperChunk();
-	chunkManager.initialize();
+
+	SuperChunk::initialize();
 
 
 
 	LocalPlayer player = LocalPlayer();
 
-	Shader shader = chunkManager.get_shader();//shader("shaders/basic.vs", "shaders/basic.fs");
-	Texture texture = *chunkManager.get_tile_atlas();
+	Shader shader = SuperChunk::get_shader();//shader("shaders/basic.vs", "shaders/basic.fs");
+	Texture texture = *SuperChunk::get_tile_atlas();
 	shader.bind();
 
 	uint64 perfCounterFrequency = SDL_GetPerformanceFrequency();
@@ -177,6 +168,9 @@ int main_function() {
 	ui.update(); 
 
 
+	Shader fontShader("shaders/font.vs", "shaders/font.fs");
+
+
 
 
 
@@ -209,7 +203,7 @@ int main_function() {
 	bool mouseButtonClickR = false;
 
 	bool close = false;
-	sdl_handler.SetRelativeMouseMode(true); // in Init ?
+	SDL_handler::SetRelativeMouseMode(true); // in Init ?
 	//float cameraSpeed = 6.0f;
 	float time = 0.0f;
 	while (!close) {
@@ -252,7 +246,7 @@ int main_function() {
 					break;
 				case SDLK_F1:
 					buttonF1 = true;
-					saveScreenshotToFile(numerate_name("screenshots/screenshot_", ".png"), sdl_handler.getWidth(), sdl_handler.getHeight());
+					saveScreenshotToFile(numerate_name("screenshots/screenshot_", ".png"), SDL_handler::getWidth(), SDL_handler::getHeight());
 					break;
 				case SDLK_1:
 					player.set_inventory_slot(1);
@@ -421,7 +415,7 @@ int main_function() {
 		ss << vec3_toString(player.getCurrentChunkPos(), "ChunkPos: ") << std::endl;
 		ss << vec3_toString(player.getPosition(), "pos: ") << std::endl;
 		ss << vec3_toString(player.getCamera()->getPos(), "CAMERA pos: ") << std::endl;
-		ss << "Number of Chunks: "<< chunkManager.getNumChunks() << std::endl;
+		ss << "Number of Chunks: "<< SuperChunk::getNumChunks() << std::endl;
 		ss << vec3_toString(position_in_chunk(player.getPosition()), "Player pos in chunk") << std::endl;
 		output = ss.str();
 		//slowPrint(output);
@@ -429,24 +423,26 @@ int main_function() {
 		if (player.hasChangedChunk()) {
 			std::cout << "Player has moved to another Chunk" << std::endl;
 			//player.printLocalChunks();
-			chunkManager.updateChunkLoadingData(player.getLocalChunkIds());
-			//chunkManager.updateChunkLoadingData(player.getLocalChunkIds());
-			//chunkManager.updateChunkLoadingData(player.getLocalChunkIds());
+			SuperChunk::updateChunkLoadingData(player.getLocalChunkIds());
+			//SuperChunk::updateChunkLoadingData(player.getLocalChunkIds());
+			//SuperChunk::updateChunkLoadingData(player.getLocalChunkIds());
 
 
-			//chunkManager.loadChunks(player.getLocalChunkIds());
+			//SuperChunk::loadChunks(player.getLocalChunkIds());
 		}
-		chunkManager.load_unload_singleChunk();
-		chunkManager.load_unload_singleChunk();
-		chunkManager.load_unload_singleChunk();
+		SuperChunk::load_unload_singleChunk();
+		SuperChunk::load_unload_singleChunk();
+		SuperChunk::load_unload_singleChunk();
 
-		chunkManager.load_unload_singleChunk();
-		chunkManager.load_unload_singleChunk();
-		chunkManager.load_unload_singleChunk();
+		SuperChunk::load_unload_singleChunk();
+		SuperChunk::load_unload_singleChunk();
+		SuperChunk::load_unload_singleChunk();
 
-		chunkManager.load_unload_singleChunk();
-		chunkManager.load_unload_singleChunk();
-		chunkManager.load_unload_singleChunk();
+		SuperChunk::load_unload_singleChunk();
+		SuperChunk::load_unload_singleChunk();
+		SuperChunk::load_unload_singleChunk();
+
+		renderer.clear();
 
 
 
@@ -455,7 +451,7 @@ int main_function() {
 		// rendering the background
 		player.render_skybox();
 		// rendering all opaque blocks
-		chunkManager.render(player.getModelViewProj_GL());
+		SuperChunk::render(player.getModelViewProj_GL());
 
 		// rendering the players selection box ontop of the blocks
 		player.render_selection_box(); 		
@@ -463,29 +459,36 @@ int main_function() {
 		UIShader.bind();
 		ui.render(UItexture.get_textureId(), texture.get_textureId());
 		// rendering the info text
-		if (show_text){
-			Fontsys.render_multiline_text(text, font, 25, sdl_handler.getHeight()-50, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f)); 
-		}
+		// if (show_text){
+		// 	Fontsys.render_multiline_text(text, font, 25, SDL_handler::getHeight()-50, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f)); 
+		// }
+
+		fontShader.bind();
+		font.update();
+		glm::vec3 color = {1.0, 1.0, 1.0};
+		glUniform3f(glGetUniformLocation(fontShader.getShaderId(), "u_textColor"), color.x, color.y, color.z);
+		font.render();
 		
 		
 
 		// Second rendering stage: transparent surfaces
 		renderer.setModeTransparent();
 		// rendering all transparent blocks
-		chunkManager.render_transparent(player.getModelViewProj_GL());
+		SuperChunk::render_transparent(player.getModelViewProj_GL());
 																
 
 		// TEMP: All text needs to be rendered again with the transparent FB so the transparent blocks are not showing infornt of it
 		// Idea: adding a FrameBuffer to handle drawing to all involved textures at once
 		//		 or adding another layer to the Compositing for Text.
 		//renderer.setModeText();
-		if (show_text){
-			Fontsys.render_multiline_text(text, font, 25, sdl_handler.getHeight()-50, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f)); 
-		} 
+
+		// if (show_text){
+		// 	Fontsys.render_multiline_text(text, font, 25, SDL_handler::getHeight()-50, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f)); 
+		// } 
 
 
-		//Fontsys.render_multiline_text(text, font, 25, sdl_handler.getHeight()-50, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f)); ///////////////////
-		//Fontsys.RenderText("Hello World :)", font0, 25, sdl_handler.getHeight()-200, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+		//Fontsys.render_multiline_text(text, font, 25, SDL_handler::getHeight()-50, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f)); ///////////////////
+		//Fontsys.RenderText("Hello World :)", font0, 25, SDL_handler::getHeight()-200, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 
 
 		// Third rendering stage: Compositing
@@ -501,7 +504,7 @@ int main_function() {
 
 
 		
-		sdl_handler.SDL_SwapWindow();
+		SDL_handler::SDL_SwapWindow();
 
 
 		// Todo: include in SDL_handler
@@ -515,16 +518,20 @@ int main_function() {
 		ss.str(std::string());
 		if (time_since_slow_tick > 1.0){
 			ss << "FPS: " << FPS << std::endl;
-			ss << "Number of Chunks: "<< chunkManager.getNumChunks() << ",  " << chunkManager.getNumFilledChunks() << std::endl;
+			ss << "Number of Chunks: "<< SuperChunk::getNumChunks() << ",  " << SuperChunk::getNumFilledChunks() << std::endl;
 			ss << vec3_toString(player.getPosition(), "pos ") << std::endl;
-			ss << vec3_toString(player.getCamera()->getViewPos(), "cam ") << std::endl;
-			ss << itm.GetItemType(player.get_selected_item_type())->info_string() << std::endl;
-			ss << "Number of Faces: " << chunkManager.get_num_all_faces() << std::endl;
-			ss << player.inventory_as_string() << std::endl;
+			//ss << vec3_toString(player.getCamera()->getViewPos(), "cam ") << std::endl;
+			//ss << ItemTypeManager::GetItemType(player.get_selected_item_type())->info_string() << std::endl;
+			ss << "Number of Faces: " << SuperChunk::get_num_all_faces() << std::endl;
+			//ss << player.inventory_as_string() << std::endl;
 			//ss << "can this (╯°□°)╯︵ ┻━┻ be rendered?" << std::endl; // no currently it wont be displayed
 			//player.debug_print_inventory();
 			text = ss.str();
 			time_since_slow_tick = 0;
+			
+			font.clear();
+			//font.addLine("Hello World :)\024", -0.5, 0.0, 0.1);
+			font.addMultipleLines(text, -0.95, 0.9, 0.075);
 		}
 		lastCounter = endCounter;
 

@@ -8,6 +8,8 @@ web_material/
 .testing_new_functions/
 build/graphics/GL_Gimps/Work_in_Progress
 
+*.backup
+
 !build/fonts
 !build/graphics
 !build/screenshots

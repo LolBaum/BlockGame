@@ -8,7 +8,7 @@ public:
 
 	}
 
-	FloatingCamera() : FPSCamera(91.5f, (float32) sdl_handler.getWidth(), (float32)sdl_handler.getHeight()) {
+	FloatingCamera() : FPSCamera(91.5f, (float32) SDL_handler::getWidth(), (float32)SDL_handler::getHeight()) {
 
 	}
 

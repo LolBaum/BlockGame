@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
 #include <string>
-#include <sstream>
+
 #include "textures.hpp"
-#include "item.hpp"
+
 
 
 enum TextureType { SingleTexture, MultiTexture, blue };
@@ -11,23 +11,12 @@ enum TransparencyType { Solid, Transparent_opaque, Transparent };
 
 struct Block{
 public:
-	Block(int id) {
-		typeId = id;
-		//rotation = id+1;
-		//light = id*2;
-	}
-	Block() {
-		typeId = 0;
-	}
-	~Block() {}
+	Block(int id);
+	Block();
+	~Block();
 
-	int getId() {
-		return typeId;
-	}
-	void setId(int id) {
-		typeId = id;
-	}
-
+	int getId();
+	void setId(int id);
 private:
 	int typeId;
 	//int rotation;
@@ -38,90 +27,30 @@ private:
 class BlockType {
 public:
 	BlockType(int TypeId,  std::string blocktypename="Unamed Block", TextureType tex_type = SingleTexture, 
-			  int tex_cord_x = 0, int tex_cord_y = 0, TransparencyType opaqueness = Solid, bool collision=true) {
-		//std::cout << "adding Blocktype: " << blocktypename << std::endl;
-		initialize_basic(TypeId, blocktypename, tex_type, opaqueness, collision);
-		texture = StadardBlockTexture(tex_cord_x, tex_cord_y);
-		texture_type = tex_type;
-		printInfo();
-	}
+			  int tex_cord_x = 0, int tex_cord_y = 0, TransparencyType opaqueness = Solid, bool collision=true);
+
 	BlockType(int TypeId, SpecialBlockTexture tex, std::string blocktypename="Unamed Block", TextureType tex_type = SingleTexture, 
-		      TransparencyType opaqueness = Solid, bool collision=true) {
-		//std::cout << "adding Blocktype: " << blocktypename << std::endl;
-		initialize_basic(TypeId, blocktypename, tex_type, opaqueness, collision);
-		int tex_cord_x = 0;
-		int tex_cord_y = 0;
-		tex.get_front(&tex_cord_x, &tex_cord_y);
-		texture = StadardBlockTexture(tex_cord_x, tex_cord_y);
-		multi_texture = tex;
-		texture_type = tex_type;
-		printInfo();
-	}
-	void initialize_basic(int TypeId,  std::string blocktypename, TextureType tex_type, TransparencyType opaqueness, bool collision){
-		id = TypeId;
-		name = blocktypename;
-		texture_type = tex_type;
-		opaque = opaqueness;
-		has_collision = collision; // blocks with no collision, should have opaqueness = false 
-	}
+		      TransparencyType opaqueness = Solid, bool collision=true);
+	void initialize_basic(int TypeId,  std::string blocktypename, TextureType tex_type, TransparencyType opaqueness, bool collision);
 	
 
-	int GetId() {
-		return id;
-	}
-	void get_tex_coords(int* uv_x, int* uv_y){
-		texture.get_coords(uv_x, uv_y);
-	}
+	int GetId();
+	void get_tex_coords(int* uv_x, int* uv_y);
 /* 	void load_special_texture(int front_x, int front_y, int left_x, int left_y, int back_x, int back_y, int right_x, int right_y,
 							  int top_x, int top_y, int bottom_x, int bottom_y){
 		texture = SpecialBlockTexture(front_x, front_y, left_x, left_y, back_x, back_y, right_x, right_y,
 							          top_x, top_y, bottom_x, bottom_y);
 	} */
-	TextureType get_texture_type(){
-		return texture_type;
-	}
-	StadardBlockTexture* get_texture(){
-		return &texture;
-	}
-	SpecialBlockTexture* get_multi_texture(){
-		return &multi_texture;
-	}
+	TextureType get_texture_type();
+	StadardBlockTexture* get_texture();
+	SpecialBlockTexture* get_multi_texture();
 
-	TransparencyType isTransparent() {
-		return opaque;
-	}
-	bool hasCollision() {
-		return has_collision;
-	}
+	TransparencyType isTransparent();
+	bool hasCollision();
 
-	void printInfo() {
-		std::string tt;
-		std::string opt;
-		if (texture_type == SingleTexture){
-			tt = "SingleTexture";
-		}else if (texture_type == MultiTexture){
-			tt = "MultiTexture";
-		}
-
-		if (opaque == Solid){
-			opt = "Solid";
-		} else if (opaque == Transparent_opaque){
-			opt = "Transparent_opaque";
-		} else if (opaque == Transparent){
-			opt = "Transparent";
-		} 
-		std::cout << "BlockType: " << id << ", " << name << ", " << tt << ", " << opt << std::endl;
-	}
-	std::string info_srting(){
-		std::stringstream ss;
-		string output;
-		ss << "BlockType: " << id << ", " << name << std::endl;
-		output = ss.str();
-		return output;
-	}
-	std::string get_name(){
-		return name;
-	}
+	void printInfo();
+	std::string info_srting();
+	std::string get_name();
 
 private:
 	int id;
@@ -141,36 +70,13 @@ private:
 
 
 class BlockTypeManager{
+	BlockTypeManager();
+	~BlockTypeManager();
 public:
-	std::vector<BlockType> BlockTypeList;
-	BlockType Air = BlockType(0, "Air", SingleTexture, 0, 0, Transparent, false);
+	static std::vector<BlockType> BlockTypeList;
+	static BlockType Air;
 	
-	BlockTypeManager() {
-		std::cout << "calledConstructor for BlockTypeManager" << std::endl;
-	}
-	~BlockTypeManager() {}
-	
-
-	void AddBlockType(BlockType type) {
-		BlockTypeList.push_back(type);
-		itm.AddItemType(new BlockItemType(type.GetId(), type.get_name().append(" block"), type.GetId(), type.get_texture())); // add a function to itm that returns the next free item id
-	}
-
-
-	BlockType* GetBlockType(int id) {
-		BlockType* type_dummy;
-		for (int i = 0; i < BlockTypeList.size(); i++) {
-			type_dummy = &BlockTypeList.at(i);
-			if (type_dummy->GetId() == id) {
-				return type_dummy;
-			}
-		}
-	return &Air;
-	}
-
-	
-
-	
+	static void AddBlockType(BlockType type);
+	static BlockType* GetBlockType(int id);
 }; 
-BlockTypeManager btm = BlockTypeManager();
 

@@ -1,3 +1,6 @@
+#ifndef SDL_HANDLER_H
+#define SDL_HANDLER_H
+
 #pragma once
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -9,77 +12,25 @@
 
 class SDL_handler {
 public:
-	SDL_handler(){}
-	~SDL_handler() {}
-	
+	static void initialize();
 
-	void initialize() {
-		std::cout << "Initializing the SDL" << std::endl;
+	static void SDL_SwapWindow();
 
-		SDL_Init(SDL_INIT_EVERYTHING);
+	static void SetRelativeMouseMode(bool b);
 
-	/* 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0); */
-
-
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
-		/* SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
-		
-		SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" );
-		SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); 
- */
-
-		SDL_GL_SetSwapInterval(1); // Vsync 
-
-#ifdef _DEBUG
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-#endif
-
-		uint32 flags = SDL_WINDOW_OPENGL;
-
-		std::stringstream Window_title;
-		Window_title << GAME_NAME << "   version: " << GAME_VERSION_MAJOR << "." << GAME_VERSION_MINOR << std::endl;
-
-		window = SDL_CreateWindow(Window_title.str().c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
-		SDL_GLContext glContext = SDL_GL_CreateContext(window);
-	}
-
-	void SDL_SwapWindow() {
-		SDL_GL_SwapWindow(window);
-	}
-
-	void SetRelativeMouseMode(bool b) {
-		if (b) {
-			SDL_SetRelativeMouseMode(SDL_TRUE);
-		}
-		else {
-			SDL_SetRelativeMouseMode(SDL_FALSE);
-		}
-	}
-
-	int getWidth() {
-		return width;
-	}
-	int getHeight() {
-		return height;
-	}
-	SDL_Window* getWindow(){
-		return window;
-	}
+	static int getWidth();
+	static int getHeight();
+	static float getAspectRatio();
+	static SDL_Window* getWindow();
 
 private:
-	SDL_Window* window;
-	int width = 1440;
-	int height = 900;
+	static SDL_Window* window;
+	static int width;
+	static int height;
+	SDL_handler();
+	~SDL_handler();
 }; 
 
-SDL_handler sdl_handler = SDL_handler();
+
+
+#endif
