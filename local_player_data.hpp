@@ -18,6 +18,9 @@
 
 #include "item.hpp"
 #include "inventory.hpp"
+#include "text.hpp"
+#include "SDL_handler.hpp"
+#include <string>
 
 #define MAX_HEIGHT 128
 #define MAX_HEIGHT_IN_CHUNKS MAX_HEIGHT/16
@@ -33,7 +36,7 @@
 class SuperChunk;
 
 
-void Update_Inventory_Items(Inventory* inv, InventoryMesh* invMesh){
+void Update_Inventory_Items(Inventory* inv, InventoryMesh* invMesh, Font* font){
 	int x=0;
 	int y=0;
 	invMesh->items.clearMesh();
@@ -44,6 +47,10 @@ void Update_Inventory_Items(Inventory* inv, InventoryMesh* invMesh){
 			glm::vec3 pos = calculate_slot_position(i);
 			item->get_tex_coords(&x, &y);
 			invMesh->items.addQuad(pos, 0, x, y, 0.11);
+			int amount = inv->get_item(i+1)->getAmount();
+			if (amount > 0){
+				font->addLine(std::to_string(amount), pos.x * SDL_handler::getAspectRatio(), pos.y-0.06, 0.04);
+			}
 		}
 	}
 	invMesh->items.update();

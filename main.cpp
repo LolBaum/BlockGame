@@ -117,6 +117,7 @@ int main_function() {
 #endif
 
 	Font font = Font();
+	Font ItemFont = Font();
 	//FontSystem Fontsys = FontSystem();
 	//Fs = &Fontsys;
 	//Fontsys.initialize();
@@ -406,7 +407,8 @@ int main_function() {
 		player.update();
 
 		ui.setSlot(player.get_inventory_slot()-1);
-		Update_Inventory_Items(player.get_inventory(), &ui);
+		ItemFont.clear();
+		Update_Inventory_Items(player.get_inventory(), &ui, &ItemFont);
 
 
 		std::stringstream ss;
@@ -443,6 +445,7 @@ int main_function() {
 		SuperChunk::load_unload_singleChunk();
 
 		renderer.clear();
+		
 
 
 
@@ -496,6 +499,9 @@ int main_function() {
 		glUniform3f(glGetUniformLocation(fontShader.getShaderId(), "u_textColor"), color.x, color.y, color.z);
 		font.render();
 
+		ItemFont.update();
+		ItemFont.render();
+
 
 		// Third rendering stage: Compositing
 		renderer.setModeComposite();
@@ -529,7 +535,7 @@ int main_function() {
 			//ss << vec3_toString(player.getCamera()->getViewPos(), "cam ") << std::endl;
 			//ss << ItemTypeManager::GetItemType(player.get_selected_item_type())->info_string() << std::endl;
 			ss << "Number of Faces: " << SuperChunk::get_num_all_faces() << std::endl;
-			//ss << player.inventory_as_string() << std::endl;
+			ss << player.inventory_as_string() << std::endl;
 			//ss << "can this (╯°□°)╯︵ ┻━┻ be rendered?" << std::endl; // no currently it wont be displayed
 			//player.debug_print_inventory();
 			text = ss.str();
