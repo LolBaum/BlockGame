@@ -16,6 +16,7 @@
                 "-I${fileDirname}\\libs\\glew-2.1.0\\include\\GL",
                 "-I${fileDirname}\\libs\\glm",
                 "-I${fileDirname}\\libs\\freetype-win\\include",
+                "-I${fileDirname}\\libs\\include",
 
                 "-L${fileDirname}\\libs\\SDL2\\x86_64-w64-mingw32\\lib",
                 "-L${fileDirname}\\libs\\glew-2.1.0\\lib\\Release\\x64",

@@ -1,5 +1,6 @@
 #include "SDL_handler.hpp"
 
+#include "config.hpp"
 
 SDL_handler::SDL_handler(){}
 SDL_handler::~SDL_handler() {}
@@ -9,11 +10,19 @@ int SDL_handler::width;
 int SDL_handler::height;
 
 
+void SDL_handler::SetWindowSize_ToDisplay(){
+    SDL_DisplayMode DM;
+    SDL_GetCurrentDisplayMode(0, &DM);
+    width = DM.w;
+    height = DM.h;
+}
+
+
 void SDL_handler::initialize() {
     std::cout << "Initializing the SDL" << std::endl;
 
-    width = 1440;
-    height = 900;
+    width = Config::getIntValue("WindowX"); //1440;
+    height = Config::getIntValue("WindowY"); //900;
 
     SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -50,6 +59,15 @@ void SDL_handler::initialize() {
 #endif
 
     uint32 flags = SDL_WINDOW_OPENGL;
+    if (Config::getBoolValue("Fullscreen")){
+        flags = flags | SDL_WINDOW_FULLSCREEN_DESKTOP;
+        SetWindowSize_ToDisplay();
+    }
+
+    if (Config::getBoolValue("WindowMaximezed")){
+        flags = flags | SDL_WINDOW_MAXIMIZED;
+        SetWindowSize_ToDisplay();
+    }
 
     std::stringstream Window_title;
     Window_title << GAME_NAME << "   version: " << GAME_VERSION_MAJOR << "." << GAME_VERSION_MINOR << std::endl;

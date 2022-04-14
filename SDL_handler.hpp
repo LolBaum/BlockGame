@@ -23,6 +23,8 @@ public:
 	static float getAspectRatio();
 	static SDL_Window* getWindow();
 
+	static void SetWindowSize_ToDisplay();
+
 private:
 	static SDL_Window* window;
 	static int width;

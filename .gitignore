@@ -16,6 +16,7 @@ build/graphics/GL_Gimps/Work_in_Progress
 !build/screenshots/.gitkeep
 !build/shaders
 !build/main.exe
+!build/config.json
 
 !build/freetype.dll
 !build/glew32.dll

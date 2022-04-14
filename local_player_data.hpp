@@ -22,6 +22,9 @@
 #include "SDL_handler.hpp"
 #include <string>
 
+
+#include "config.hpp"
+
 #define MAX_HEIGHT 128
 #define MAX_HEIGHT_IN_CHUNKS MAX_HEIGHT/16
 #define MIN_HEIGHT 0
@@ -64,6 +67,7 @@ public:
 	LocalPlayer(){
 		//position = glm::vec3(8.0f, 8.0f, 25.0f);
 		//model = glm::scale(model, glm::vec3(1.2f));
+		camera.setFov(Config::getFloatValue("Fov"));
 		camera.set_camera_height(player_height);
 		camera.translate(glm::vec3(8.0f, 48.0f, -100.0f));
 		chunksInSight.reserve(sightDistance * sightDistance * sightDistance);

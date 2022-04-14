@@ -1,4 +1,5 @@
 #include "SuperChunk.hpp"
+#include "config.hpp"
 
 
 std::vector<Chunk*> SuperChunk::chunks;
@@ -28,7 +29,7 @@ void SuperChunk::initialize(){
     }
     modelViewProjMatrixLocation = GLCALL(glGetUniformLocation(shader.getShaderId(), "u_modelViewProj"));
     //tile_atlas.load("Graphics/TileAtlas64.png");
-    tile_atlas.load("graphics/TileAtlas64_Quandary_1_1.png", true);
+    tile_atlas.load(Config::getStringValue("TileAtlasPathName").c_str(), true);
 }
 
 void SuperChunk::addChunk(int x, int y, int z) {

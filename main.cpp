@@ -55,6 +55,8 @@
 #include "item.hpp"
 
 #include "SDL_handler.hpp"
+
+#include "config.hpp"
 //#include <filesystem>
 #include <sstream>
 
@@ -91,6 +93,9 @@ int main_function() {
 
 
 	ItemTypeManager::AddItemType(new ItemType(10, "Stick"));
+
+	Config::init();
+	//Config::saveConfig();
 
 
 
@@ -535,7 +540,7 @@ int main_function() {
 			//ss << vec3_toString(player.getCamera()->getViewPos(), "cam ") << std::endl;
 			//ss << ItemTypeManager::GetItemType(player.get_selected_item_type())->info_string() << std::endl;
 			ss << "Number of Faces: " << SuperChunk::get_num_all_faces() << std::endl;
-			ss << player.inventory_as_string() << std::endl;
+			//ss << player.inventory_as_string() << std::endl;
 			//ss << "can this (╯°□°)╯︵ ┻━┻ be rendered?" << std::endl; // no currently it wont be displayed
 			//player.debug_print_inventory();
 			text = ss.str();
@@ -543,7 +548,7 @@ int main_function() {
 			
 			font.clear();
 			//font.addLine("Hello World :)\024", -0.5, 0.0, 0.1);
-			font.addMultipleLines(text, -0.95, 0.9, 0.075);
+			font.addMultipleLines(text, -0.95, 0.9, 0.05);
 		}
 		lastCounter = endCounter;
 
@@ -553,6 +558,8 @@ int main_function() {
 	}
 
 	GLCALL(glDeleteTextures(1, texture.get_textureId_ptr()));
+
+	Config::saveConfig();
 
 	return 0;
 }
