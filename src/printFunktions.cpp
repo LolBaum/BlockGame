@@ -2,6 +2,7 @@
 
 using namespace std;
 
+
 void Set_Console_Color(int color){
 #ifdef _WIN32
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);

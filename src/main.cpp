@@ -540,6 +540,7 @@ int main_function() {
 			//ss << vec3_toString(player.getCamera()->getViewPos(), "cam ") << std::endl;
 			//ss << ItemTypeManager::GetItemType(player.get_selected_item_type())->info_string() << std::endl;
 			ss << "Number of Faces: " << SuperChunk::get_num_all_faces() << std::endl;
+			ss << "Sight distance: " << player.get_sight_distance() << std::endl;
 			//ss << player.inventory_as_string() << std::endl;
 			//ss << "can this (╯°□°)╯︵ ┻━┻ be rendered?" << std::endl; // no currently it wont be displayed
 			//player.debug_print_inventory();

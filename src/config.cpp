@@ -56,8 +56,8 @@ void Config::init(){
 
     floatData.insert(pair<string,float> (string("Fov"), 91.5f));
 
-    boolData.insert(pair<string,bool> (string("Fullscreen"), true));
-    boolData.insert(pair<string,bool> (string("WindowMaximezed"), true));
+    boolData.insert(pair<string,bool> (string("Fullscreen"), false));
+    boolData.insert(pair<string,bool> (string("WindowMaximezed"), false));
 
     //print_map("[Config-info] int: ", intData);
     //print_map("[Config-info] string: ", stringData);

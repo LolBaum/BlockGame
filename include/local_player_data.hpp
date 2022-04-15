@@ -394,6 +394,9 @@ public:
 		update_selection_box();
 	}
 
+	int get_sight_distance(){
+		return sightDistance;
+	}
 
 	// Work in Progress Functions:
 	// --- RENDERING ---
@@ -478,7 +481,7 @@ private:
 	float player_half_height = player_height/2;
 
 	float speed = 8.0f;
-	int sightDistance = 5;
+	int sightDistance = Config::getIntValue("SightDistance");
 	std::vector<glm::vec3> chunksInSight;
 	glm::vec3 position;
 	glm::vec3 currentChunkPos;
