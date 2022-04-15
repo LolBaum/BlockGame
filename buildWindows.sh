@@ -5,6 +5,8 @@
 # setting the Directories
 $BASE_DIR=Get-Location 
 $BUILD_DIR = "$BASE_DIR\build"
+$SRC_DIR = "$BASE_DIR\src"
+$include_DIR = "$BASE_DIR\include"
 #$IMGUI_DIR="$BASE_DIR\libs\imgui"
 $LIB_DIR="$BASE_DIR\libs"
 $EXE = "$BUILD_DIR\mainWin.exe"
@@ -16,13 +18,13 @@ $CXXFLAGS="-std=c++11", "-Wall"
 
 # Adding all sources
 # When using "*.cpp" don't include the main file seperately - it will cause a linker error
-$SOURCES = "$BASE_DIR\*.cpp" #,"$BASE_DIR\main.cpp", `
+$SOURCES = "$SRC_DIR\*.cpp" #,"$BASE_DIR\main.cpp", `
 #"$IMGUI_DIR\imgui.cpp", "$IMGUI_DIR\imgui_demo.cpp", "$IMGUI_DIR\imgui_draw.cpp", "$IMGUI_DIR\imgui_tables.cpp", "$IMGUI_DIR\imgui_widgets.cpp", `
 #"$IMGUI_DIR\backends\imgui_impl_sdl.cpp", "$IMGUI_DIR\backends\imgui_impl_opengl3.cpp"
 
 # Including all directories which are needed
 $INCLUDES = "-I$LIB_DIR\SDL2\x86_64-w64-mingw32\include\SDL2", "-I$LIB_DIR\glew-2.1.0\include\GL", `
-"-I$LIB_DIR\glm", "-I$LIB_DIR\freetype-win\include", "-I$LIB_DIR\include" ###, "-I$IMGUI_DIR", "-I$IMGUI_DIR\backends"
+"-I$LIB_DIR\glm", "-I$LIB_DIR\freetype-win\include", "-I$LIB_DIR\include", "-I$include_DIR" ###, "-I$IMGUI_DIR", "-I$IMGUI_DIR\backends"
 
 # linking the libraries
 $LINKER = "-L$LIB_DIR\SDL2\x86_64-w64-mingw32\lib", "-L$LIB_DIR\glew-2.1.0\lib\Release\x64", "-L$LIB_DIR\freetype-win\release_dll\win64"

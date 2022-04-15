@@ -6,10 +6,12 @@ BASEDIR=$(dirname "$0")
 SDLDIR="/usr/include/SDL2"
 GLEWDIR="/usr/include/GL"
 FT2DIR="/usr/include/freetype2"
-INCLUDE_DIR="libs/include"
+LIB_INCLUDE_DIR="${BASEDIR}/libs/include"
+include_DIR="${BASEDIR}/include"
+SRC_DIR="${BASEDIR}/src"
 
 #-I${fileDirname}/libs/SDL2-2.0.20/x86_64-w64-mingw32/include/SDL2
 #-I${fileDirname}/libs/glew-2.1.0/include/GL
 #-I${fileDirname}/libs/glm
 
-g++ "*.cpp" -I${SDLDIR} -I${GLEWDIR} -I${FT2DIR} -I${INCLUDE_DIR}  -lGL -lGLEW -lSDL2 -lfreetype -std=c++11 -o build/mainLinux
+g++ "${SRC_DIR}*.cpp" -I${SDLDIR} -I${GLEWDIR} -I${FT2DIR} -I${INCLUDE_DIR} -I${LIB_INCLUDE_DIR} -I${SRC_DIR} -lGL -lGLEW -lSDL2 -lfreetype -std=c++11 -o build/mainLinux

@@ -3,7 +3,7 @@
     "Fov": 91.0,
     "Fullscreen": false,
     "ShaderPath": "shaders/",
-    "SightDistance": 6,
+    "SightDistance": 5,
     "TileAtlasPathName": "graphics/TileAtlas64_Quandary_1_1.png",
     "WindowMaximezed": false,
     "WindowX": 1440,
