@@ -178,6 +178,10 @@ int main_function() {
 
 
 
+	Shader skySahder("shaders/sky.vs", "shaders/sky.fs");
+
+
+
 
 
 
@@ -450,14 +454,18 @@ int main_function() {
 		SuperChunk::load_unload_singleChunk();
 
 		renderer.clear();
-		
-
 
 
 		// First rendering stage: solid surfaces
 		renderer.setModeSolid();
+
+
+		
 		// rendering the background
+		skySahder.bind();
 		player.render_skybox();
+
+
 		// rendering all opaque blocks
 		SuperChunk::render(player.getModelViewProj_GL());
 

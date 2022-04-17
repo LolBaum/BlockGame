@@ -436,7 +436,9 @@ public:
 
 	void render_skybox(){
 		skybox.render(position.x - player_radius, position.y + player_height-0.5, position.z - player_radius, getModelViewProj_GL());
+		//skyQuad.draw();
 	}
+	
 
 	// --- INVENTORY ---
 
@@ -499,6 +501,7 @@ private:
 	
 	Box selection_box = Box("shaders/selection_box.vs", "shaders/selection_box.fs", "graphics/selection_box_64_2.png");
 	Skybox skybox = Skybox("shaders/skybox.vs", "shaders/skybox.fs", "graphics/HA_logo_saved.jpg");
+	Quad skyQuad = Quad();
 	glm::vec3 selection_box_pos;
 	bool selection_box_is_focussed = false;
 

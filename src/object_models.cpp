@@ -404,8 +404,10 @@ Quad::Quad(){
     glBindVertexArray(0);
 }
 void Quad::draw(){
+    glDisable(GL_DEPTH_TEST);
     glBindVertexArray(quadVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+    glEnable(GL_DEPTH_TEST);
 }
 
 
