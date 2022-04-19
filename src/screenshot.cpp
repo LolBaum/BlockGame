@@ -4,13 +4,11 @@
 #include <iostream>
 #include <string>
 #include <glew.h>
+#include "util_funcs.hpp"
 
 #include <sys/stat.h>
 
-inline bool exists (const std::string& name) {
-  struct stat buffer;   
-  return (stat (name.c_str(), &buffer) == 0); 
-}
+
 
 std::string numerate_name(std::string name, std::string ending, int max_tests){
 	int i = 0;

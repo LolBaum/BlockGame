@@ -1,8 +1,30 @@
 #include "util_funcs.hpp"
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <direct.h>
+#include <iostream>
 
 
+bool exists (const std::string& name) {
+  struct stat buffer;   
+  return (stat (name.c_str(), &buffer) == 0); 
+}
 
+bool isDir(const std::string& name){
+	struct stat info;   
+  	return (info.st_mode & S_IFDIR); 
+}
 
+void createDir(const std::string& name){
+	_mkdir(name.c_str());
+}
+
+void createDir_IfDoesNotExist(const std::string& name){
+	if ( ! isDir(name)){
+		std::cout << "creating Dir: " << name << std::endl; 
+		createDir(name);
+	}
+}
 
 
 

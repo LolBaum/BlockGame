@@ -32,7 +32,7 @@ void map_set(map<string, type>& m, string key, type value){
         it->second = value;
     }
     else{
-        m.insert(pair<string, type> (string(key), value));
+        m.insert(pair<string, type> (key, value));
     } 
 }
 
@@ -67,6 +67,7 @@ void Config::init(){
     loadConfigFile();
 
     //print_map("[Config-info] int: ", intData);
+    //print_map("[Config-info] string: ", stringData);
 
 }
 

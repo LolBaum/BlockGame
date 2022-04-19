@@ -30,6 +30,15 @@ void _GLGetError(const char* file, int line, const char* call) {
 #endif
 
 
+bool exists (const std::string& name);
+
+bool isDir(const std::string& name);
+
+void createDir(const std::string& name);
+
+void createDir_IfDoesNotExist(const std::string& name);
+
+
 template<typename T>
 int sign(T Value){
 	if (Value>=0){

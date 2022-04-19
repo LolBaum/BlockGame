@@ -2,6 +2,10 @@
 #include "object_models.hpp"
 #include "util_funcs.hpp"
 #include "printFunktions.hpp"
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <stdio.h>
 
 
 Chunk::Chunk(glm::vec3 position) {
@@ -41,6 +45,7 @@ void Chunk::setBlock(int x, int y, int z, int type) {
     if (0 <= x && x <= 15 && 0 <= y && y <= 15 && 0 <= z && z <= 15) {
         blocks[x][y][z].setId(type);
         changed = true;
+        //changed_since_loading = true;
     }
 } //add changes
 void Chunk::setBlock(glm::vec3 pos, int type) {
@@ -52,6 +57,7 @@ void Chunk::setBlock(glm::vec3 pos, int type) {
         blocks[x][y][z].setId(type);
         changed = true;
         std::cout << "set Block at: " << vec3_toString(pos) << std::endl;
+        changed_since_loading = true;                                           // should only be true i the player changed a block (not worldgen)
         return;
     }
 }
@@ -415,4 +421,48 @@ unsigned int Chunk::get_numBlocks(){
 }
 bool Chunk::is_empty(){
     return (numBlocks==0);
+}
+
+static std::string getFormattedFilePath(const std::string& worldSavePath,  int pos_x, int pos_y, int pos_z){
+    std::string file_path = worldSavePath + "/" + 
+        std::to_string(pos_x) + "_" + std::to_string(pos_y) + "_" + std::to_string(pos_z)
+        + ".bin";
+    return file_path;
+}
+
+void Chunk::serialize(const std::string& worldSavePath){
+    if (changed_since_loading){
+        std::string file_path = getFormattedFilePath(worldSavePath, 
+                                this->pos.x, this->pos.y, this->pos.z);
+        FILE* fp = fopen(file_path.c_str(), "wb");
+        if (fp != NULL){
+            fwrite(&pos, sizeof(glm::vec3), 1, fp);
+            fwrite(blocks, sizeof(Block) * CX * CY * CZ, 1, fp);
+            fclose(fp);
+        }
+        else{
+            std::cout << "couldn't write chunk: " << file_path << std::endl;
+        }
+    }
+}
+
+bool Chunk::deserialize(const std::string& worldSavePath, int load_x, int load_y, int load_z){
+    std::string file_path = getFormattedFilePath(worldSavePath,
+                            load_x, load_y, load_z);
+    if(exists(file_path)){
+        FILE* fp = fopen(file_path.c_str(), "rb");
+        if (fp != NULL){
+            std::cout << "loading chunk: " << file_path << std::endl;
+            fread(&pos, sizeof(glm::vec3), 1, fp);
+            fread(&blocks, sizeof(Block) * CX * CY * CZ, 1, fp);
+            fclose(fp);
+            changed = true;
+            return true;
+        }
+        else{
+            std::cout << "couldn't load chunk: " << file_path << std::endl;
+        }
+    }
+    return false;
+    
 }

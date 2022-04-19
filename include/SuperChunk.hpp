@@ -77,6 +77,9 @@ public:
 
 	static Shader get_shader();
 	static Texture* get_tile_atlas();
+
+	static void saveWorld();
+
 private:
 	static std::vector<Chunk*> chunks;
 	static std::vector<glm::vec3> chunks_to_load;
@@ -88,6 +91,8 @@ private:
 	static Shader shader;
 	static Shader transparent_shader;
 	static Texture tile_atlas;
+
+	static std::string worldSavePath;
 };
 
 

@@ -18,9 +18,11 @@ public:
 	int getId();
 	void setId(int id);
 private:
-	int typeId;
-	//int rotation;
-	//int light;
+	uint16 typeId;
+	uint8 rotation;
+	uint8 light;
+	uint32 _placeholder_;
+	
 };
 
 

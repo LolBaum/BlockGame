@@ -7,5 +7,6 @@
     "TileAtlasPathName": "graphics/TileAtlas64_Quandary_1_1.png",
     "WindowMaximezed": false,
     "WindowX": 1440,
-    "WindowY": 900
+    "WindowY": 900,
+    "WorldSavePath": "world"
 }

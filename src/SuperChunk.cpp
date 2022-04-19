@@ -1,5 +1,7 @@
 #include "SuperChunk.hpp"
 #include "config.hpp"
+#include <util_funcs.hpp>
+
 
 
 std::vector<Chunk*> SuperChunk::chunks;
@@ -12,6 +14,8 @@ int SuperChunk::modelViewProjMatrixLocation;
 Shader SuperChunk::shader = Shader();
 Shader SuperChunk::transparent_shader = Shader();
 Texture SuperChunk::tile_atlas;
+
+std::string SuperChunk::worldSavePath = "world";
 
 SuperChunk::SuperChunk(){}
 SuperChunk::~SuperChunk() {}
@@ -30,7 +34,10 @@ void SuperChunk::initialize(){
     modelViewProjMatrixLocation = GLCALL(glGetUniformLocation(shader.getShaderId(), "u_modelViewProj"));
     //tile_atlas.load("Graphics/TileAtlas64.png");
     tile_atlas.load(Config::getStringValue("TileAtlasPathName").c_str(), true);
+    worldSavePath = Config::getStringValue("WorldSavePath");
+    createDir_IfDoesNotExist(worldSavePath);
 }
+
 
 void SuperChunk::addChunk(int x, int y, int z) {
     Chunk* newChunk = new Chunk(glm::vec3(x, y, z));
@@ -40,6 +47,7 @@ void SuperChunk::addChunk(int x, int y, int z) {
 }
 
 void SuperChunk::loadChunk_new(glm::vec3 pos) {
+    Chunk* chunk_pointer;
     if (pos.y <= 128 && pos.y >= 0) {
         bool found_empty_chunk = false;
         int i = 0;
@@ -48,7 +56,9 @@ void SuperChunk::loadChunk_new(glm::vec3 pos) {
             if (isChunkEmty(chunks.at(i)->getPos())) {
                 found_empty_chunk = true;
                 chunks.at(i)->setPos(pos);
-                generateChunk(chunks.at(i));
+                //generateChunk(chunks.at(i));
+                chunk_pointer = chunks.at(i);
+
                 //std::cout << "CHunk Pos FOUND :  " << vec3_toString(chunks.at(i)->getPos()) << std::endl;
             }
             i++;
@@ -57,8 +67,21 @@ void SuperChunk::loadChunk_new(glm::vec3 pos) {
         if (!found_empty_chunk) {
             Chunk* newChunk = new Chunk(pos);
             chunks.push_back(newChunk);
-            generateChunk(newChunk);
+            //generateChunk(newChunk);
+            chunk_pointer = newChunk;
         }
+
+        if ( ! chunk_pointer->deserialize(worldSavePath, pos.x, pos.y, pos.z)){
+            generateChunk(chunk_pointer);
+        }
+        chunk_pointer->updateMesh();
+
+
+
+        // if (!dummy_chunk_pointer->is_empty()){
+        //     //dummy_chunk_pointer->serialize(std::string("world"));
+        // }
+
     }
 
 }
@@ -81,6 +104,7 @@ void SuperChunk::loadChunk(glm::vec3 pos) {
 void SuperChunk::unloadChunk_new(glm::vec3 pos) {
     Chunk* chunk = getChunk(pos);
     if (chunk != NULL) {
+        chunk->serialize(worldSavePath);
         chunk->clearChunk();
     }
     
@@ -392,6 +416,13 @@ Shader SuperChunk::get_shader(){
 Texture* SuperChunk::get_tile_atlas(){
     return &tile_atlas;
 } 
+
+void SuperChunk::saveWorld(){
+    std::cout << "Saving World" << std::endl;
+    for (int i=0; i<chunks.size(); i++){
+        chunks.at(i)->serialize(worldSavePath);
+    }
+}
 
 
 

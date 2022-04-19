@@ -3,7 +3,7 @@
 #include <glew.h>
 
 #include <sys/stat.h>
-inline bool exists (const std::string& name);
+
 
 std::string numerate_name(std::string name, std::string ending=".png", int max_tests=200);
 

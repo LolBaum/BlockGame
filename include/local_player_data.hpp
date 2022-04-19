@@ -70,6 +70,7 @@ public:
 		camera.setFov(Config::getFloatValue("Fov"));
 		camera.set_camera_height(player_height);
 		camera.translate(glm::vec3(8.0f, 48.0f, -100.0f));
+
 		chunksInSight.reserve(sightDistance * sightDistance * sightDistance);
 		update();
 		lastChunkPos = currentChunkPos;

@@ -52,11 +52,22 @@ struct Chunk{
 	unsigned int get_numBlocks();
 	bool is_empty();
 
+
+	////////////////////////////
+	// Chunk Loading //////////
+	//////////////////////////
+
+	void serialize(const std::string& worldSavePath);
+	bool deserialize(const std::string& worldSavePath, int load_x, int load_y, int load_z);
+
+
+
 private:
 	Block blocks[CX][CY][CZ];
 	glm::vec3 pos;
 	unsigned int numBlocks;
 	bool changed;
+	bool changed_since_loading = false;
 
 	int num_faces;
 	ChunkMesh mesh;

@@ -565,6 +565,7 @@ int main_function() {
 		mouseButtonClickR = false;
 		//buttonSpacePress = false;
 	}
+	SuperChunk::saveWorld();
 
 	GLCALL(glDeleteTextures(1, texture.get_textureId_ptr()));
 
