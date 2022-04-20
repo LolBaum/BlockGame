@@ -38,6 +38,13 @@ public:
 		return position;
 	}
 
+	glm::mat4 getProjection(){
+		return projection;
+	}
+	glm::mat4 getView(){
+		return view;
+	}
+
 
 protected:
 	glm::vec3 position;

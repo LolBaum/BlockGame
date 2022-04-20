@@ -46,6 +46,9 @@ public:
 	glm::vec3 getLookAt() {
 		return lookAt;
 	}
+	glm::vec3 getRotation(){
+		return glm::vec3(yaw, pitch, 0.0f);
+	}
 
 	glm::vec3 getViewPos() {
 		return position+camera_height;

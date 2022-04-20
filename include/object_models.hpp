@@ -300,8 +300,26 @@ struct Quad{
 	};
     unsigned int quadVAO, quadVBO;
 	Quad();
-	void draw();
+	virtual void draw();
 };
+
+
+
+struct SkyQuad:Quad{
+	uint32 lookAt_uniformLocation;
+	uint32 InvProjection_uniformLocation;
+    uint32 InvView_uniformLocation;
+	Shader shader = Shader();
+	//uint32 sunPosition_uniformLocation;
+	//uint32 color_uniformLocation;
+	SkyQuad(const char* VertexShaderFilename, const char* fragmentShaderFilename);
+	void render(glm::vec3 lookAt, const GLfloat* InvProjection, const GLfloat* InvView);
+};
+
+
+
+
+
 
 
 

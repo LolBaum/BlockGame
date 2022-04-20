@@ -411,6 +411,32 @@ void Quad::draw(){
 }
 
 
+/////////////////////////////////////////////////////////////////////////
+// SkyQuad
+
+
+SkyQuad::SkyQuad(const char* VertexShaderFilename, const char* fragmentShaderFilename):Quad(){
+    shader.initialize(VertexShaderFilename, fragmentShaderFilename);
+    lookAt_uniformLocation = glGetUniformLocation(shader.getShaderId(), "u_LookAt");
+    InvProjection_uniformLocation = glGetUniformLocation(shader.getShaderId(), "InvProjection");
+    InvView_uniformLocation = glGetUniformLocation(shader.getShaderId(), "InvView");
+}
+void SkyQuad::render(glm::vec3 lookAt, const GLfloat* InvProjection, const GLfloat* InvView){
+    shader.bind();
+    GLCALL(glUniform3f(lookAt_uniformLocation, lookAt.x, lookAt.y, lookAt.z));
+    GLCALL(glUniformMatrix4fv(InvProjection_uniformLocation, 1, GL_FALSE, InvProjection));
+    GLCALL(glUniformMatrix4fv(InvView_uniformLocation, 1, GL_FALSE, InvView));
+
+    glDisable(GL_DEPTH_TEST);
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glEnable(GL_DEPTH_TEST);
+    
+    shader.unbind();
+}
+
+
+
 
 /////////////////////////////////////////////////////////////////////
 // UImesh

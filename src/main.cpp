@@ -178,7 +178,7 @@ int main_function() {
 
 
 
-	Shader skySahder("shaders/sky.vs", "shaders/sky.fs");
+	//Shader skySahder("shaders/sky.vs", "shaders/sky.fs");
 
 
 
@@ -462,7 +462,7 @@ int main_function() {
 
 		
 		// rendering the background
-		skySahder.bind();
+		//skySahder.bind();
 		player.render_skybox();
 
 
@@ -549,6 +549,9 @@ int main_function() {
 			//ss << ItemTypeManager::GetItemType(player.get_selected_item_type())->info_string() << std::endl;
 			ss << "Number of Faces: " << SuperChunk::get_num_all_faces() << std::endl;
 			ss << "Sight distance: " << player.get_sight_distance() << std::endl;
+			//glm::vec3 dummy_cam_rotation = player.getCamera()->getRotation();
+			//ss << "Yaw: " << dummy_cam_rotation.x << std::endl;
+			//ss << "Pitch: " << dummy_cam_rotation.y << std::endl;
 			//ss << player.inventory_as_string() << std::endl;
 			//ss << "can this (╯°□°)╯︵ ┻━┻ be rendered?" << std::endl; // no currently it wont be displayed
 			//player.debug_print_inventory();

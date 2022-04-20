@@ -436,9 +436,22 @@ public:
 	}
 
 	void render_skybox(){
-		skybox.render(position.x - player_radius, position.y + player_height-0.5, position.z - player_radius, getModelViewProj_GL());
-		//skyQuad.draw();
+		if (use_fancy_sky){
+			//skyQuad.render(camera.getLookAt());
+			glm::mat4 inv_projection = glm::inverse(camera.getProjection());
+			glm::mat4 inv_view = glm::inverse(camera.getView());
+			skyQuad.render(camera.getRotation(), 
+						   (const GLfloat*)&inv_projection[0][0],
+						   (const GLfloat*)&inv_view[0][0]);
+		}
+		else{
+			skybox.render(position.x - player_radius, position.y + player_height-0.5, position.z - player_radius, getModelViewProj_GL());
+		}
 	}
+
+	// glm::vec3 getLookAt(){
+	// 	return camera.getLookAt();
+	// }
 	
 
 	// --- INVENTORY ---
@@ -501,10 +514,13 @@ private:
 	// still WIP --- RENDERING
 	
 	Box selection_box = Box("shaders/selection_box.vs", "shaders/selection_box.fs", "graphics/selection_box_64_2.png");
-	Skybox skybox = Skybox("shaders/skybox.vs", "shaders/skybox.fs", "graphics/HA_logo_saved.jpg");
-	Quad skyQuad = Quad();
 	glm::vec3 selection_box_pos;
 	bool selection_box_is_focussed = false;
+
+	bool use_fancy_sky = Config::getBoolValue("FancySky");
+	Skybox skybox = Skybox("shaders/skybox.vs", "shaders/skybox.fs", "graphics/HA_logo_saved.jpg");
+	SkyQuad skyQuad = SkyQuad("shaders/sky.vs", "shaders/sky.fs");
+	
 
 	// more WIP --- INVENTORY
 	//int selected_block_type = 4;

@@ -58,6 +58,7 @@ void Config::init(){
 
     boolData.insert(pair<string,bool> (string("Fullscreen"), false));
     boolData.insert(pair<string,bool> (string("WindowMaximezed"), false));
+    boolData.insert(pair<string,bool> (string("FancySky"), false));
 
     //print_map("[Config-info] int: ", intData);
     //print_map("[Config-info] string: ", stringData);

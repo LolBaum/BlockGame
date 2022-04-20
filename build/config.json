@@ -1,4 +1,5 @@
 {
+    "FancySky": true,
     "FontPathName": "graphics/fontAtlas.png",
     "Fov": 91.0,
     "Fullscreen": false,
