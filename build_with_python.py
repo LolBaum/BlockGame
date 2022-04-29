@@ -5,9 +5,10 @@ import hashlib
 # import File stuff?
 # import colors?
 
-#########################################
-### Based a build script by cloudious ###
-#########################################
+##############################################################
+### Based a build script by sivansh11 
+### https://github.com/sivansh11/python-based-cpp-build-system
+##############################################################
 
 
 # Include Folders

@@ -86,6 +86,8 @@ void main()
 
     vec3 eye = vec3(0.0, 0.0, 0.0);
 
+    // Ray direction function by SamCZ (https://github.com/SamCZ)
+
     float x = 2.0 * gl_FragCoord.x / iResolution.x - 1.0;
     float y = 2.0 * gl_FragCoord.y / iResolution.y - 1.0;
     vec2 ray_nds = vec2(x, y);
