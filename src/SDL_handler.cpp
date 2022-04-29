@@ -65,9 +65,16 @@ void SDL_handler::initialize() {
     }
 
     if (Config::getBoolValue("WindowMaximezed")){
-        flags = flags | SDL_WINDOW_MAXIMIZED;
+        flags = flags | SDL_WINDOW_BORDERLESS;
         SetWindowSize_ToDisplay();
     }
+
+    // if (Config::getBoolValue("WindowBorderless")){
+    //     flags = flags | SDL_WINDOW_BORDERLESS;
+    //     SetWindowSize_ToDisplay();
+    // }
+
+    
 
     std::stringstream Window_title;
     Window_title << GAME_NAME << "   version: " << GAME_VERSION_MAJOR << "." << GAME_VERSION_MINOR << std::endl;

@@ -25,6 +25,9 @@
 
 #include "config.hpp"
 
+#include "world.hpp"
+
+
 #define MAX_HEIGHT 128
 #define MAX_HEIGHT_IN_CHUNKS MAX_HEIGHT/16
 #define MIN_HEIGHT 0
@@ -69,7 +72,7 @@ public:
 		//model = glm::scale(model, glm::vec3(1.2f));
 		camera.setFov(Config::getFloatValue("Fov"));
 		camera.set_camera_height(player_height);
-		camera.translate(glm::vec3(8.0f, 48.0f, -100.0f));
+		camera.translate(World::getvec3Value("PlayerPosition"));
 
 		chunksInSight.reserve(sightDistance * sightDistance * sightDistance);
 		update();
@@ -327,23 +330,86 @@ public:
 		output = ss.str();
 		std::cout << output << std::endl;
 	}
+	void _addChunkStack(int pos_x, int pos_z){
+		for (int y = -MAX_HEIGHT_IN_CHUNKS; y <= MAX_HEIGHT_IN_CHUNKS; y++) {
+			int pos_y = currentChunkPos.y + y * 16; // might cause problems
+			if (pos_y >= MIN_HEIGHT && pos_y <= MAX_HEIGHT){
+				chunksInSight.push_back(glm::vec3(pos_x, pos_y, pos_z));
+			}
+		}
+	}
+
+	void _addCunkline_x(int pos_z, int x_start, int x_end){
+		if (x_start > x_end){ // use swap function instead
+			int dummy = x_end;
+			x_end = x_start;
+			x_start = dummy;
+		}
+		for (int i=0; i < (x_end-x_start)/16; i++){
+			int pos_x = x_start + i * 16;
+			_addChunkStack(pos_x, pos_z);
+		}
+	}
+
+	void _addCunkline_z(int pos_x, int z_start, int z_end){
+		if (z_start > z_end){ // use swap function instead
+			int dummy = z_end;
+			z_end = z_start;
+			z_start = dummy;
+		}
+		for (int i=0; i < (z_end-z_start)/16; i++){
+			int pos_z = z_start + i * 16;
+			_addChunkStack(pos_x, pos_z);
+		}
+	}
 
 	void updateLocalChunkIds() {
 		chunksInSight.clear();
 
-		for (int x = -sightDistance; x <= sightDistance; x++) {
-			for (int y = -MAX_HEIGHT_IN_CHUNKS; y <= MAX_HEIGHT_IN_CHUNKS; y++) {
-				for (int z = -sightDistance; z <= sightDistance; z++) {
-					int pos_x = currentChunkPos.x + x * 16;
-					int pos_y = currentChunkPos.y + y * 16;
-					int pos_z = currentChunkPos.z + z * 16;
-					if (pos_y >= MIN_HEIGHT && pos_y <= MAX_HEIGHT){
-						chunksInSight.push_back(glm::vec3(pos_x, pos_y, pos_z));
-					}
-					
-				}
-			}
+		chunksInSight.push_back(currentChunkPos);
+		int line_length = 1; // start chunk plus the next
+
+		int base_x = currentChunkPos.x;
+		int base_z = currentChunkPos.z;
+		int x, z;
+
+		for (int i=0; i<sightDistance; i++){
+			x = base_x - 16 * i;
+			z = base_z - 16 * i;
+			_addCunkline_x(z, x, x + line_length*16);
+
+			x = base_x + 16 * i;
+			z = base_z - 16 * i;
+			_addCunkline_z(x, z, z + line_length*16);
+
+			x = base_x + 16 * i;
+			z = base_z + 16 * i;
+			_addCunkline_x(z, x, x - line_length*16);
+
+			x = base_x - 16 * i;
+			z = base_z + 16 * i;
+			_addCunkline_z(x, z, z - line_length*16);
+
+
+
+
+			line_length += 2;
 		}
+		
+
+		// for (int x = -sightDistance; x <= sightDistance; x++) {
+		// 	for (int y = -MAX_HEIGHT_IN_CHUNKS; y <= MAX_HEIGHT_IN_CHUNKS; y++) {
+		// 		for (int z = -sightDistance; z <= sightDistance; z++) {
+		// 			int pos_x = currentChunkPos.x + x * 16;
+		// 			int pos_y = currentChunkPos.y + y * 16;
+		// 			int pos_z = currentChunkPos.z + z * 16;
+		// 			if (pos_y >= MIN_HEIGHT && pos_y <= MAX_HEIGHT){
+		// 				chunksInSight.push_back(glm::vec3(pos_x, pos_y, pos_z));
+		// 			}
+					
+		// 		}
+		// 	}
+		// }
 	}
 
 	std::vector<glm::vec3> getLocalChunkIds() {
@@ -479,6 +545,15 @@ public:
 		return &inventory;
 	}
 
+
+
+	//////////////////////////
+	// --- World Saving --- //
+	//////////////////////////
+
+	void setPlayerValues_inWorldData(){
+		World::setvec3Value("PlayerPosition", position);
+	}
 
 private:
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);

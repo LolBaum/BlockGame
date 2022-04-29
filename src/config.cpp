@@ -53,11 +53,15 @@ void Config::init(){
     stringData.insert(pair<string, string> (string("ShaderPath"), string("shaders/")));
     stringData.insert(pair<string, string> (string("TileAtlasPathName"), string("graphics/TileAtlas64_Quandary_1_1.png")));
     stringData.insert(pair<string, string> (string("FontPathName"), string("graphics/fontAtlas.png")));
+    stringData.insert(pair<string, string> (string("WorldSavePath"), string("world")));
 
     floatData.insert(pair<string,float> (string("Fov"), 91.5f));
 
+    // "Fullscreen" will use Borderless Mode 
     boolData.insert(pair<string,bool> (string("Fullscreen"), false));
     boolData.insert(pair<string,bool> (string("WindowMaximezed"), false));
+    //boolData.insert(pair<string,bool> (string("WindowBorderless"), false));
+    boolData.insert(pair<string,bool> (string("WindowResizeable"), false));
     boolData.insert(pair<string,bool> (string("FancySky"), false));
 
     //print_map("[Config-info] int: ", intData);

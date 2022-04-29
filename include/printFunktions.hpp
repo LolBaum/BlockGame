@@ -1,4 +1,6 @@
 #pragma once
+#ifndef PRINT_FUNCTIONS_H
+#define PRINT_FUNCTIONS_H
 
 #include <iostream>
 #include <ostream>
@@ -40,4 +42,4 @@ std::string vec3_toString(glm::vec3 vec, std::string prefix = "",int precision=5
 
 std::string posVector_toString(std::vector<glm::vec3> vector, std::string prefix = "");
 
-
+#endif 

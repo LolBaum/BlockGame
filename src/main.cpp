@@ -129,6 +129,8 @@ int main_function() {
 	//Font font0 = Fontsys.create_Font("fonts/TheJewishBitmap.ttf");
 	//Font font = Fontsys.create_Font("fonts/BLKCHCRY.TTF");
 
+	World::init();
+
 
 	SuperChunk::initialize();
 
@@ -572,6 +574,10 @@ int main_function() {
 
 	GLCALL(glDeleteTextures(1, texture.get_textureId_ptr()));
 
+
+	player.setPlayerValues_inWorldData();
+
+	World::saveWorldFile();
 	Config::saveConfig();
 
 	return 0;
