@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/LolBaum/BlockGame/blob/master/BlockGame_Logo.png"/>
+</p>
+
 # BlockGame
 Prototype of a Voxelgame with C++ and OpenGL.
 ## Disclaimer
@@ -36,8 +40,15 @@ following dependencies need to be installed:
 The `buildWindows.sh` script can be used to build the Game for Windows. All Dependecies must be located in the `libs\` directory.
 It's important that all folders have the same names as in the script.
 <br>
-The file `.vscode/tasks.json` can be used in VSCode for the compilation. <br>
+The file `.vscode\tasks.json` can be used in VSCode for the compilation. <br>
 To run the game, the DLLs of the dependencies are necessaray (`SDL2.dll`, `glew32.dll`, `freetype.dll`). For windows they are aleady locted in the build directory.
+
+## MacOS *(Work in Progress)*
+_coming soon_
+
+**Building**<br>
+_coming soon_
+
 
 
 ___
