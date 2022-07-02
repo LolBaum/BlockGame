@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/LolBaum/BlockGame/blob/master/BlockGame_Logo.png"/>
+  <img src="https://github.com/LolBaum/BlockGame/blob/2d32680f58500a500f32f70ae24b23bb65a4ab83/GitHub/BlockGame_Logo.png"/>
 </p>
 
 # BlockGame
