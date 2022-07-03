@@ -2,12 +2,13 @@
     "FancySky": true,
     "FontPathName": "graphics/fontAtlas.png",
     "Fov": 91.0,
-    "Fullscreen": false,
+    "Fullscreen": true,
     "ShaderPath": "shaders/",
     "SightDistance": 5,
     "TileAtlasPathName": "graphics/TileAtlas64_Quandary_1_1.png",
     "WindowMaximezed": false,
+    "WindowResizeable": false,
     "WindowX": 1440,
     "WindowY": 900,
-    "WorldSavePath": "world"
+    "WorldSavePath": "world_2"
 }
