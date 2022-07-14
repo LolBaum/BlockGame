@@ -85,7 +85,7 @@ int main_function() {
 	BlockTypeManager::AddBlockType(BlockType(3, SpecialBlockTexture(2,0, 2,0, 2,0, 2,0, 3,0, 1,0), "Grass", MultiTexture));
 	BlockTypeManager::AddBlockType(BlockType(4, "Cobblestone", SingleTexture, 1, 1));
 	BlockTypeManager::AddBlockType(BlockType(5, SpecialBlockTexture(0,2, 0,2, 0,2, 0,2, 1,2, 1,2), "Wood Log", MultiTexture));
-	//BlockTypeManager::AddBlockType(BlockType(6, "Wooden Planks", SingleTexture, 0, 3));
+	BlockTypeManager::AddBlockType(BlockType(6, "Wooden Planks", SingleTexture, 0, 3));
 	//BlockTypeManager::AddBlockType(BlockType(6, "Withe Test - no collision", SingleTexture, 3, 1, Solid, false));
 	BlockTypeManager::AddBlockType(BlockType(7, "Leafs", SingleTexture, 2, 3, Transparent_opaque));
 	BlockTypeManager::AddBlockType(BlockType(8, "Glass", SingleTexture, 3, 2, Transparent_opaque));

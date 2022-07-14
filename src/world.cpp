@@ -90,7 +90,7 @@ map<string, float> World::floatData;
 map<string, string> World::stringData;
 map<string, bool> World::boolData;
 map<string, glm::vec3> World::vec3Data;
-map<string, Inventory> World::containerData;
+//map<string, Inventory> World::containerData;
 std::string World::filePaht;
 
 
@@ -108,6 +108,7 @@ void World::init(){
 
     vec3Data.insert(pair<string,glm::vec3> (string("PlayerPosition"), glm::vec3(8.0f, 48.0f, -100.0f)));
     vec3Data.insert(pair<string,glm::vec3> (string("PlayerSpawnPoint"), glm::vec3(8.0f, 60.0f, -100.0f)));
+    vec3Data.insert(pair<string,glm::vec3> (string("PlayerLookAt"), glm::vec3(8.0f, 30.0f, -100.0f)));
 
     print_map("[World-info] Vec3: ", vec3Data);
 

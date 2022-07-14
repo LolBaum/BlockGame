@@ -73,6 +73,8 @@ public:
 		camera.setFov(Config::getFloatValue("Fov"));
 		camera.set_camera_height(player_height);
 		camera.translate(World::getvec3Value("PlayerPosition"));
+		glm::vec3 yaw_pitch = World::getvec3Value("PlayerLookAt");
+		camera.setPitchYaw(yaw_pitch.y, yaw_pitch.x);
 
 		chunksInSight.reserve(sightDistance * sightDistance * sightDistance);
 		update();
@@ -553,6 +555,7 @@ public:
 
 	void setPlayerValues_inWorldData(){
 		World::setvec3Value("PlayerPosition", position);
+		World::setvec3Value("PlayerLookAt", camera.getRotation());
 	}
 
 private:

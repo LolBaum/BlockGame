@@ -1,5 +1,6 @@
 backup/
-libs/*
+libs/freetype-2.10.0
+libs/freetype-win
 devlog/
 build/screenshots/*
 .vscode/settings.json
@@ -12,12 +13,13 @@ build/graphics/GL_Gimps/Work_in_Progress
 
 !build/fonts
 !build/graphics
-!build/screenshots
 !build/screenshots/.gitkeep
 !build/shaders
 #!build/main.exe
 !build/mainWin.exe
 !build/config.json
+!build/world_2
+
 
 !build/freetype.dll
 !build/glew32.dll

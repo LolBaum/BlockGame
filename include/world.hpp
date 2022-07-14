@@ -32,7 +32,7 @@ private:
     static std::map<std::string, std::string> stringData;
     static std::map<std::string, bool> boolData;
     static std::map<std::string, glm::vec3> vec3Data;
-    static std::map<std::string, Inventory> World::containerData;
+    //static std::map<std::string, Inventory> containerData;
     static std::string filePaht;
 
     World(/* args */);

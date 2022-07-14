@@ -7,4 +7,5 @@
 #define GAME_VERSION_MAJOR 0
 #define GAME_VERSION_MINOR 1
 #define GAME_VERSION_PATCH 0
+#define GAME_VERSION_DEVELOPMENT_TAG "pre-alpha"
 #define GAME_NAME "Block Game"

@@ -46,6 +46,11 @@ public:
 	glm::vec3 getLookAt() {
 		return lookAt;
 	}
+	void setPitchYaw(float p, float yw) {
+		pitch = p;
+		yaw = yw;
+		onMouseMoved(0, 0);
+	}
 	glm::vec3 getRotation(){
 		return glm::vec3(yaw, pitch, 0.0f);
 	}
