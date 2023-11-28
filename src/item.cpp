@@ -75,7 +75,14 @@ void ItemType::rightClickFunc(glm::vec3 position, int* return_id){}
     BlockItemType::BlockItemType(int TypeID, std::string TypeName, int BlockTypeId, StadardBlockTexture* tex) : ItemType(TypeID, TypeName){
         blockTypeId = BlockTypeId;
         group = BlockItem;
-        texture = tex;
+        texture = tex; // is correct here
+        printInfo();
+        int x,y;
+
+        texture->get_coords(&x, &y);
+    
+        std::cout << "coords: x " << x << ", y " << y << ", a " << texture->a << std::endl;
+
     }
     void BlockItemType::printInfo() {
 		std::cout << "BlockItemType: " << id << ", " << name << ", " << blockTypeId << std::endl;
@@ -85,7 +92,23 @@ void ItemType::rightClickFunc(glm::vec3 position, int* return_id){}
         //SuperChunk::setBlock(position, blockTypeId);
     }
     void BlockItemType::get_tex_coords(int* uv_x, int* uv_y){
-		texture->get_coords(uv_x, uv_y);
+
+        //std::cout << "get_tex_coords: texture pointer: " << texture << std::endl;
+        //std::cout << "get_tex_coords: texture pointer StadardBlockTexture: " << dynamic_cast<StadardBlockTexture*>(texture) << std::endl;
+        //std::cout << "get_tex_coords: texture pointer SpecialBlockTexture: " << dynamic_cast<SpecialBlockTexture*>(texture) << std::endl;
+        //std::cout << "get_tex_coords: a: " << texture->a << std::endl;
+        //std::cout << "get_tex_coords: tex ptr: " << texture << std::endl;
+        
+        
+		texture->get_coords(uv_x, uv_y); // is wrong here, Not initialised/ y is overwritten when moving forewarnd
+        
+        printInfo();
+        int x,y;
+
+        texture->get_coords(&x, &y);
+    
+        std::cout << "coords: x " << x << ", y " << y << ", a " << texture->a << std::endl;
+
 	}
 
 

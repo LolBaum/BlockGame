@@ -80,6 +80,7 @@
 
 
 int main_function() {
+	std::cout << "DEV: Loading Block types" << std::endl;
 	BlockTypeManager::AddBlockType(BlockType(1, "Stone", SingleTexture, 0, 1));
 	BlockTypeManager::AddBlockType(BlockType(2, "Dirt", SingleTexture, 1, 0));
 	BlockTypeManager::AddBlockType(BlockType(3, SpecialBlockTexture(2,0, 2,0, 2,0, 2,0, 3,0, 1,0), "Grass", MultiTexture));
@@ -93,7 +94,8 @@ int main_function() {
 
 
 	ItemTypeManager::AddItemType(new ItemType(10, "Stick"));
-
+	
+	std::cout << "DEV: loading config" << std::endl;
 	Config::init();
 	//Config::saveConfig();
 
@@ -101,9 +103,10 @@ int main_function() {
 
 	//BlockType b = *BlockTypeManager::GetBlockType(0);
 	//b.printInfo();
-	
+	std::cout << "DEV: init SDL" << std::endl;
 	SDL_handler::initialize();
 
+	std::cout << "DEV: init GELW" << std::endl;
 	GLenum err = glewInit();
 	if (err != GLEW_OK) {
 		std::cout << "Error: " << glewGetErrorString(err) << std::endl;
@@ -128,10 +131,11 @@ int main_function() {
 	//Fontsys.initialize();
 	//Font font0 = Fontsys.create_Font("fonts/TheJewishBitmap.ttf");
 	//Font font = Fontsys.create_Font("fonts/BLKCHCRY.TTF");
-
+	
+	std::cout << "DEV: init world" << std::endl;
 	World::init();
 
-
+	std::cout << "DEV: init SuperChunk" << std::endl;
 	SuperChunk::initialize();
 
 
@@ -154,6 +158,8 @@ int main_function() {
 	//glDepthFunc(GL_ALWAYS);
 
 	//glEnable(GL_NORMALIZE);
+	
+	std::cout << "DEV: loading shaders" << std::endl;
 
 	Shader compositeShader("shaders/composite.vs", "shaders/composite.fs");
 	Shader screenShader("shaders/frame.vs", "shaders/frame.fs");
@@ -218,6 +224,9 @@ int main_function() {
 	SDL_handler::SetRelativeMouseMode(true); // in Init ?
 	//float cameraSpeed = 6.0f;
 	float time = 0.0f;
+	
+	std::cout << "DEV: Starting Game Loop" << std::endl;
+	
 	while (!close) {
 
 		SDL_Event event;
@@ -343,6 +352,7 @@ int main_function() {
 
 			}
 		}
+		//std::cout << "DEV: GL clear buffers" << std::endl;
 		glClearColor(0.5f, 0.5f, 0.8f, 1.0f); // set Color to zero again and use a cubemap background
 		//glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		
@@ -414,13 +424,17 @@ int main_function() {
 		} */
 
 		
-
+		//std::cout << "DEV: update" << std::endl;
 		player.update();
-
+		
+		
 		ui.setSlot(player.get_inventory_slot()-1);
+		//std::cout << "DEV: Item Font" << std::endl;
 		ItemFont.clear();
+		//std::cout << "DEV: update inventory" << std::endl;
 		Update_Inventory_Items(player.get_inventory(), &ui, &ItemFont);
-
+		
+		//std::cout << "DEV: info string" << std::endl;
 
 		std::stringstream ss;
 		string output;
@@ -432,7 +446,7 @@ int main_function() {
 		ss << vec3_toString(position_in_chunk(player.getPosition()), "Player pos in chunk") << std::endl;
 		output = ss.str();
 		//slowPrint(output);
-
+		//std::cout << "DEV: load chunks" << std::endl;
 		if (player.hasChangedChunk()) {
 			std::cout << "Player has moved to another Chunk" << std::endl;
 			//player.printLocalChunks();
@@ -454,9 +468,12 @@ int main_function() {
 		SuperChunk::load_unload_singleChunk();
 		SuperChunk::load_unload_singleChunk();
 		SuperChunk::load_unload_singleChunk();
+		
+		//std::cout << "DEV: clear renderer" << std::endl;
 
 		renderer.clear();
-
+		
+		//std::cout << "DEV: render" << std::endl;
 
 		// First rendering stage: solid surfaces
 		renderer.setModeSolid();
@@ -480,9 +497,9 @@ int main_function() {
 		
 
 		// Second rendering stage: transparent surfaces
-		renderer.setModeTransparent();
+		//renderer.setModeTransparent();
 		// rendering all transparent blocks
-		SuperChunk::render_transparent(player.getModelViewProj_GL());
+		//SuperChunk::render_transparent(player.getModelViewProj_GL());
 																
 
 		// TEMP: All text needs to be rendered again with the transparent FB so the transparent blocks are not showing infornt of it

@@ -69,12 +69,14 @@ void StadardBlockTexture::get_coords(int* uv_x, int* uv_y){
     *uv_x = x;
     *uv_y = y;
 }
-void StadardBlockTexture::get_front(int* uv_x, int* uv_y){}
-void StadardBlockTexture::get_left(int* uv_x, int* uv_y){}
-void StadardBlockTexture::get_back(int* uv_x, int* uv_y){}
-void StadardBlockTexture::get_right(int* uv_x, int* uv_y){}
-void StadardBlockTexture::get_top(int* uv_x, int* uv_y){}
-void StadardBlockTexture::get_bottom(int* uv_x, int* uv_y){}
+
+// void StadardBlockTexture::get_front(int* uv_x, int* uv_y){}
+// void StadardBlockTexture::get_left(int* uv_x, int* uv_y){}
+// void StadardBlockTexture::get_back(int* uv_x, int* uv_y){}
+// void StadardBlockTexture::get_right(int* uv_x, int* uv_y){}
+// void StadardBlockTexture::get_top(int* uv_x, int* uv_y){}
+// void StadardBlockTexture::get_bottom(int* uv_x, int* uv_y){}
+
 /* std::string get_info_string(){
     return std::string("Texture x: " << x << ", y: " << y)
 } */

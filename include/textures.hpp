@@ -36,16 +36,17 @@ private:
 	int x=0;
 	int y=0;
 public:
+	int a=666;
 	StadardBlockTexture();
 	StadardBlockTexture(int uv_x, int uv_y);
 
-	virtual void get_coords(int* uv_x, int* uv_y);
-	virtual void get_front(int* uv_x, int* uv_y);
-	virtual void get_left(int* uv_x, int* uv_y);
-	virtual void get_back(int* uv_x, int* uv_y);
-	virtual void get_right(int* uv_x, int* uv_y);
-	virtual void get_top(int* uv_x, int* uv_y);
-	virtual void get_bottom(int* uv_x, int* uv_y);
+	void get_coords(int* uv_x, int* uv_y);
+	// virtual void get_front(int* uv_x, int* uv_y);
+	// virtual void get_left(int* uv_x, int* uv_y);
+	// virtual void get_back(int* uv_x, int* uv_y);
+	// virtual void get_right(int* uv_x, int* uv_y);
+	// virtual void get_top(int* uv_x, int* uv_y);
+	// virtual void get_bottom(int* uv_x, int* uv_y);
 	~StadardBlockTexture();
 };
 

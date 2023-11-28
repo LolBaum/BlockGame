@@ -45,20 +45,37 @@ class SuperChunk;
 void Update_Inventory_Items(Inventory* inv, InventoryMesh* invMesh, Font* font){
 	int x=0;
 	int y=0;
+	//std::cout << "DEV: Update_Inventory_Items clear mesh" << std::endl;
 	invMesh->items.clearMesh();
+
+	//std::cout << "DEV: Update_Inventory_Items loop" << std::endl;
 	for (int i=0; i<9; i++){
+
+		//std::cout << "DEV: Update_Inventory_Items get id" << std::endl;
 		int id = inv->get_item(i+1)->getId();
 		if (id!=0){
+
+			//std::cout << "DEV: Update_Inventory_Items ItemTypeManager::GetItemType(id);" << std::endl;
 			ItemType* item = ItemTypeManager::GetItemType(id);
+			//std::cout << "DEV: Update_Inventory_Items calculate_slot_position(i); i=" << i << std::endl;
+			
 			glm::vec3 pos = calculate_slot_position(i);
+			//item->printInfo();
+			//std::cout << "DEV: Update_Inventory_Items item->get_tex_coords(&x, &y); &x=" << &x << ", &y=" << &y << std::endl;
 			item->get_tex_coords(&x, &y);
+
+			//std::cout << "DEV: Update_Inventory_Items mehsh add quads" << std::endl;
 			invMesh->items.addQuad(pos, 0, x, y, 0.11);
 			int amount = inv->get_item(i+1)->getAmount();
 			if (amount > 0){
+
+				//std::cout << "DEV: Update_Inventory_Items add number" << std::endl;
 				font->addLine(std::to_string(amount), pos.x * SDL_handler::getAspectRatio(), pos.y-0.06, 0.04);
 			}
 		}
 	}
+
+	//std::cout << "DEV: Update_Inventory_Items update" << std::endl;
 	invMesh->items.update();
 }
 
