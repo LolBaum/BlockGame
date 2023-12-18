@@ -72,21 +72,26 @@ void ItemType::rightClickFunc(glm::vec3 position, int* return_id){}
 
 
 
-    BlockItemType::BlockItemType(int TypeID, std::string TypeName, int BlockTypeId, StadardBlockTexture* tex) : ItemType(TypeID, TypeName){
-        blockTypeId = BlockTypeId;
-        group = BlockItem;
-        texture = tex;
-    }
-    void BlockItemType::printInfo() {
-		std::cout << "BlockItemType: " << id << ", " << name << ", " << blockTypeId << std::endl;
-	}
-    void BlockItemType::rightClickFunc(glm::vec3 position, int* return_id){
-        *return_id = blockTypeId;
-        //SuperChunk::setBlock(position, blockTypeId);
-    }
-    void BlockItemType::get_tex_coords(int* uv_x, int* uv_y){
-		texture->get_coords(uv_x, uv_y);
-	}
+BlockItemType::BlockItemType(int TypeID, std::string TypeName, int BlockTypeId, StadardBlockTexture* tex) : ItemType(TypeID, TypeName){
+    blockTypeId = BlockTypeId;
+    group = BlockItem;
+    int x,y;
+    tex->get_coords(&x, &y);
+    texture = new StadardBlockTexture(x, y);
+}
+BlockItemType::~BlockItemType(){
+    delete texture;
+}
+void BlockItemType::printInfo() {
+	std::cout << "BlockItemType: " << id << ", " << name << ", " << blockTypeId << std::endl;
+}
+void BlockItemType::rightClickFunc(glm::vec3 position, int* return_id){
+    *return_id = blockTypeId;
+    //SuperChunk::setBlock(position, blockTypeId);
+}
+void BlockItemType::get_tex_coords(int* uv_x, int* uv_y){
+	texture->get_coords(uv_x, uv_y);
+}
 
 
 

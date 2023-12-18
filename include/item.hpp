@@ -54,6 +54,7 @@ protected:
     StadardBlockTexture* texture;
 public:
     BlockItemType(int TypeID, std::string TypeName, int BlockTypeId, StadardBlockTexture* tex);
+    ~BlockItemType();
     void printInfo();
     void rightClickFunc(glm::vec3 position, int* return_id);
     void get_tex_coords(int* uv_x, int* uv_y);

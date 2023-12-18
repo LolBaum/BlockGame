@@ -10,7 +10,7 @@ layout (binding = 0) uniform sampler2D screenTexture;
 // revealage threshold buffer
 layout (binding = 1) uniform sampler2D u_texture_gui;
 
-vec4 kernal_sharpen(vec2 Coords, sampler2D Texture, float inverse_sharpness=3000.0){
+vec4 kernal_sharpen(vec2 Coords, sampler2D Texture, float inverse_sharpness){
     float offset = 1.0 / inverse_sharpness; 
 
     vec2 offsets[9] = vec2[](

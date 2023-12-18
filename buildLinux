@@ -7,11 +7,17 @@ SDLDIR="/usr/include/SDL2"
 GLEWDIR="/usr/include/GL"
 FT2DIR="/usr/include/freetype2"
 LIB_INCLUDE_DIR="${BASEDIR}/libs/include"
-include_DIR="${BASEDIR}/include"
-SRC_DIR="${BASEDIR}/src"
+INCLUDE_DIR="${BASEDIR}/include"
+
+SRC="-I src src/*.cpp"
+
+ALL_INCLUDES="-I${SDLDIR} -I${GLEWDIR} -I${FT2DIR} -I${INCLUDE_DIR} -I${LIB_INCLUDE_DIR}"
+linker_flags="-lGL -lGLEW -lSDL2 -lfreetype"
+CPP_FLAGS="-std=c++11 -o build/mainLinux"
 
 #-I${fileDirname}/libs/SDL2-2.0.20/x86_64-w64-mingw32/include/SDL2
 #-I${fileDirname}/libs/glew-2.1.0/include/GL
 #-I${fileDirname}/libs/glm
+echo ${ALL_INCLUDES}
 
-g++ "${SRC_DIR}*.cpp" -I${SDLDIR} -I${GLEWDIR} -I${FT2DIR} -I${INCLUDE_DIR} -I${LIB_INCLUDE_DIR} -I${SRC_DIR} -lGL -lGLEW -lSDL2 -lfreetype -std=c++11 -o build/mainLinux
+g++ ${SRC} ${ALL_INCLUDES} ${linker_flags} ${CPP_FLAGS}

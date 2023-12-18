@@ -1,7 +1,7 @@
 #include "util_funcs.hpp"
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <direct.h>
+//#include <direct.h>
 #include <iostream>
 
 
@@ -16,7 +16,8 @@ bool isDir(const std::string& name){
 }
 
 void createDir(const std::string& name){
-	_mkdir(name.c_str());
+	mode_t mode = 0755; // LOL WHY?
+	mkdir(name.c_str(), mode); // EDIT
 }
 
 void createDir_IfDoesNotExist(const std::string& name){
