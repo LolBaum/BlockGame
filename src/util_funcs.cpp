@@ -1,7 +1,9 @@
 #include "util_funcs.hpp"
 #include <sys/stat.h>
 #include <sys/types.h>
-//#include <direct.h>
+#ifdef _WIN32
+    #include <direct.h>
+#endif
 #include <iostream>
 
 
@@ -16,8 +18,12 @@ bool isDir(const std::string& name){
 }
 
 void createDir(const std::string& name){
-	mode_t mode = 0755; // LOL WHY?
-	mkdir(name.c_str(), mode); // EDIT
+	#ifdef __linux__ 
+		mode_t mode = 0755; // LOL WHY?
+		mkdir(name.c_str(), mode); // EDIT
+	#elif _WIN32
+		_mkdir(name.c_str());
+	#endif
 }
 
 void createDir_IfDoesNotExist(const std::string& name){
