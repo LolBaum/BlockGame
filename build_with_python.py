@@ -23,7 +23,7 @@ includes = ["-I" + path for path in include_list + [glm_include]]
 
 
 # Lib Folders
-SDL_lib = "E:\\Programmieren\\_GameDev\\Ourcraft\\libs\\SDL2\\x86_64-w64-mingw32\\lib"#"libs/SDL2/x86_64-w64-mingw32/lib"
+SDL_lib = "libs/SDL2/x86_64-w64-mingw32/lib"
 glew_lib = "libs/glew-2.1.0/lib/Release/x64"
 libs_list = [SDL_lib, glew_lib]
 libs = ["-L" + path for path in libs_list]
