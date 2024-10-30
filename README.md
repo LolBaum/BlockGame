@@ -4,52 +4,86 @@
 
 # BlockGame
 Prototype of a Voxelgame with C++ and OpenGL.
-## Disclaimer
-*This Project is still under construction and might not work stable.
-The Licence (and Licences of used Dependecies) will be added soon*
-___
-### Dependencies
-glew, glm, SDL2, freetype
-___
-# Instaltion 
-## Linux
-### Ubuntu
-following dependencies need to be installed: 
-| dependency | installation (apt-get) |
-| ----------- | ----------- |
-| GLEW: | `sudo apt-get install libglew-dev` |
-| glm: | `sudo apt-get install libglm-dev` |
-| SDL2: | `sudo apt-get install libsdl2-dev` |
-| freetype: | `sudo apt-get install libfreetype6-dev` |
 
-**Building**<br>
+Table of Contents
+-----------------
+
+1. [Controls](#controls) <!--- 2. [Paths](#paths) -->
+3. [Configuration File](#config-file)
+4. [Building](#building)
+5. [Screenshots](#screenshots)
+
+Controls
+--------
+| Button                        | Action       |
+|-------------------------------|--------------|
+| Move mouse                    | Look around  |
+| W, A, S, D                    | Move         |
+| Space                         | Jump         |
+| Left mouse button             | Remove block |
+| Right mouse button            | Place block  |
+| 0-9                           | Select item  |
+
+<!---
+Paths
+-----
+-->
+
+Config File
+-----------
+- location: `build/config.json`
+- This file is created by closing BlockGame for the first time.
+
+
+Building
+--------
+
+### building with Cmake
+BlockGame can be build using the `CMakeLists.txt` file (tested in CLion).
+
+Make sure the executable will be placed into `build` directory. 
+Alternatively the working directory can be specified to the `build` directory.
+
+This build process might take longer than the alternative approaches.
+
+### Alternative Linux
+following dependencies need to be installed: 
+```
+sudo apt-get install libglew-dev libglm-dev libsdl2-dev
+``` 
+
+#### Compiling
 To build the Project (with g++), simply execute the `buildLinux` bash script.<br>
 If the compilation was sucessfull the executable game will be at `build/mainLinux`.<br>
-To run the game, the corresponding dynamic librarys of the dependencies are necessaray (the commands above should install these correctly)
 
-## Windows *(Still Work in Progress)*
-following dependencies need to be installed: 
-| dependency <br>(development Version) | download link |
-| ----------- | ----------- |
-| GLEW: | `http://glew.sourceforge.net/` |
-| glm: | `https://glm.g-truc.net/0.9.9/` |
-| SDL2: | `https://libsdl.org/download-2.0.php` |
-| freetype: | `https://freetype.org/download.html` |
+### Alternative Windows
+The necessary dependencies `glew, glm, SDL2` are already included in this repository (`libs` directory).
 
-**Building**<br>
+
+#### buildWindows.sh
 The `buildWindows.sh` script can be used to build the Game for Windows. All Dependecies must be located in the `libs\` directory.
 It's important that all folders have the same names as in the script.
 <br>
-The file `.vscode\tasks.json` can be used in VSCode for the compilation. <br>
-To run the game, the DLLs of the dependencies are necessaray (`SDL2.dll`, `glew32.dll`, `freetype.dll`). For windows they are aleady locted in the build directory.
 
-## MacOS *(Work in Progress)*
+#### build_with_python.py
+The `python build_with_python.py` can be used to speed up the compilation if the Project is compiled multiple times.
+All compiled sources are cached in `.python_build/filehash.txt` and will only be recompiled if necessary.
+
+### MacOS *(Work in Progress)*
 _coming soon_
 
 **Building**<br>
 _coming soon_
 
+Screenshots
+-----------
 
+<p align="center">
+  <img src="https://github.com/LolBaum/BlockGame/blob/759c4edf9a6b1e978c0427af788dfb3654848490/GitHub/coolScreenshots/screenshot_178.png"/>
+</p>
 
+<p align="center">
+  <img src="https://github.com/LolBaum/BlockGame/blob/759c4edf9a6b1e978c0427af788dfb3654848490/GitHub/coolScreenshots/screenshot_199_test.png"/>
+</p>
 ___
 The development of this Project has started around 20.09.2021.
