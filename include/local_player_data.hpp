@@ -569,8 +569,8 @@ private:
 	bool movement_input_f = false;
 	bool movement_input_s = false;
 
-	float player_radius = 0.4;
-	float player_height =  1.8;
+	float player_radius = 0.3;
+	float player_height =  1.6;
 	float player_half_height = player_height/2;
 
 	float speed = 8.0f;
