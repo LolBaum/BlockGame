@@ -170,6 +170,38 @@ public:
 		}
 	}
 
+    bool check_collision_y(glm::vec3 pos, float offset_y){
+        return (
+                SuperChunk::has_Block_collision(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z + player_radius)) ||
+                SuperChunk::has_Block_collision(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z - player_radius)) ||
+                SuperChunk::has_Block_collision(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z + player_radius)) ||
+                SuperChunk::has_Block_collision(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z - player_radius)) ||
+                pos.y < MIN_HEIGHT || pos.y > MAX_HEIGHT
+                );
+    }
+
+    bool check_collision_x(glm::vec3 pos, float sign_x){
+        return (
+                SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z + player_radius)) ||
+                SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z - player_radius)) ||
+                SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_half_height, position.z + player_radius)) ||
+                SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_half_height, position.z - player_radius)) ||
+                SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_height, 		position.z + player_radius)) ||
+                SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_height, 		position.z - player_radius))
+                );
+    }
+
+    bool check_collision_z(glm::vec3 pos, float sign_z){
+        return (
+                SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius, pos.y, 					  pos.z + player_radius*sign_z)) ||
+                SuperChunk::has_Block_collision(glm::vec3(pos.x - player_radius, pos.y, 					  pos.z + player_radius*sign_z)) ||
+                SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius, pos.y + player_half_height, pos.z + player_radius*sign_z)) ||
+                SuperChunk::has_Block_collision(glm::vec3(pos.x - player_radius, pos.y + player_half_height, pos.z + player_radius*sign_z)) ||
+                SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius, pos.y + player_height, 	  pos.z + player_radius*sign_z)) ||
+                SuperChunk::has_Block_collision(glm::vec3(pos.x - player_radius, pos.y + player_height, 	  pos.z + player_radius*sign_z))
+            );
+    }
+
 	void move(float amount){
 		if (length(velocity) > max_velocity){
 			velocity = normalize(velocity) * max_velocity;
@@ -189,7 +221,6 @@ public:
 		glm::vec3 correct_motion = motion; 
 		glm::vec3 pos = new_position + velocity;
 
-		bool collided;
 		int sign_x = sign(motion.x);
 		int sign_z = sign(motion.z);
 		float offset_y;
@@ -202,18 +233,7 @@ public:
 
 		// check y
 		is_grounded = false;
-		collided = false;
-		if (
-			SuperChunk::has_Block_collision(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z + player_radius)) ||
-			SuperChunk::has_Block_collision(glm::vec3(position.x + player_radius, pos.y + offset_y, position.z - player_radius)) ||
-			SuperChunk::has_Block_collision(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z + player_radius)) ||
-			SuperChunk::has_Block_collision(glm::vec3(position.x - player_radius, pos.y + offset_y, position.z - player_radius))){
-			collided = true;
-		}
-		if (pos.y < MIN_HEIGHT || pos.y > MAX_HEIGHT){
-			collided = true;
-		}
-		if (collided){
+		if (check_collision_y(pos, offset_y)){
 			if (motion.y <= 0){
 				is_grounded = true;
 			}
@@ -223,39 +243,18 @@ public:
 		}
 
 
-
-
 		// add is_gounded to x and z to add wall Climbing
 		// check x
-		collided = false;
-		if (SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z + player_radius)) ||
-			SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y, 						position.z - player_radius)) ||
-			SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_half_height, position.z + player_radius)) ||
-			SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_half_height, position.z - player_radius)) ||
-			SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_height, 		position.z + player_radius)) ||
-			SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius * sign_x, pos.y + player_height, 		position.z - player_radius))){
-			collided = true;
-		}
-		if (collided){
+
+		if (check_collision_x(pos, sign_x)){
 			//is_grounded = true;
 			correct_motion.x = 0.0f;
 			pos.x = position.x -motion.x;
 		}
 
 
-		
-
 		// check z
-		collided = false;
-		if (SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius, pos.y, 					  pos.z + player_radius*sign_z)) ||
-			SuperChunk::has_Block_collision(glm::vec3(pos.x - player_radius, pos.y, 					  pos.z + player_radius*sign_z)) ||
-			SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius, pos.y + player_half_height, pos.z + player_radius*sign_z)) ||
-			SuperChunk::has_Block_collision(glm::vec3(pos.x - player_radius, pos.y + player_half_height, pos.z + player_radius*sign_z)) ||
-			SuperChunk::has_Block_collision(glm::vec3(pos.x + player_radius, pos.y + player_height, 	  pos.z + player_radius*sign_z)) ||
-			SuperChunk::has_Block_collision(glm::vec3(pos.x - player_radius, pos.y + player_height, 	  pos.z + player_radius*sign_z))){
-			collided = true;
-		}
-		if (collided){
+		if (check_collision_z(pos, sign_z)){
 			correct_motion.z = 0.0f;
 			pos.z = position.z -motion.z;
 		}
