@@ -264,6 +264,7 @@ public:
 
 		movement_input_f = false;
 		movement_input_s = false;
+        update_selection_box();
 	}
 
 
