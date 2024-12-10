@@ -129,6 +129,8 @@ int main_function() {
 	//Font font0 = Fontsys.create_Font("fonts/TheJewishBitmap.ttf");
 	//Font font = Fontsys.create_Font("fonts/BLKCHCRY.TTF");
 
+    std::cout << "screen size: width = " << SDL_handler::getWidth() << " height = " << SDL_handler::getHeight() << std::endl;
+
 	World::init();
 
 
@@ -199,6 +201,7 @@ int main_function() {
 	float time_since_right_tick = 0;
 
 	bool show_text = true;
+    bool render_wireframe = false;
 
 	bool buttonW = false;
 	bool buttonA = false;
@@ -254,7 +257,7 @@ int main_function() {
 					break;
 				case SDLK_z:
 					buttonZ = true;
-					GLCALL(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
+                    render_wireframe = true;
 					break;
 				case SDLK_F1:
 					buttonF1 = true;
@@ -311,7 +314,7 @@ int main_function() {
 					break;
 				case SDLK_z:
 					buttonZ = false;
-					GLCALL(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
+                    render_wireframe = false;
 					break;
 				case SDLK_F1:
 					buttonF1 = false;
@@ -457,18 +460,18 @@ int main_function() {
 
 		renderer.clear();
 
-
 		// First rendering stage: solid surfaces
 		renderer.setModeSolid();
-
-
 		
 		// rendering the background
 		//skySahder.bind();
 		player.render_skybox();
 
+        if (render_wireframe){
+            GLCALL(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
+        }
 
-		// rendering all opaque blocks
+        // rendering all opaque blocks
 		SuperChunk::render(player.getModelViewProj_GL());
 
 		// rendering the players selection box ontop of the blocks
@@ -498,6 +501,7 @@ int main_function() {
 		//Fontsys.render_multiline_text(text, font, 25, SDL_handler::getHeight()-50, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f)); ///////////////////
 		//Fontsys.RenderText("Hello World :)", font0, 25, SDL_handler::getHeight()-200, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 
+        GLCALL(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 
 		renderer.setModeGui();	
 
@@ -516,7 +520,6 @@ int main_function() {
 
 		ItemFont.update();
 		ItemFont.render();
-
 
 		// Third rendering stage: Compositing
 		renderer.setModeComposite();
