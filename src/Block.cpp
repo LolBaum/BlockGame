@@ -55,7 +55,8 @@ void BlockType::initialize_basic(int TypeId,  std::string blocktypename, Texture
     name = blocktypename;
     texture_type = tex_type;
     opaque = opaqueness;
-    has_collision = collision; // blocks with no collision, should have opaqueness = false 
+    has_collision = collision; // blocks with no collision, should have opaqueness = false
+    is_transparent = opaque==Transparent_opaque || opaque==Transparent;
 }
 
 
@@ -80,8 +81,8 @@ SpecialBlockTexture* BlockType::get_multi_texture(){
     return &multi_texture;
 }
 
-TransparencyType BlockType::isTransparent() {
-    return opaque;
+bool BlockType::isTransparent() {
+    return is_transparent;
 }
 bool BlockType::hasCollision() {
     return has_collision;
@@ -116,11 +117,9 @@ std::string BlockType::get_name(){
     return name;
 }
 
-
-
-
-
-
+TransparencyType BlockType::get_transparency_type() {
+    return opaque;
+}
 
 
 BlockType BlockTypeManager::Air = BlockType(0, "Air", SingleTexture, 0, 0, Transparent, false);

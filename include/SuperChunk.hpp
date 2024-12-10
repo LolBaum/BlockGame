@@ -43,10 +43,11 @@ public:
 
 	static void render(const GLfloat* modelViewProj);
 
+    static void render_semi_solid(const GLfloat* modelViewProj);
+
 	static void render_transparent(const GLfloat* modelViewProj);
 
 	static Chunk* getChunk(glm::vec3 pos);
-
 
 	static Chunk* getChunk(int x, int y, int z);
 

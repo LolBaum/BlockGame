@@ -220,75 +220,75 @@ void Chunk::updateMesh() {
                         glm::vec3 dummyPos = glm::vec3(pos.x, pos.y, pos.z);
 
                         BlockType* bt = getBlockType(x,y,z);
-                        if (!(bt->isTransparent()==Transparent) && bt->hasCollision()){
-                        switch (bt->get_texture_type()) // ToDo: Get teh texture Type from the Blockmanager 
-                        {
-                            // Single Texture
-                        case SingleTexture: {
-                            int tex_x = 0;
-                            int tex_y = 0;
-                            bt->get_tex_coords(&tex_x, &tex_y);
-                            if (getBlockType(x - 1, y, z)->isTransparent()) { // Todo: check for opeaqeness
-                                mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 3, tex_x, tex_y);
-                            }
-                            if (getBlockType(x + 1, y, z)->isTransparent()) { // Todo: check for opeaqeness
-                                mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 1, tex_x, tex_y);
-                            }
-                            if (getBlockType(x, y - 1, z)->isTransparent()) { // Todo: check for opeaqeness
-                                mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 4, tex_x, tex_y);
-                            }
-                            if (getBlockType(x, y + 1, z)->isTransparent()) { // Todo: check for opeaqeness
-                                mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 5, tex_x, tex_y);
-                            }
-                            if (getBlockType(x, y, z - 1)->isTransparent()) { // Todo: check for opeaqeness
-                                mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 2, tex_x, tex_y);
-                            }
-                            if (getBlockType(x, y, z + 1)->isTransparent()) { // Todo: check for opeaqeness
-                                mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 0, tex_x, tex_y);
-                            }
-                            break;
-                        }
-                                // Sides, Top, Bottom
-
-                                // dummy test for Gras
-                        case MultiTexture: {
-                            //std::cout << "Mulittexture" << std::endl;
-                            int tex_x = 0;
-                            int tex_y = 0;
-                            SpecialBlockTexture* tex = bt->get_multi_texture();
-                            //std::cout << tex << std::endl;
-                            if (getBlockType(x - 1, y, z)->isTransparent()) { // Todo: check for opeaqeness
-                                tex->get_left(&tex_x, &tex_y);
-                                mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 3, tex_x, tex_y); // left
-                            }
+                        if ((bt->get_transparency_type()==Solid) && bt->hasCollision()){
+                            switch (bt->get_texture_type()) // ToDo: Get the texture Type from the Blockmanager
+                            {
+                                // Single Texture
+                            case SingleTexture: {
+                                int tex_x = 0;
+                                int tex_y = 0;
+                                bt->get_tex_coords(&tex_x, &tex_y);
+                                if (getBlockType(x - 1, y, z)->isTransparent()) { // Todo: check for opeaqeness //TODO: Add explanation for this!!!
+                                    mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 3, tex_x, tex_y);
+                                }
                                 if (getBlockType(x + 1, y, z)->isTransparent()) { // Todo: check for opeaqeness
-                                tex->get_right(&tex_x, &tex_y);
-                                mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 1, tex_x, tex_y); // right
+                                    mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 1, tex_x, tex_y);
+                                }
+                                if (getBlockType(x, y - 1, z)->isTransparent()) { // Todo: check for opeaqeness
+                                    mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 4, tex_x, tex_y);
+                                }
+                                if (getBlockType(x, y + 1, z)->isTransparent()) { // Todo: check for opeaqeness
+                                    mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 5, tex_x, tex_y);
+                                }
+                                if (getBlockType(x, y, z - 1)->isTransparent()) { // Todo: check for opeaqeness
+                                    mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 2, tex_x, tex_y);
+                                }
+                                if (getBlockType(x, y, z + 1)->isTransparent()) { // Todo: check for opeaqeness
+                                    mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 0, tex_x, tex_y);
+                                }
+                                break;
                             }
-                            if (getBlockType(x, y - 1, z)->isTransparent()) { // Todo: check for opeaqeness
-                                tex->get_bottom(&tex_x, &tex_y);
-                                mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 4, tex_x, tex_y); // bottom
+                                    // Sides, Top, Bottom
+
+                                    // dummy test for Gras
+                            case MultiTexture: {
+                                //std::cout << "Mulittexture" << std::endl;
+                                int tex_x = 0;
+                                int tex_y = 0;
+                                SpecialBlockTexture* tex = bt->get_multi_texture();
+                                //std::cout << tex << std::endl;
+                                if (getBlockType(x - 1, y, z)->isTransparent()) { // Todo: check for opeaqeness
+                                    tex->get_left(&tex_x, &tex_y);
+                                    mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 3, tex_x, tex_y); // left
+                                }
+                                    if (getBlockType(x + 1, y, z)->isTransparent()) { // Todo: check for opeaqeness
+                                    tex->get_right(&tex_x, &tex_y);
+                                    mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 1, tex_x, tex_y); // right
+                                }
+                                if (getBlockType(x, y - 1, z)->isTransparent()) { // Todo: check for opeaqeness
+                                    tex->get_bottom(&tex_x, &tex_y);
+                                    mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 4, tex_x, tex_y); // bottom
+                                }
+                                if (getBlockType(x, y + 1, z)->isTransparent()) { // Todo: check for opeaqeness
+                                    tex->get_top(&tex_x, &tex_y);
+                                    mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 5, tex_x, tex_y); // top
+                                }
+                                if (getBlockType(x, y, z - 1)->isTransparent()) { // Todo: check for opeaqeness
+                                    tex->get_back(&tex_x, &tex_y);
+                                    mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 2, tex_x, tex_y); // back
+                                }
+                                if (getBlockType(x, y, z + 1)->isTransparent()) { // Todo: check for opeaqeness
+                                    tex->get_front(&tex_x, &tex_y);
+                                    mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 0, tex_x, tex_y); // front
+                                }
+                                break;
                             }
-                            if (getBlockType(x, y + 1, z)->isTransparent()) { // Todo: check for opeaqeness
-                                tex->get_top(&tex_x, &tex_y);
-                                mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 5, tex_x, tex_y); // top
+                            default:
+                                break;
                             }
-                            if (getBlockType(x, y, z - 1)->isTransparent()) { // Todo: check for opeaqeness
-                                tex->get_back(&tex_x, &tex_y);
-                                mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 2, tex_x, tex_y); // back
-                            }
-                            if (getBlockType(x, y, z + 1)->isTransparent()) { // Todo: check for opeaqeness
-                                tex->get_front(&tex_x, &tex_y);
-                                mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 0, tex_x, tex_y); // front
-                            } 
-                            break;
-                        }
-                        default:
-                            break;
-                        }
 
                         }
-                        else if (!(bt->isTransparent()==Solid)) {
+                        else if (bt->get_transparency_type()==Transparent) {
                             int tex_x = 0;
                             int tex_y = 0;
                             bt->get_tex_coords(&tex_x, &tex_y);
@@ -298,6 +298,30 @@ void Chunk::updateMesh() {
                             mesh_transparent.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 5, tex_x, tex_y);
                             mesh_transparent.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 2, tex_x, tex_y);
                             mesh_transparent.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 0, tex_x, tex_y);
+                        }
+                        else if (bt->get_transparency_type()==Transparent_opaque){
+                            std::cout << "Transparent_opaque" << std::endl;
+                            int tex_x = 0;
+                            int tex_y = 0;
+                            bt->get_tex_coords(&tex_x, &tex_y);
+                            if (getBlockType(x - 1, y, z)->isTransparent()) { // Todo: check for opeaqeness //TODO: Add explanation for this!!!
+                                mesh_semi_solid.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 3, tex_x, tex_y);
+                            }
+                            if (getBlockType(x + 1, y, z)->isTransparent()) { // Todo: check for opeaqeness
+                                mesh_semi_solid.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 1, tex_x, tex_y);
+                            }
+                            if (getBlockType(x, y - 1, z)->isTransparent()) { // Todo: check for opeaqeness
+                                mesh_semi_solid.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 4, tex_x, tex_y);
+                            }
+                            if (getBlockType(x, y + 1, z)->isTransparent()) { // Todo: check for opeaqeness
+                                mesh_semi_solid.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 5, tex_x, tex_y);
+                            }
+                            if (getBlockType(x, y, z - 1)->isTransparent()) { // Todo: check for opeaqeness
+                                mesh_semi_solid.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 2, tex_x, tex_y);
+                            }
+                            if (getBlockType(x, y, z + 1)->isTransparent()) { // Todo: check for opeaqeness
+                                mesh_semi_solid.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 0, tex_x, tex_y);
+                            }
                         }
                         else{
                             int tex_x = 0;
@@ -317,6 +341,7 @@ void Chunk::updateMesh() {
         }
 
         mesh.update();
+        mesh_semi_solid.update();
         mesh_transparent.update();
 
         changed = false;
@@ -327,7 +352,10 @@ void Chunk::updateMesh() {
 void Chunk::render(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId) {
     updateMesh();
     mesh.render(modelViewProjMatrixLocation, modelViewProj, textureId);
-    //mesh_transparent.render(modelViewProjMatrixLocation, modelViewProj, textureId);
+}
+
+void Chunk::render_semi_solid(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId) {
+    mesh_semi_solid.render(modelViewProjMatrixLocation, modelViewProj, textureId);
 }
 
 void Chunk::render_transparent(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId) {

@@ -37,6 +37,8 @@ struct Chunk{
 
 	void render(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId);
 
+    void render_semi_solid(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId);
+
 	void render_transparent(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId);
 
 	void calculateNumFaces();
@@ -71,6 +73,9 @@ private:
 
 	int num_faces;
 	ChunkMesh mesh;
+
+    int num_faces_semi_solid;
+    ChunkMesh mesh_semi_solid;
 
 	int num_faces_transparent;
 	ChunkMesh mesh_transparent;

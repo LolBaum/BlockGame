@@ -196,6 +196,15 @@ void SuperChunk::render(const GLfloat* modelViewProj) {
     shader.unbind();
 }
 
+void SuperChunk::render_semi_solid(const GLfloat *modelViewProj) {
+    shader.bind();
+    for (int i = 0; i < chunks.size(); i++) {
+        chunks.at(i)->render_semi_solid(modelViewProjMatrixLocation, modelViewProj, tile_atlas.get_textureId());
+        //std::cout << "renderd Chunk NR " << i << " at " << chunks.at(i)->getPos().x << ", " << chunks.at(i)->getPos().y << ", " << chunks.at(i)->getPos().z << ", " << std::endl;
+    }
+    shader.unbind();
+}
+
 void SuperChunk::render_transparent(const GLfloat* modelViewProj) {
 /* 		glDepthMask(GL_FALSE);
     glEnable(GL_BLEND);
@@ -423,7 +432,5 @@ void SuperChunk::saveWorld(){
         chunks.at(i)->serialize(worldSavePath);
     }
 }
-
-
 
 

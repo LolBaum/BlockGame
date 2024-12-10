@@ -47,8 +47,10 @@ public:
 	StadardBlockTexture* get_texture();
 	SpecialBlockTexture* get_multi_texture();
 
-	TransparencyType isTransparent();
+	bool isTransparent();
 	bool hasCollision();
+
+    TransparencyType get_transparency_type();
 
 	void printInfo();
 	std::string info_srting();
@@ -63,6 +65,7 @@ private:
 	
 	TransparencyType opaque = Solid;
 	bool has_collision = true;
+    bool is_transparent = false;
 };
 
 

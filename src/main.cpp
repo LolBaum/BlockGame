@@ -472,10 +472,11 @@ int main_function() {
 		SuperChunk::render(player.getModelViewProj_GL());
 
 		// rendering the players selection box ontop of the blocks
-		player.render_selection_box(); 	
+		player.render_selection_box();
 
 
-		
+        renderer.setModeSemiSolid();
+        SuperChunk::render_semi_solid(player.getModelViewProj_GL());
 		
 		
 
@@ -483,7 +484,7 @@ int main_function() {
 		renderer.setModeTransparent();
 		// rendering all transparent blocks
 		SuperChunk::render_transparent(player.getModelViewProj_GL());
-																
+
 
 		// TEMP: All text needs to be rendered again with the transparent FB so the transparent blocks are not showing infornt of it
 		// Idea: adding a FrameBuffer to handle drawing to all involved textures at once

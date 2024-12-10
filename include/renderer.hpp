@@ -128,7 +128,8 @@ public:
         
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_POLYGON_SMOOTH);  */
-        
+
+        glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 		glDepthMask(GL_TRUE);
@@ -140,6 +141,21 @@ public:
 
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
+
+    void setModeSemiSolid(){
+
+        glDisable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+        glDepthMask(GL_TRUE);
+        glDisable(GL_BLEND);
+        glClearColor(0.6, 0.7, 1.0, 1.0); // set Color to zero again and use a cubemap background
+
+        // bind opaque framebuffer to render solid objects
+        solidFB.bind();
+
+    }
+
     /* void setModeText(){
         glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_TRUE);
@@ -147,6 +163,7 @@ public:
     } */
     void setModeTransparent(){
         glDepthMask(GL_FALSE);
+        glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunci(0, GL_ONE, GL_ONE);
 		glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
