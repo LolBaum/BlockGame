@@ -7,6 +7,13 @@ in vec2 TexCoords;
 const float width = 1920.0f;
 const float height = 1080.0f;
 
+const vec2 iResolution = vec2(width, height);//vec2(1, height/width);
+
+const int samples = 35;
+const int LOD = 2;         // gaussian done on MIPmap at scale LOD
+const int sLOD = 1 << LOD; // tile size = 2^LOD
+const float sigma = float(samples) * .25;
+
 
 
 layout (binding = 0) uniform sampler2D screenTexture;
@@ -64,10 +71,10 @@ vec4 weighted_grayscale(vec4 c){
 }
 
 
-void make_kernel(inout vec4 n[9], sampler2D tex, vec2 coord)
+void make_kernel(inout vec4 n[9], sampler2D tex, vec2 coord, float step)
 {
-	float w = 1.0 / width;
-	float h = 1.0 / height;
+	float w = step / width;
+	float h = step / height;
 
 	n[0] = texture(tex, coord + vec2( -w, -h));
 	n[1] = texture(tex, coord + vec2(0.0, -h));
@@ -80,10 +87,10 @@ void make_kernel(inout vec4 n[9], sampler2D tex, vec2 coord)
 	n[8] = texture(tex, coord + vec2(  w, h));
 }
 
-vec4 sobel_edges(sampler2D tex, vec2 coord)
+vec4 sobel_edges(sampler2D tex, vec2 coord, float step)
 {
     vec4 n[9];
-    make_kernel( n, screenTexture, TexCoords);
+    make_kernel( n, screenTexture, coord, step);
 
     vec4 sobel_edge_h = n[2] + (2.0*n[5]) + n[8] - (n[0] + (2.0*n[3]) + n[6]);
     vec4 sobel_edge_v = n[0] + (2.0*n[1]) + n[2] - (n[6] + (2.0*n[7]) + n[8]);
@@ -92,9 +99,9 @@ vec4 sobel_edges(sampler2D tex, vec2 coord)
     return sobel;
 }
 
-vec4 sobel_value(sampler2D tex, vec2 coord)
+vec4 sobel_value(sampler2D tex, vec2 coord, float step=1.0)
 {
-    vec4 sobel = sobel_edges(tex, coord);
+    vec4 sobel = sobel_edges(tex, coord, step);
     float value = (sobel.r + sobel.g + sobel.b) / 3;
     return vec4(value);
 }
@@ -109,64 +116,106 @@ vec4 gaussian_blur(float r, int axis){
     return col;
 }
 
-void main()
-{ 
-    // Standard
-    //FragColor = texture(screenTexture, TexCoords);
+float gaussian(vec2 i) {
+    return exp( -.5* dot(i/=sigma,i) ) / ( 6.28 * sigma*sigma );
+}
 
-    vec4 sobel = sobel_value(screenTexture, TexCoords);
+vec4 blur(sampler2D sp, vec2 U, vec2 scale) {
+    vec4 O = vec4(0);
+    int s = samples/sLOD;
 
-    FragColor = sobel;
+    for ( int i = 0; i < s*s; i++ ) {
+        vec2 d = vec2(i%s, i/s)*float(sLOD) - float(samples)/2.;
+        O += gaussian(d) * textureLod( sp, U + scale * d , float(LOD) );
+    }
+
+    return O / O.a;
+}
+
+vec3 brightnessContrast(vec3 value, float brightness, float contrast) {
+    return (value - 0.5) * contrast + 0.5 + brightness;
+    }
 
 
-        // NOT GOOD!!!
-//     float radius = 5.0f;
-//
-//
-//     vec4 gauss_x = gaussian_blur(radius, 0);
-//     vec4 gauss_y = gaussian_blur(radius, 1);
-//
-//     vec4 gauss_both = mix(gauss_x, gauss_y, 0.5f);
-//
-//     FragColor = gauss_both;
-
-
-// TRY THIS:
-    float Pi = 6.28318530718; // Pi*2
+vec4 gaussianBlur(sampler2D tex, vec2 uv, float radius=2){
+        float Pi = 6.28318530718; // Pi*2
 
     // GAUSSIAN BLUR SETTINGS {{{
     float Directions = 16.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
-    float Quality = 3.0; // BLUR QUALITY (Default 4.0 - More is better but slower)
-    float Size = 8.0; // BLUR SIZE (Radius)
+    float Quality = 8.0; // BLUR QUALITY (Default 4.0 - More is better but slower)
+    float Size = radius; // BLUR SIZE (Radius)
     // GAUSSIAN BLUR SETTINGS }}}
-
-    vec2 iResolution = vec2(1, 1);
 
     vec2 Radius = Size/iResolution.xy;
 
     // Normalized pixel coordinates (from 0 to 1)
-    vec2 uv = TexCoords/iResolution.xy;
+//     vec2 uv = fragCoord/iResolution.xy;
     // Pixel colour
-    vec4 Color = texture(screenTexture, uv);
+    vec4 Color = texture(tex, uv);
 
     // Blur calculations
     for( float d=0.0; d<Pi; d+=Pi/Directions)
     {
 		for(float i=1.0/Quality; i<=1.0; i+=1.0/Quality)
         {
-			Color += texture( screenTexture, uv+vec2(cos(d),sin(d))*Radius*i);
+			Color += texture( tex, uv+vec2(cos(d),sin(d))*Radius*i);
         }
     }
 
     // Output to screen
     Color /= Quality * Directions - 15.0;
-    FragColor =  Color;
+    return Color;
+}
+vec4 blurred_sobel(sampler2D tex, vec2 uv, float step=0.5){
+    vec2 offset = 1/vec2(width, height);//vec2(random(uv), random(-uv));
+
+    vec4 s = sobel_value(screenTexture, offset, step);
+    vec4 s1 = sobel_value(screenTexture, vec2(uv.x + offset.x, uv.y + offset.y), step);
+    vec4 s2 = sobel_value(screenTexture, vec2(uv.x + offset.x, uv.y - offset.y), step);
+    vec4 s3 = sobel_value(screenTexture, vec2(uv.x - offset.x, uv.y - offset.y), step);
+    vec4 s4 = sobel_value(screenTexture, vec2(uv.x - offset.x, uv.y + offset.y), step);
+
+    vec4 s5 = sobel_value(screenTexture, vec2(uv.x, uv.y + offset.y), step);
+    vec4 s6 = sobel_value(screenTexture, vec2(uv.x, uv.y - offset.y), step);
+    vec4 s7 = sobel_value(screenTexture, vec2(uv.x - offset.x, uv.y), step);
+    vec4 s8 = sobel_value(screenTexture, vec2(uv.x + offset.x, uv.y), step);
+    return (s+s1+s2+s3+s4+s5+s6+s7+s8)/9*4;
+    return (s+s1+s2+s3+s4)/5;
+//return s;
+}
+
+
+void main()
+{ 
+    // Standard
+    //FragColor = texture(screenTexture, TexCoords);
+
+    vec4 sobel = sobel_value(screenTexture, TexCoords);
+    sobel *= 4.0;
+    float fac = (sobel.x + sobel.y + sobel.z)/3;
+
+    //FragColor.xyz = brightnessContrast(sobel.xyz*4, 0.1, 1.0) -0.1;
+    //FragColor =sobel;
+
+    //vec2 shadertoy_fragCoord = vec2(TexCoords.x * width, TexCoords.y * height);
+
+    vec4 blurred = gaussianBlur(screenTexture, TexCoords);
+    vec4 gauss_no_blur = gaussianBlur(screenTexture, TexCoords, 0.0);
+
     if (debug_render_state == 0){
+        FragColor = mix(texture(screenTexture, TexCoords), blurred, fac);
     } else if (debug_render_state == 1){
+        FragColor = blurred;
     }else if (debug_render_state == 2){
+        FragColor = sobel;
     }else if (debug_render_state == 3){
+             FragColor = blurred_sobel(screenTexture, TexCoords);
     }else if (debug_render_state == 4){
+        vec4 bs = blurred_sobel(screenTexture, TexCoords);
+        float fac_bs = (bs.x + bs.y + bs.z)/3;
+        FragColor = mix(gauss_no_blur, blurred, fac_bs);
     }else if (debug_render_state == 5){
+         FragColor = gauss_no_blur;
      }
 
 
