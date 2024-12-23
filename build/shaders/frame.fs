@@ -14,6 +14,9 @@ layout (binding = 0) uniform sampler2D screenTexture;
 // revealage threshold buffer
 layout (binding = 1) uniform sampler2D u_texture_gui;
 
+uniform int debug_render_state;
+
+
 vec4 kernal_sharpen(vec2 Coords, sampler2D Texture, float inverse_sharpness){
     float offset = 1.0 / inverse_sharpness; 
 
@@ -158,6 +161,13 @@ void main()
     // Output to screen
     Color /= Quality * Directions - 15.0;
     FragColor =  Color;
+    if (debug_render_state == 0){
+    } else if (debug_render_state == 1){
+    }else if (debug_render_state == 2){
+    }else if (debug_render_state == 3){
+    }else if (debug_render_state == 4){
+    }else if (debug_render_state == 5){
+     }
 
 
     if (texture(u_texture_gui, TexCoords).a > 0.1){

@@ -217,6 +217,8 @@ int main_function() {
 	bool mouseButtonClickL = false;
 	bool mouseButtonClickR = false;
 
+    int debug_render_state = 0; // default
+
 	bool close = false;
 	SDL_handler::SetRelativeMouseMode(true); // in Init ?
 	//float cameraSpeed = 6.0f;
@@ -265,21 +267,27 @@ int main_function() {
 					break;
 				case SDLK_1:
 					player.set_inventory_slot(1);
+                    if (buttonShift){debug_render_state=0;}
 					break;
 				case SDLK_2:
 					player.set_inventory_slot(2);
+                    if (buttonShift){debug_render_state=1;}
 					break;
 				case SDLK_3:
 					player.set_inventory_slot(3);
+                    if (buttonShift){debug_render_state=2;}
 					break;
 				case SDLK_4:
 					player.set_inventory_slot(4);
+                        if (buttonShift){debug_render_state=3;}
 					break;
 				case SDLK_5:
 					player.set_inventory_slot(5);
+                        if (buttonShift){debug_render_state=4;}
 					break;
 				case SDLK_6:
 					player.set_inventory_slot(6);
+                        if (buttonShift){debug_render_state=5;}
 					break;
 				case SDLK_7:
 					player.set_inventory_slot(7);
@@ -530,6 +538,8 @@ int main_function() {
 		// Final stage: Showing the result on the screen
 		renderer.setModeScreen();
 		screenShader.bind();
+
+        glUniform1i(glGetUniformLocation(screenShader.getShaderId(), "debug_render_state"), debug_render_state);
 		renderer.drawScreen();
 
 
