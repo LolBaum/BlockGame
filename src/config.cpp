@@ -79,6 +79,7 @@ void Config::init(){
 void Config::locateConfigFile(){}
 
 void Config::loadConfigFile(){
+    std::cout << "[INFO] Loading Config" << std::endl;
     string line;
     string file_name = "config.json";
     ifstream file (file_name);

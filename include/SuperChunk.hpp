@@ -75,7 +75,7 @@ public:
 	static void setBlock(glm::vec3 pos, int type=0);
 	static int get_num_all_faces();
 
-	static Shader get_shader();
+	static Shader & get_shader();
 	static Texture* get_tile_atlas();
 
 	static void saveWorld();

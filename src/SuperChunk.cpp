@@ -410,7 +410,7 @@ int SuperChunk::get_num_all_faces(){
     return n_faces;
 }
 
-Shader SuperChunk::get_shader(){
+Shader & SuperChunk::get_shader(){
     return shader;
 } 
 Texture* SuperChunk::get_tile_atlas(){
