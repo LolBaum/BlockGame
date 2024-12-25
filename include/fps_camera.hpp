@@ -67,7 +67,7 @@ protected:
 	float yaw;
 	float pitch;
 	glm::vec3 lookAt;
-	const float mouseSentitivity = 0.3f;
+	float mouseSentitivity = 0.3f;
 	glm::vec3 up;
 	glm::vec3 camera_height;
 };

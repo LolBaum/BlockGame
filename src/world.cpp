@@ -201,7 +201,7 @@ int World::getIntValue(string key){
         return intData.at(key);
     }
     else{
-        cout << "[ERROR] Key " << key << " not found in int-Cofig" << endl;
+        cout << "[ERROR] Key " << key << " not found in int-Config" << endl;
         return -1;
     } 
 }
@@ -212,7 +212,7 @@ float World::getFloatValue(string key){
         return floatData.at(key);
     }
     else{
-        cout << "[ERROR] Key " << key << " not found in float-Cofig" << endl;
+        cout << "[ERROR] Key " << key << " not found in float-Config" << endl;
         return -1;
     } 
 }
@@ -223,7 +223,7 @@ string World::getStringValue(string key){
         return stringData.at(key);
     }
     else{
-        cout << "[ERROR] Key " << key << " not found in string-Cofig" << endl;
+        cout << "[ERROR] Key " << key << " not found in string-Config" << endl;
         return "_NO_World_VALUE_";
     } 
 
@@ -235,7 +235,7 @@ bool World::getBoolValue(string key){
         return boolData.at(key);
     }
     else{
-        cout << "[ERROR] Key " << key << " not found in bool-Cofig" << endl;
+        cout << "[ERROR] Key " << key << " not found in bool-Config" << endl;
         return false;
     } 
 
@@ -243,12 +243,12 @@ bool World::getBoolValue(string key){
 
 
 glm::vec3 World::getvec3Value(string key){
-    map<string, glm::vec3>::iterator it = vec3Data.find(key);
+    auto it = vec3Data.find(key);
     if (it != vec3Data.end()){
         return vec3Data.at(key);
     }
     else{
-        cout << "[ERROR] Key " << key << " not found in vec3-Cofig" << endl;
+        cout << "[ERROR] Key " << key << " not found in vec3-Config" << endl;
         return glm::vec3(0,0,0);
     } 
 
