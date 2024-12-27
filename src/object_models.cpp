@@ -297,6 +297,124 @@ void ChunkMesh::addPlane_basic_lighting(glm::vec3 position, int rotation, int te
     usedVertices += 4;
 }
 
+void ChunkMesh::addPlane_basic_lighting_with_offset(glm::vec3 position, int rotation, int tex_x, int tex_y, float size) {
+
+    float uv_x_1 = tex_x * tex_factor;
+    float uv_x_2 = tex_x * tex_factor + tex_factor;
+    float uv_y_1 = 1.0f - tex_y * tex_factor - tex_factor;
+    float uv_y_2 = 1.0f - tex_y * tex_factor;
+
+    float upper_offset = size;
+    float lower_offset = 1-size;
+
+    indices.push_back(usedVertices + 0);
+    indices.push_back(usedVertices + 1);
+    indices.push_back(usedVertices + 2);
+    indices.push_back(usedVertices + 0);
+    indices.push_back(usedVertices + 2);
+    indices.push_back(usedVertices + 3);
+    usedIndices += 6;
+
+    switch (rotation)
+    {
+        case 0: {
+
+            vertices.push_back(Vertex{ position.x + lower_offset, position.y + lower_offset, position.z + size,
+                                       uv_x_1, uv_y_1,
+                                       0.7 });
+            vertices.push_back(Vertex{ position.x + size, position.y + lower_offset, position.z + size,
+                                       uv_x_2, uv_y_1,
+                                       0.7 });
+            vertices.push_back(Vertex{ position.x + size, position.y + size, position.z + size,
+                                       uv_x_2, uv_y_2,
+                                       0.7 });
+            vertices.push_back(Vertex{ position.x + lower_offset, position.y + size, position.z + size,
+                                       uv_x_1, uv_y_2,
+                                       0.7 });
+            break;
+        }
+        case 1: {
+            vertices.push_back(Vertex{ position.x + size, position.y + lower_offset, position.z + size,
+                                       uv_x_1, uv_y_1,
+                                       0.8 });
+            vertices.push_back(Vertex{ position.x + size, position.y + lower_offset, position.z + lower_offset,
+                                       uv_x_2, uv_y_1,
+                                       0.8 });
+            vertices.push_back(Vertex{ position.x + size, position.y + size, position.z + lower_offset,
+                                       uv_x_2, uv_y_2,
+                                       0.8 });
+            vertices.push_back(Vertex{ position.x + size, position.y + size, position.z + size,
+                                       uv_x_1, uv_y_2,
+                                       0.8 });
+            break;
+        }
+        case 2: {
+            vertices.push_back(Vertex{ position.x + size, position.y + lower_offset, position.z + lower_offset,
+                                       uv_x_1, uv_y_1,
+                                       0.7 });
+            vertices.push_back(Vertex{ position.x + lower_offset, position.y + lower_offset, position.z + lower_offset,
+                                       uv_x_2, uv_y_1,
+                                       0.7 });
+            vertices.push_back(Vertex{ position.x + lower_offset, position.y + size, position.z + lower_offset,
+                                       uv_x_2, uv_y_2,
+                                       0.7 });
+            vertices.push_back(Vertex{ position.x + size, position.y + size, position.z + lower_offset,
+                                       uv_x_1, uv_y_2,
+                                       0.7 });
+            break;
+        }
+        case 3: {
+            vertices.push_back(Vertex{ position.x + lower_offset, position.y + lower_offset, position.z + lower_offset,
+                                       uv_x_1, uv_y_1,
+                                       0.8 });
+            vertices.push_back(Vertex{ position.x + lower_offset, position.y + lower_offset, position.z + size,
+                                       uv_x_2, uv_y_1,
+                                       0.8 });
+            vertices.push_back(Vertex{ position.x + lower_offset, position.y + size, position.z + size,
+                                       uv_x_2, uv_y_2,
+                                       0.8 });
+            vertices.push_back(Vertex{ position.x + lower_offset, position.y + size, position.z + lower_offset,
+                                       uv_x_1, uv_y_2,
+                                       0.8 });
+            break;
+        }
+        case 4: {
+            vertices.push_back(Vertex{ position.x + lower_offset, position.y + lower_offset, position.z + lower_offset,
+                                       uv_x_1, uv_y_1,
+                                       0.6 });
+            vertices.push_back(Vertex{ position.x + size, position.y + lower_offset, position.z + lower_offset,
+                                       uv_x_2, uv_y_1,
+                                       0.6 });
+            vertices.push_back(Vertex{ position.x + size, position.y + lower_offset, position.z + size,
+                                       uv_x_2, uv_y_2,
+                                       0.6 });
+            vertices.push_back(Vertex{ position.x + lower_offset, position.y + lower_offset, position.z + size,
+                                       uv_x_1, uv_y_2,
+                                       0.6 });
+            break;
+        }
+        case 5: {
+            vertices.push_back(Vertex{ position.x + lower_offset, position.y + size, position.z + size,
+                                       uv_x_1, uv_y_1,
+                                       1.0 });
+            vertices.push_back(Vertex{ position.x + size, position.y + size, position.z + size,
+                                       uv_x_2, uv_y_1,
+                                       1.0 });
+            vertices.push_back(Vertex{ position.x + size, position.y + size, position.z + lower_offset,
+                                       uv_x_2, uv_y_2,
+                                       1.0 });
+            vertices.push_back(Vertex{ position.x + lower_offset, position.y + size, position.z + lower_offset,
+                                       uv_x_1, uv_y_2,
+                                       1.0 });
+            break;
+        }
+
+        default:
+            break;
+    }
+    usedVertices += 4;
+}
+
 void ChunkMesh::add_Block(glm::vec3 position, int tex_x, int tex_y) {
     addPlane(glm::vec3(0, 0, 0) + position);
     addPlane(glm::vec3(0, 0, 0) + position, 1, tex_x, tex_y);
@@ -305,6 +423,71 @@ void ChunkMesh::add_Block(glm::vec3 position, int tex_x, int tex_y) {
     addPlane(glm::vec3(0, 0, 0) + position, 4, tex_x, tex_y);
     addPlane(glm::vec3(0, 0, 0) + position, 5, tex_x, tex_y);
 	}
+
+void ChunkMesh::add_Block_with_offset(glm::vec3 position, int tex_x, int tex_y, float size) {
+    addPlane_basic_lighting_with_offset(glm::vec3(0, 0, 0) + position, 0, tex_x, tex_y, size);
+    addPlane_basic_lighting_with_offset(glm::vec3(0, 0, 0) + position, 1, tex_x, tex_y, size);
+    addPlane_basic_lighting_with_offset(glm::vec3(0, 0, 0) + position, 2, tex_x, tex_y, size);
+    addPlane_basic_lighting_with_offset(glm::vec3(0, 0, 0) + position, 3, tex_x, tex_y, size);
+    addPlane_basic_lighting_with_offset(glm::vec3(0, 0, 0) + position, 4, tex_x, tex_y, size);
+    addPlane_basic_lighting_with_offset(glm::vec3(0, 0, 0) + position, 5, tex_x, tex_y, size);
+}
+
+void ChunkMesh::diagonal_Plane(glm::vec3 position, int tex_x, int tex_y, float size, int c) {
+    float uv_x_1 = tex_x * tex_factor;
+    float uv_x_2 = tex_x * tex_factor + tex_factor;
+    float uv_y_1 = 1.0f - tex_y * tex_factor - tex_factor;
+    float uv_y_2 = 1.0f - tex_y * tex_factor;
+
+    indices.push_back(usedVertices + 0);
+    indices.push_back(usedVertices + 1);
+    indices.push_back(usedVertices + 2);
+    indices.push_back(usedVertices + 0);
+    indices.push_back(usedVertices + 2);
+    indices.push_back(usedVertices + 3);
+    usedIndices += 6;
+
+    switch (c) {
+        case 0:
+
+            vertices.push_back(Vertex{ position.x + 0.0f, position.y + 0.0f, position.z + 0.0f,
+                                       uv_x_1, uv_y_1,
+                                       0.8 });
+            vertices.push_back(Vertex{ position.x + 0.0f, position.y + 1.0f, position.z + 0.0f,
+                                       uv_x_1, uv_y_2,
+                                       0.8 });
+            vertices.push_back(Vertex{ position.x + 1.0f, position.y + 1.0f, position.z + 1.0f,
+                                       uv_x_2, uv_y_2,
+                                       0.8 });
+            vertices.push_back(Vertex{ position.x + 1.0f, position.y + 0.0f, position.z + 1.0f,
+                                       uv_x_2, uv_y_1,
+                                       0.8 });
+            break;
+        case 1:
+            vertices.push_back(Vertex{ position.x + 1.0f, position.y + 0.0f, position.z + 0.0f,
+                                       uv_x_1, uv_y_1,
+                                       0.8 });
+            vertices.push_back(Vertex{ position.x + 1.0f, position.y + 1.0f, position.z + 0.0f,
+                                       uv_x_1, uv_y_2,
+                                       0.8 });
+            vertices.push_back(Vertex{ position.x + 0.0f, position.y + 1.0f, position.z + 1.0f,
+                                       uv_x_2, uv_y_2,
+                                       0.8 });
+            vertices.push_back(Vertex{ position.x + 0.0f, position.y + 0.0f, position.z + 1.0f,
+                                       uv_x_2, uv_y_1,
+                                       0.8 });
+            break;
+    }
+
+
+    usedVertices += 4;
+}
+
+
+void ChunkMesh::add_cross(glm::vec3 position, int tex_x, int tex_y, float size) {
+    diagonal_Plane(position, tex_x, tex_y, size, 0);
+    diagonal_Plane(position, tex_x, tex_y, size, 1);
+}
 
 
 
