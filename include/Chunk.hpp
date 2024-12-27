@@ -19,6 +19,8 @@ struct Chunk{
 	Chunk(glm::vec3 position = glm::vec3(0,0,0));
 	~Chunk();
 
+    const unsigned long long getId();
+
 	void clearChunk();
 
 	void setBlock(int x, int y, int z, int type);
@@ -36,6 +38,8 @@ struct Chunk{
 	void updateMesh();
 
 	void render(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId);
+
+    void render_foliage(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId);
 
 	void render_transparent(int modelViewProjMatrixLocation, const GLfloat* modelViewProj, GLuint textureId);
 
@@ -65,12 +69,16 @@ struct Chunk{
 private:
 	Block blocks[CX][CY][CZ];
 	glm::vec3 pos;
+    unsigned long long id;
 	unsigned int numBlocks;
 	bool changed;
 	bool changed_since_loading = false;
 
 	int num_faces;
 	ChunkMesh mesh;
+
+    int num_faces_foliage;
+    ChunkMesh mesh_foliage;
 
 	int num_faces_transparent;
 	ChunkMesh mesh_transparent;

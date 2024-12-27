@@ -59,4 +59,6 @@ glm::vec3 position_in_chunk(glm::vec3 pos);
 glm::vec3 scale_vec3(glm::vec3 vec, float value);
 bool is_inside_block(glm::vec3 blockpos, glm::vec3 pos);
 
+unsigned long long map_3d_to_1d(glm::vec3);
+
 #endif 

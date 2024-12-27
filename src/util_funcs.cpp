@@ -93,3 +93,25 @@ bool is_inside_block(glm::vec3 blockpos, glm::vec3 pos){
 		return false;
 	}
 }
+
+inline bool positive(int a){
+    return a>=0;
+}
+
+unsigned long long map_3d_to_1d(glm::vec3 v){
+    int x = (int) v.x / CX;
+    int y = (int) v.y / CY;
+    int z = (int) v.z / CZ;
+
+    int s1 = positive(x);
+    int s2 = positive(y);
+    int s3 = positive(z);
+
+    x = abs(x);
+    y = abs(y);
+    z = abs(z);
+
+    unsigned long long T = (x + y) * (x + y + 1) / 2 + y;
+    unsigned long long T2 =  (T + z) * (T + z + 1) / 2 + z;
+    return T2*8 + s1 + s2*2 + s3*4;
+}
