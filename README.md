@@ -86,7 +86,9 @@ Screenshots
 ___
 
 <p align="center">
-*The development of this Project has started around 20.09.2021.*
+    <i>
+    The development of this Project has started around 20.09.2021.
+    </i>
 </p>
 
 <p align="center">
