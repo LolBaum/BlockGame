@@ -6,8 +6,8 @@
 
 
 
-enum TextureType { SingleTexture, MultiTexture, blue };
-enum TransparencyType { Solid, Transparent_opaque, Transparent };
+enum TextureType { SingleTexture, MultiTexture, Cross };
+enum TransparencyType { Solid, Foliage, Glass, Transparent };
 
 struct Block{
 public:
@@ -29,11 +29,13 @@ private:
 class BlockType {
 public:
 	BlockType(int TypeId,  std::string blocktypename="Unamed Block", TextureType tex_type = SingleTexture, 
-			  int tex_cord_x = 0, int tex_cord_y = 0, TransparencyType opaqueness = Solid, bool collision=true);
+			  int tex_cord_x = 0, int tex_cord_y = 0, TransparencyType opaqueness = Solid, bool collision=true,
+              bool onAir=true);
 
 	BlockType(int TypeId, SpecialBlockTexture tex, std::string blocktypename="Unamed Block", TextureType tex_type = SingleTexture, 
-		      TransparencyType opaqueness = Solid, bool collision=true);
-	void initialize_basic(int TypeId,  std::string blocktypename, TextureType tex_type, TransparencyType opaqueness, bool collision);
+		      TransparencyType opaqueness = Solid, bool collision=true, bool is_placeable_on_air=true);
+	void initialize_basic(int TypeId,  std::string blocktypename, TextureType tex_type, TransparencyType opaqueness,
+                          bool collision, bool onAir);
 	
 
 	int GetId();
@@ -47,11 +49,14 @@ public:
 	StadardBlockTexture* get_texture();
 	SpecialBlockTexture* get_multi_texture();
 
-	TransparencyType isTransparent();
+	bool isTransparent();
 	bool hasCollision();
+    bool isPlaceableOnAir();
+
+    TransparencyType get_transparency_type();
 
 	void printInfo();
-	std::string info_srting();
+	std::string info_string();
 	std::string get_name();
 
 private:
@@ -63,6 +68,9 @@ private:
 	
 	TransparencyType opaque = Solid;
 	bool has_collision = true;
+    bool is_transparent = false;
+    bool is_placeable_on_air = true;
+
 };
 
 
