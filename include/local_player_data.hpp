@@ -349,50 +349,27 @@ public:
     void updateLocalChunkIds() {
         chunksInSight.clear();
 
-        chunksInSight.push_back(currentChunkPos);
-        int line_length = 1; // start chunk plus the next
-
         int base_x = currentChunkPos.x;
         int base_z = currentChunkPos.z;
-        int x, z;
 
-        for (int i=0; i<sightDistance; i++){
-            x = base_x - 16 * i;
-            z = base_z - 16 * i;
-            _addCunkline_x(z, x, x + line_length*16);
+        _addChunkStack(base_x, base_z);
 
-            x = base_x + 16 * i;
-            z = base_z - 16 * i;
-            _addCunkline_z(x, z, z + line_length*16);
-
-            x = base_x + 16 * i;
-            z = base_z + 16 * i;
-            _addCunkline_x(z, x, x - line_length*16);
-
-            x = base_x - 16 * i;
-            z = base_z + 16 * i;
-            _addCunkline_z(x, z, z - line_length*16);
-
-
-
-
-            line_length += 2;
+        for (int z=1; z<=sightDistance; z++){
+            _addChunkStack(base_x, base_z + 16*z);
+            _addChunkStack(base_x, base_z - 16*z);
         }
 
-
-        // for (int x = -sightDistance; x <= sightDistance; x++) {
-        // 	for (int y = -MAX_HEIGHT_IN_CHUNKS; y <= MAX_HEIGHT_IN_CHUNKS; y++) {
-        // 		for (int z = -sightDistance; z <= sightDistance; z++) {
-        // 			int pos_x = currentChunkPos.x + x * 16;
-        // 			int pos_y = currentChunkPos.y + y * 16;
-        // 			int pos_z = currentChunkPos.z + z * 16;
-        // 			if (pos_y >= MIN_HEIGHT && pos_y <= MAX_HEIGHT){
-        // 				chunksInSight.push_back(glm::vec3(pos_x, pos_y, pos_z));
-        // 			}
-
-        // 		}
-        // 	}
-        // }
+        for (int x=1; x<=sightDistance; x++){
+            int offset_x = 16*x;
+            for (int z=1; z<=sightDistance; z++){
+                _addChunkStack(base_x + offset_x, base_z);
+                _addChunkStack(base_x + offset_x, base_z + 16*z);
+                _addChunkStack(base_x + offset_x, base_z - 16*z);
+                _addChunkStack(base_x - offset_x, base_z);
+                _addChunkStack(base_x - offset_x, base_z + 16*z);
+                _addChunkStack(base_x - offset_x, base_z - 16*z);
+            }
+        }
     }
 
     std::vector<glm::vec3> getLocalChunkIds() {
