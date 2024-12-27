@@ -89,7 +89,7 @@ void GameInstance::initialize() {
 void GameInstance::load() {
     BlockTypeManager::AddBlockType(BlockType(1, "Stone", SingleTexture, 0, 1));
     BlockTypeManager::AddBlockType(BlockType(2, "Dirt", SingleTexture, 1, 0));
-    BlockTypeManager::AddBlockType(BlockType(3, SpecialBlockTexture(2,0, 2,0, 2,0, 2,0, 3,0, 1,0), "Grass", MultiTexture));
+    BlockTypeManager::AddBlockType(BlockType(3, SpecialBlockTexture(2,0, 2,0, 2,0, 2,0, 3,0, 1,0), "Dirt/Grass", MultiTexture));
     BlockTypeManager::AddBlockType(BlockType(4, "Grass", Cross, 2, 1, Foliage, false, false));
     BlockTypeManager::AddBlockType(BlockType(5, SpecialBlockTexture(0,2, 0,2, 0,2, 0,2, 1,2, 1,2), "Wood Log", MultiTexture));
     BlockTypeManager::AddBlockType(BlockType(6, "Wooden Planks", SingleTexture, 0, 3));

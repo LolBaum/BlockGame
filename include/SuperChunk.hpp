@@ -96,6 +96,9 @@ private:
 
 	static std::string worldSavePath;
 
+    static void PopulateChunk(Chunk *chunk);
+
+    void setBlock(glm::vec3 pos, int type, Chunk *c);
 };
 
 

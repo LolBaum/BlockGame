@@ -131,8 +131,30 @@ void SuperChunk::unloadChunk(glm::vec3 pos) {
 
 }
 
+void SuperChunk::PopulateChunk(Chunk* chunk){ // TODO: NOT WORKING !!!
+    glm::vec3 pos = chunk->getPos();
+    glm::vec3 offset = {0, 0.9, 0};
+    std::cout << "POPULATING CHUNK " << vec3_toString(pos) << std::endl;
+    if (isChunkEmty(pos)){
+        std::cout << "IS EMPTY !!" << std::endl;
+        return;
+    }
+    for (int x = 0; x < CX; x++) {
+        for (int y = 0; y < CY; y++) {
+            for (int z = 0; z < CZ; z++) {
+                // TODO use variable do identify block types
+                getBlockType(x,y,z)->printInfo();
+                if (getBlockTypeInt(x,y,z) == 3){ // grass
+                    std::cout << "Setting Grass" << std::endl;
+                    chunk->setBlock(x, y, z, 4);
+                }
+            }
+        }
+    }
+}
+
 void SuperChunk::generateChunk(Chunk* chunk){
-    //std::cout << "Generating Chunk " << vec3_toString(chunk->getPos()) << std::endl;
+    std::cout << "Generating Chunk " << vec3_toString(chunk->getPos()) << std::endl;
     float pos_x = chunk->getPos().x;
     float pos_z = chunk->getPos().z;
     int pos_y = chunk->getPos().y;
@@ -166,6 +188,11 @@ void SuperChunk::generateChunk(Chunk* chunk){
                         chunk->setBlock(x, i - pos_y, z, 2);// add: check if boundings are correct
                     }
                     chunk->setBlock(x, h - pos_y, z, 3);
+
+                    float grass_val = (glm::perlin(glm::vec2((x + pos_x) /4, (z + pos_z) / 4)));
+                    if (grass_val >0.5){
+                        chunk->setBlock(x, h - pos_y+1, z, 4);
+                    }
                         
                 }
                 //else
@@ -177,6 +204,7 @@ void SuperChunk::generateChunk(Chunk* chunk){
 
         }
     }
+    //PopulateChunk(chunk);
     chunk->updateMesh();
 }
 
@@ -389,6 +417,7 @@ int SuperChunk::getBlockTypeInt(glm::vec3 pos) {
     Chunk* chunk = getChunk(cx, cy, cz);
     if (!chunk) {
         std::cout << "CHUNK NOT FOUND" << std::endl;
+        printf("%d %d %d\n\n", cx, cy, cz);
         return 0;
     }
     else {
