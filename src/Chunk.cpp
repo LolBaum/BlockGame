@@ -15,6 +15,13 @@ Chunk::Chunk(glm::vec3 position) {
     numBlocks = 0;
     changed = true;
 
+//        calcChunkCoords(pos, &px, &py, &pz);
+        //std::cout << vec3_toString(pos) << std::endl;
+    px = pos.x;
+    py = pos.y;
+    pz = pos.z;
+    //printf("%d %d %d \n", px,py,pz);
+
     // vertexBuffer = *new ChunkVertexBuffer();
     // indexBuffer = *new IndexBuffer();
 }
@@ -31,6 +38,10 @@ Chunk::~Chunk(){
 void Chunk::clearChunk() {
     //std::cout << "cleared Chunk: " << vec3_toString(pos) << std::endl;
     pos = glm::vec3(-1, -1, -1);
+    px=-1;
+    py=-1;
+    pz=-1;
+
     id = 0;
     for (int x = 0; x < CX; x++) {
         for (int y = 0; y < CY; y++) {
@@ -454,12 +465,21 @@ glm::vec3 Chunk::getPos() {
 }
 void Chunk::setPos(glm::vec3 newPos) {
     pos = newPos;
+    px = pos.x;
+    py = pos.y;
+    pz = pos.z;
 }
 unsigned int Chunk::get_numBlocks(){
     return numBlocks;
 }
 bool Chunk::is_empty(){
     return (numBlocks==0);
+}
+
+void Chunk::getIDPos(int*x, int*y, int*z){
+    *x = px;
+    *y = py;
+    *z = pz;
 }
 
 static std::string getFormattedFilePath(const std::string& worldSavePath,  int pos_x, int pos_y, int pos_z){
