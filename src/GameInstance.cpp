@@ -379,9 +379,12 @@ void GameInstance::render() {
     std::stringstream ss;
     ss.str(std::string());
     if (time_since_slow_tick > 1.0){
+        int x,y,z;
+        calcChunkCoords(player->getPosition(),&x, &y, &z);
         ss << "FPS: " << FPS << std::endl;
         ss << "Number of Chunks: "<< SuperChunk::getNumChunks() << ",  " << SuperChunk::getNumFilledChunks() << std::endl;
         ss << vec3_toString(player->getPosition(), "pos ") << std::endl;
+        ss << vec3_toString({x,y,z}, "pos ") << std::endl;
         ss << "Number of Faces: " << SuperChunk::get_num_all_faces() << std::endl;
         ss << "Sight distance: " << player->get_sight_distance() << std::endl;
         text = ss.str();

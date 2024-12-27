@@ -29,6 +29,8 @@ void _GLGetError(const char* file, int line, const char* call) {
 
 #endif
 
+int toChunkCoord(float p);
+void calcChunkCoords(glm::vec3 pos, int* x, int* y, int* z);
 
 bool exists (const std::string& name);
 

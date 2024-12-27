@@ -103,7 +103,9 @@ void SuperChunk::loadChunk(glm::vec3 pos) {
 
 void SuperChunk::unloadChunk_new(glm::vec3 pos) {
     Chunk* chunk = getChunk(pos);
+    std::cout <<  vec3_toString(pos, "unloadChunk_new  pos") << std::endl;
     if (chunk != NULL) {
+        std::cout <<  vec3_toString(chunk->getPos(), "unloadChunk_new cpos") << std::endl;
         chunk->serialize(worldSavePath);
         chunk->clearChunk();
     }
@@ -250,8 +252,12 @@ void SuperChunk::render_transparent(const GLfloat* modelViewProj) {
 
 Chunk* SuperChunk::getChunk(glm::vec3 pos) {
     Chunk* chunk = nullptr;
+    int x,y,z, px, py, pz;
+    calcChunkCoords(pos, &x, &y, &z);
     for (int i=0; i < chunks.size(); i++) {
-        if (compareVec3(chunks.at(i)->getPos(), pos)) {
+        chunks.at(i)->getIDPos(&px, &py, &pz);
+        if (x==px && y==py && z==pz) {
+            std::cout << "FOUND CHUNK" << std::endl;
             return chunks.at(i);
         }
     }
@@ -390,7 +396,7 @@ int SuperChunk::getBlockTypeInt(int x, int y, int z) {
     int cy = floor(y / CY) * CY;
     int cz = floor(z / CZ) * CZ;
 
-    std::cout << "cx: " << cx << " cy: " << cy  << " cz:" << cz << std::endl;
+    //std::cout << "cx: " << cx << " cy: " << cy  << " cz:" << cz << std::endl;
 
 //    for (int i = 0; i < chunks.size(); i++) {
 //    std::cout << "chunk id: " << chunks.at(i)->getId() << std::endl;
@@ -401,7 +407,7 @@ int SuperChunk::getBlockTypeInt(int x, int y, int z) {
 
     Chunk* chunk = getChunk(glm::vec3(cx, cy, cz));
     if (!chunk) {
-        std::cout << "Chunk not found" << std::endl;
+        //std::cout << "Chunk not found" << std::endl;
         return 0;
     }
     else {
@@ -416,8 +422,8 @@ int SuperChunk::getBlockTypeInt(glm::vec3 pos) {
 
     Chunk* chunk = getChunk(cx, cy, cz);
     if (!chunk) {
-        std::cout << "CHUNK NOT FOUND" << std::endl;
-        printf("%d %d %d\n\n", cx, cy, cz);
+        //std::cout << "CHUNK NOT FOUND" << std::endl;
+        //printf("%d %d %d\n\n", cx, cy, cz);
         return 0;
     }
     else {
@@ -425,11 +431,11 @@ int SuperChunk::getBlockTypeInt(glm::vec3 pos) {
     }
 }
 BlockType* SuperChunk::getBlockType(int x, int y, int z) {
-    std::cout << "" << std::endl;
-    std::cout << "x: " << x << " y: " << y  << " z:" << z << std::endl;
-    std::cout << "getBlockTypeInt: " << getBlockTypeInt(x, y, z) << std::endl;
-    std::cout << "Blocktype: " << BlockTypeManager::GetBlockType(getBlockTypeInt(x, y, z))->info_string() << std::endl;
-    std::cout << "" << std::endl;
+    //std::cout << "" << std::endl;
+    //std::cout << "x: " << x << " y: " << y  << " z:" << z << std::endl;
+    //std::cout << "getBlockTypeInt: " << getBlockTypeInt(x, y, z) << std::endl;
+    //std::cout << "Blocktype: " << BlockTypeManager::GetBlockType(getBlockTypeInt(x, y, z))->info_string() << std::endl;
+    //std::cout << "" << std::endl;
     return BlockTypeManager::GetBlockType(getBlockTypeInt(glm::vec3(x, y, z)));
 }
 
@@ -444,14 +450,14 @@ void SuperChunk::setBlock(glm::vec3 pos, int type) {
     int cy = floor(pos.y / CY) * CY;
     int cz = floor(pos.z / CZ) * CZ;
 
-    std::cout << "cx: " << cx << ", cy: " << cy << ", cz: " << cz << std::endl;
+    //std::cout << "cx: " << cx << ", cy: " << cy << ", cz: " << cz << std::endl;
 
     Chunk* chunk = getChunk(cx, cy, cz);
     if (!chunk) {
         return;
     }
     else {
-        std::cout << "pos in chunk: " <<vec3_toString(position_in_chunk(pos)) << std::endl;
+        //std::cout << "pos in chunk: " <<vec3_toString(position_in_chunk(pos)) << std::endl;
         chunk->setBlock(position_in_chunk(pos), type);
     }
 }

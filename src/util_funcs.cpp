@@ -115,3 +115,20 @@ unsigned long long map_3d_to_1d(glm::vec3 v){
     unsigned long long T2 =  (T + z) * (T + z + 1) / 2 + z;
     return T2*8 + s1 + s2*2 + s3*4;
 }
+
+void calcChunkCoords(glm::vec3 pos, int* x, int* y, int* z){
+    *x = toChunkCoord(pos.x);
+    *y = toChunkCoord(pos.y);
+    *z = toChunkCoord(pos.z);
+}
+
+inline int toChunkCoord(float p){
+    int c;
+    if (p>=0){
+        c = (int)p - (int)p%16;
+    }
+    else{
+        c =  (int)p - (16 + ((int)p+1)%16)+1;
+    }
+    return c;
+}

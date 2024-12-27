@@ -55,6 +55,7 @@ struct Chunk{
 	void setPos(glm::vec3 newPos);
 	unsigned int get_numBlocks();
 	bool is_empty();
+    void getIDPos(int *x, int *y, int *z);
 
 
 	////////////////////////////
@@ -83,6 +84,10 @@ private:
 	int num_faces_transparent;
 	ChunkMesh mesh_transparent;
 
+    int px;
+    int py;
+    int pz;
 
-}; 
+
+};
 //Chunk NullChunk = *new Chunk(glm::vec3(0,0,0));
