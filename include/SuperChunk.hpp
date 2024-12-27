@@ -51,7 +51,6 @@ public:
 
 	static Chunk* _getChunk(int x, int y, int z);
 
-
 	static int getChunk_index(glm::vec3 pos);
 
 	static void loadChunks(std::vector<glm::vec3> chunkIds);
@@ -96,10 +95,6 @@ private:
 	static Texture tile_atlas;
 
 	static std::string worldSavePath;
-
-    static void PopulateChunk(Chunk *chunk);
-
-    void setBlock(glm::vec3 pos, int type, Chunk *c);
 
 };
 

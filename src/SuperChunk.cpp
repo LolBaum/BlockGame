@@ -419,7 +419,6 @@ int SuperChunk::getBlockTypeInt(glm::vec3 pos) {
     if (!chunk) {
         //std::cout << "CHUNK NOT FOUND" << std::endl;
         //printf("%d %d %d\n\n", cx, cy, cz);
-        return 0;
     }
     else {
         return chunk->getBlockTypeInt(position_in_chunk(pos));
