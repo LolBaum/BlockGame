@@ -49,7 +49,7 @@ public:
 
 	static Chunk* getChunk(glm::vec3 pos);
 
-	static Chunk* getChunk(int x, int y, int z);
+	static Chunk* _getChunk(int x, int y, int z);
 
 
 	static int getChunk_index(glm::vec3 pos);
@@ -75,6 +75,7 @@ public:
 
 
 	static void setBlock(glm::vec3 pos, int type=0);
+    static void setBlock(int x, int y, int z, int type=0);
 	static int get_num_all_faces();
 
 	static Shader & get_shader();
@@ -99,6 +100,7 @@ private:
     static void PopulateChunk(Chunk *chunk);
 
     void setBlock(glm::vec3 pos, int type, Chunk *c);
+
 };
 
 

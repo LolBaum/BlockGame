@@ -193,7 +193,8 @@ void SuperChunk::generateChunk(Chunk* chunk){
 
                     float grass_val = (glm::perlin(glm::vec2((x + pos_x) /4, (z + pos_z) / 4)));
                     if (grass_val >0.5){
-                        chunk->setBlock(x, h - pos_y+1, z, 4);
+                        //chunk->setBlock(x, h - pos_y+1, z, 4);
+                        SuperChunk::setBlock((int)(x + pos_x), h+1, (int)(z + pos_z), 4);
                     }
                         
                 }
@@ -251,25 +252,19 @@ void SuperChunk::render_transparent(const GLfloat* modelViewProj) {
 }
 
 Chunk* SuperChunk::getChunk(glm::vec3 pos) {
-    Chunk* chunk = nullptr;
-    int x,y,z, px, py, pz;
+    int x,y,z;
     calcChunkCoords(pos, &x, &y, &z);
-    for (int i=0; i < chunks.size(); i++) {
-        chunks.at(i)->getIDPos(&px, &py, &pz);
-        if (x==px && y==py && z==pz) {
-            std::cout << "FOUND CHUNK" << std::endl;
-            return chunks.at(i);
-        }
-    }
-    return nullptr; // kann evtl. verbessert werden...
+    return _getChunk(x, y, z);
 }
 
 
-Chunk* SuperChunk::getChunk(int x, int y, int z) {
+Chunk* SuperChunk::_getChunk(int x, int y, int z) {
     Chunk* chunk = nullptr;
+    int px, py, pz;
     glm::vec3 pos = glm::vec3(x, y, z);
     for (int i = 0; i < chunks.size(); i++) {
-        if (compareVec3(chunks.at(i)->getPos(), pos)) {
+        chunks.at(i)->getIDPos(&px, &py, &pz);
+        if (x==px && y==py && z==pz) {
             return chunks.at(i);
         }
     }
@@ -420,7 +415,7 @@ int SuperChunk::getBlockTypeInt(glm::vec3 pos) {
     int cz = floor(pos.z / CZ) * CZ;
 
 
-    Chunk* chunk = getChunk(cx, cy, cz);
+    Chunk* chunk = _getChunk(cx, cy, cz);
     if (!chunk) {
         //std::cout << "CHUNK NOT FOUND" << std::endl;
         //printf("%d %d %d\n\n", cx, cy, cz);
@@ -444,7 +439,7 @@ bool SuperChunk::has_Block_collision(glm::vec3 pos){
     return BlockTypeManager::GetBlockType(typeint)->hasCollision();
 }
 
-
+/// @param [in] pos Block Position in WorldCoordinates
 void SuperChunk::setBlock(glm::vec3 pos, int type) {
     int cx = floor(pos.x / CX) * CX;
     int cy = floor(pos.y / CY) * CY;
@@ -452,13 +447,31 @@ void SuperChunk::setBlock(glm::vec3 pos, int type) {
 
     //std::cout << "cx: " << cx << ", cy: " << cy << ", cz: " << cz << std::endl;
 
-    Chunk* chunk = getChunk(cx, cy, cz);
+    Chunk* chunk = _getChunk(cx, cy, cz);
     if (!chunk) {
         return;
     }
     else {
         //std::cout << "pos in chunk: " <<vec3_toString(position_in_chunk(pos)) << std::endl;
         chunk->setBlock(position_in_chunk(pos), type);
+    }
+}
+
+/// @param [in] x,y,z Block Position in Chunk Aligned Coordinates
+void SuperChunk::setBlock(int x, int y, int z, int type) {
+    Chunk* chunk = getChunk({x, y, z});
+    int px, py, pz;
+    if (!chunk) {
+        std::cout << "CHUNK NOT FOUND " << vec3_toString( {x,y,z})<< std::endl;
+        return;
+    }
+    else {
+        auto p = position_in_chunk({x,y,z});
+        std::cout << "pos in chunk: " <<vec3_toString( position_in_chunk({x,y,z})) << std::endl;
+        px = positionInChunk(p.x);
+        py = positionInChunk(p.y);
+        pz = positionInChunk(p.z);
+        chunk->setBlock(px, py, pz, type);
     }
 }
 

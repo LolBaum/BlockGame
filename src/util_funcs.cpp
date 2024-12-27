@@ -77,6 +77,17 @@ glm::vec3 position_in_chunk(glm::vec3 pos) {
 	return glm::vec3(x, y, z);
 }
 
+int positionInChunk(int p){
+    int x;
+    if (p >= 0) {
+        x = abs((int)p % CX); // not floor(). use (int)
+    }
+    else {
+        x = CX -1 - abs((int)p % CX);
+    }
+    return x;
+}
+
 glm::vec3 scale_vec3(glm::vec3 vec, float value) {
 	vec.x *= value;
 	vec.y *= value;
