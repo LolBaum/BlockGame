@@ -89,13 +89,13 @@ void GameInstance::initialize() {
 void GameInstance::load() {
     BlockTypeManager::AddBlockType(BlockType(1, "Stone", SingleTexture, 0, 1));
     BlockTypeManager::AddBlockType(BlockType(2, "Dirt", SingleTexture, 1, 0));
-    BlockTypeManager::AddBlockType(BlockType(3, SpecialBlockTexture(2,0, 2,0, 2,0, 2,0, 3,0, 1,0), "Grass", MultiTexture));
-    BlockTypeManager::AddBlockType(BlockType(4, "Cobblestone", SingleTexture, 1, 1));
+    BlockTypeManager::AddBlockType(BlockType(3, SpecialBlockTexture(2,0, 2,0, 2,0, 2,0, 3,0, 1,0), "Dirt/Grass", MultiTexture));
+    BlockTypeManager::AddBlockType(BlockType(4, "Grass", Cross, 2, 1, Foliage, false, false));
     BlockTypeManager::AddBlockType(BlockType(5, SpecialBlockTexture(0,2, 0,2, 0,2, 0,2, 1,2, 1,2), "Wood Log", MultiTexture));
     BlockTypeManager::AddBlockType(BlockType(6, "Wooden Planks", SingleTexture, 0, 3));
     //BlockTypeManager::AddBlockType(BlockType(6, "Withe Test - no collision", SingleTexture, 3, 1, Solid, false));
-    BlockTypeManager::AddBlockType(BlockType(7, "Leafs", SingleTexture, 2, 3, Transparent_opaque));
-    BlockTypeManager::AddBlockType(BlockType(8, "Glass", SingleTexture, 3, 2, Transparent_opaque));
+    BlockTypeManager::AddBlockType(BlockType(7, "Leafs", SingleTexture, 2, 3, Foliage));
+    BlockTypeManager::AddBlockType(BlockType(8, "Glass", SingleTexture, 3, 2, Glass));
     BlockTypeManager::AddBlockType(BlockType(9, "Ice", SingleTexture, 3, 3, Transparent));
 
     ItemTypeManager::AddItemType(new ItemType(10, "Stick"));
@@ -322,6 +322,9 @@ void GameInstance::render() {
     // rendering all opaque blocks
     SuperChunk::render(player->getModelViewProj_GL());
 
+    renderer->setModeSemiSolid();
+    SuperChunk::render_foliage(player->getModelViewProj_GL());
+
     // rendering the players selection box ontop of the blocks
     player->render_selection_box();
 
@@ -376,9 +379,12 @@ void GameInstance::render() {
     std::stringstream ss;
     ss.str(std::string());
     if (time_since_slow_tick > 1.0){
+        int x,y,z;
+        calcChunkCoords(player->getPosition(),&x, &y, &z);
         ss << "FPS: " << FPS << std::endl;
         ss << "Number of Chunks: "<< SuperChunk::getNumChunks() << ",  " << SuperChunk::getNumFilledChunks() << std::endl;
         ss << vec3_toString(player->getPosition(), "pos ") << std::endl;
+        ss << vec3_toString({x,y,z}, "pos ") << std::endl;
         ss << "Number of Faces: " << SuperChunk::get_num_all_faces() << std::endl;
         ss << "Sight distance: " << player->get_sight_distance() << std::endl;
         text = ss.str();

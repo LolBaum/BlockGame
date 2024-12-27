@@ -43,13 +43,13 @@ public:
 
 	static void render(const GLfloat* modelViewProj);
 
+    static void render_foliage(const GLfloat* modelViewProj);
+
 	static void render_transparent(const GLfloat* modelViewProj);
 
 	static Chunk* getChunk(glm::vec3 pos);
 
-
-	static Chunk* getChunk(int x, int y, int z);
-
+	static Chunk* _getChunk(int x, int y, int z);
 
 	static int getChunk_index(glm::vec3 pos);
 
@@ -68,11 +68,13 @@ public:
 
 	static int getBlockTypeInt(int x, int y, int z);
 	static int getBlockTypeInt(glm::vec3);
+    static BlockType *getBlockType(int x, int y, int z);
 
 	static bool has_Block_collision(glm::vec3 pos);
 
 
 	static void setBlock(glm::vec3 pos, int type=0);
+    static void setBlock(int x, int y, int z, int type=0);
 	static int get_num_all_faces();
 
 	static Shader & get_shader();
@@ -93,6 +95,7 @@ private:
 	static Texture tile_atlas;
 
 	static std::string worldSavePath;
+
 };
 
 

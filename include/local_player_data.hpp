@@ -404,12 +404,20 @@ public:
         glm::vec3 viewpos = camera.getViewPos();
         glm::vec3 previousPos = viewpos;
         bool found = false;
+        int block_type = inventory.get_item(selected_inventory_slot)->getId();
         for (int i = 0; i * APROX_STEP_SIZE < PLAYER_ACTION_RANGE; i++) {
             float factor = i * APROX_STEP_SIZE;
             stepPos = viewpos + lookAt * factor; // multiplied Vector with scalar by using *. better change to function
-            if (SuperChunk::getBlockTypeInt(stepPos)) {
-                if (!block_collision(previousPos)){
-                    int block_type = inventory.get_item(selected_inventory_slot)->getId();
+            if ( SuperChunk::getBlockTypeInt(stepPos)) {
+                BlockType* bt = BlockTypeManager::GetBlockType(block_type);
+
+                if (!block_collision(previousPos) || !bt->hasCollision()){
+                    if (!bt->isPlaceableOnAir()){
+                        //TODO: SuperChunk needs to be fixed for this to work - should be fixed now (27.12.24)
+                        if (!SuperChunk::has_Block_collision(previousPos - glm::vec3(0,0.99,0))){
+                            break;
+                        }
+                    }
                     inventory.pop_item(selected_inventory_slot);
                     SuperChunk::setBlock(previousPos, block_type);
                     found = true;

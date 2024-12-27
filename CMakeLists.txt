@@ -35,7 +35,7 @@ FetchContent_Declare(
 FetchContent_Declare(
         SDL2
         GIT_REPOSITORY  https://github.com/libsdl-org/SDL
-        GIT_TAG         release-2.0.20
+        GIT_TAG         release-2.30.10
         GIT_PROGRESS    TRUE
 )
 
@@ -68,11 +68,11 @@ ENDIF()
 # Create an executable
 add_executable(BlockGame ${all_SRCS})
 
+# Link to dependencies
+target_link_libraries(BlockGame libglew_static glm::glm ${SDL_LIBRARIES})
+
 get_cmake_property(_variableNames VARIABLES)
 list (SORT _variableNames)
 foreach (_variableName ${_variableNames})
     message(STATUS "${_variableName}=${${_variableName}}")
 endforeach()
-
-# Link to dependencies
-target_link_libraries(BlockGame libglew_static glm::glm ${SDL_LIBRARIES})

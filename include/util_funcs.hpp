@@ -29,6 +29,8 @@ void _GLGetError(const char* file, int line, const char* call) {
 
 #endif
 
+int toChunkCoord(float p);
+void calcChunkCoords(glm::vec3 pos, int* x, int* y, int* z);
 
 bool exists (const std::string& name);
 
@@ -55,8 +57,11 @@ bool compareVec3(glm::vec3 v1, glm::vec3 v2);
 bool isChunkEmty(glm::vec3 v1);
 glm::vec3 Chunk_Position(glm::vec3 pos);
 glm::vec3 position_in_chunk(glm::vec3 pos);
+int positionInChunk(int p);
 
 glm::vec3 scale_vec3(glm::vec3 vec, float value);
 bool is_inside_block(glm::vec3 blockpos, glm::vec3 pos);
+
+unsigned long long map_3d_to_1d(glm::vec3);
 
 #endif 
