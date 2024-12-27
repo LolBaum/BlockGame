@@ -84,7 +84,10 @@ Screenshots
 </p>
 
 ___
-The development of this Project has started around 20.09.2021.
+
+<p align="center">
+*The development of this Project has started around 20.09.2021.*
+</p>
 
 <p align="center">
   <img src="https://github.com/LolBaum/BlockGame/blob/bdb9729edd7e09680489464cc1e8383afcf3309e/GitHub/gitBlockGameSocial.png" style="width:200px;"/>
