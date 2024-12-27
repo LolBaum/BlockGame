@@ -31,17 +31,17 @@ void Block::setId(int id) {
 
 
 BlockType::BlockType(int TypeId,  std::string blocktypename, TextureType tex_type, 
-            int tex_cord_x, int tex_cord_y, TransparencyType opaqueness, bool collision) {
+            int tex_cord_x, int tex_cord_y, TransparencyType opaqueness, bool collision, bool onAir) {
     //std::cout << "adding Blocktype: " << blocktypename << std::endl;
-    initialize_basic(TypeId, blocktypename, tex_type, opaqueness, collision);
+    initialize_basic(TypeId, blocktypename, tex_type, opaqueness, collision, onAir);
     texture = StadardBlockTexture(tex_cord_x, tex_cord_y);
     texture_type = tex_type;
     printInfo();
 }
 BlockType::BlockType(int TypeId, SpecialBlockTexture tex, std::string blocktypename, TextureType tex_type, 
-            TransparencyType opaqueness, bool collision) {
+            TransparencyType opaqueness, bool collision, bool onAir) {
     //std::cout << "adding Blocktype: " << blocktypename << std::endl;
-    initialize_basic(TypeId, blocktypename, tex_type, opaqueness, collision);
+    initialize_basic(TypeId, blocktypename, tex_type, opaqueness, collision, onAir);
     int tex_cord_x = 0;
     int tex_cord_y = 0;
     tex.get_front(&tex_cord_x, &tex_cord_y);
@@ -50,12 +50,15 @@ BlockType::BlockType(int TypeId, SpecialBlockTexture tex, std::string blocktypen
     texture_type = tex_type;
     printInfo();
 }
-void BlockType::initialize_basic(int TypeId,  std::string blocktypename, TextureType tex_type, TransparencyType opaqueness, bool collision){
+void BlockType::initialize_basic(int TypeId,  std::string blocktypename, TextureType tex_type,
+                                 TransparencyType opaqueness, bool collision, bool onAir){
     id = TypeId;
     name = blocktypename;
     texture_type = tex_type;
     opaque = opaqueness;
-    has_collision = collision; // blocks with no collision, should have opaqueness = false 
+    has_collision = collision; // blocks with no collision, should have opaqueness = false
+    is_transparent = opaque==Foliage || opaque==Transparent || opaque==Glass;
+    is_placeable_on_air = onAir;
 }
 
 
@@ -80,47 +83,67 @@ SpecialBlockTexture* BlockType::get_multi_texture(){
     return &multi_texture;
 }
 
-TransparencyType BlockType::isTransparent() {
-    return opaque;
+bool BlockType::isTransparent() {
+    return is_transparent;
 }
 bool BlockType::hasCollision() {
     return has_collision;
 }
+bool BlockType::isPlaceableOnAir() {
+    return is_placeable_on_air;
+}
 
 void BlockType::printInfo() {
+    std::cout << info_string() << std::endl;
+}
+std::string BlockType::info_string(){
+    std::stringstream ss;
     std::string tt;
     std::string opt;
+    std::string col;
+    std::string onAir;
     if (texture_type == SingleTexture){
         tt = "SingleTexture";
     }else if (texture_type == MultiTexture){
         tt = "MultiTexture";
+    }else if (texture_type == Cross){
+        tt = "Cross";
+    }else{
+        tt = "UNDEFINED";
     }
 
     if (opaque == Solid){
         opt = "Solid";
-    } else if (opaque == Transparent_opaque){
-        opt = "Transparent_opaque";
+    } else if (opaque == Foliage){
+        opt = "Foliage";
     } else if (opaque == Transparent){
         opt = "Transparent";
-    } 
-    std::cout << "BlockType: " << id << ", " << name << ", " << tt << ", " << opt << std::endl;
-}
-std::string BlockType::info_srting(){
-    std::stringstream ss;
-    std::string output;
-    ss << "BlockType: " << id << ", " << name << std::endl;
-    output = ss.str();
-    return output;
+    } else{
+        tt = "UNDEFINED";
+    }
+
+    if (has_collision){
+        col = "has collision";
+    }else{
+        col = "NO collision";
+    }
+
+    if (is_placeable_on_air){
+        onAir = "is placeable on air";
+    }else{
+        onAir = "NOT placeable on air";
+    }
+    std::cout << "BlockType: " << id << ", " << name << ", " << tt << ", " << opt << ", "
+              << col << ", " << onAir << std::endl;
+    return ss.str();
 }
 std::string BlockType::get_name(){
     return name;
 }
 
-
-
-
-
-
+TransparencyType BlockType::get_transparency_type() {
+    return opaque;
+}
 
 
 BlockType BlockTypeManager::Air = BlockType(0, "Air", SingleTexture, 0, 0, Transparent, false);

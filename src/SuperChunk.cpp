@@ -196,6 +196,15 @@ void SuperChunk::render(const GLfloat* modelViewProj) {
     shader.unbind();
 }
 
+void SuperChunk::render_foliage(const GLfloat *modelViewProj) {
+    shader.bind();
+    for (int i = 0; i < chunks.size(); i++) {
+        chunks.at(i)->render_foliage(modelViewProjMatrixLocation, modelViewProj, tile_atlas.get_textureId());
+        //std::cout << "renderd Chunk NR " << i << " at " << chunks.at(i)->getPos().x << ", " << chunks.at(i)->getPos().y << ", " << chunks.at(i)->getPos().z << ", " << std::endl;
+    }
+    shader.unbind();
+}
+
 void SuperChunk::render_transparent(const GLfloat* modelViewProj) {
 /* 		glDepthMask(GL_FALSE);
     glEnable(GL_BLEND);
@@ -353,9 +362,18 @@ int SuperChunk::getBlockTypeInt(int x, int y, int z) {
     int cy = floor(y / CY) * CY;
     int cz = floor(z / CZ) * CZ;
 
+    std::cout << "cx: " << cx << " cy: " << cy  << " cz:" << cz << std::endl;
 
-    Chunk* chunk = getChunk(cx, cy, cz);
+//    for (int i = 0; i < chunks.size(); i++) {
+//    std::cout << "chunk id: " << chunks.at(i)->getId() << std::endl;
+//    }
+//    std::cout << "this ID: " << map_3d_to_1d(glm::vec3(cx, cy, cz)) << std::endl;
+//    std::cout << "this ID: " << map_3d_to_1d(glm::vec3(x, y, z)) << std::endl;
+
+
+    Chunk* chunk = getChunk(glm::vec3(cx, cy, cz));
     if (!chunk) {
+        std::cout << "Chunk not found" << std::endl;
         return 0;
     }
     else {
@@ -370,11 +388,20 @@ int SuperChunk::getBlockTypeInt(glm::vec3 pos) {
 
     Chunk* chunk = getChunk(cx, cy, cz);
     if (!chunk) {
+        std::cout << "CHUNK NOT FOUND" << std::endl;
         return 0;
     }
     else {
         return chunk->getBlockTypeInt(position_in_chunk(pos));
     }
+}
+BlockType* SuperChunk::getBlockType(int x, int y, int z) {
+    std::cout << "" << std::endl;
+    std::cout << "x: " << x << " y: " << y  << " z:" << z << std::endl;
+    std::cout << "getBlockTypeInt: " << getBlockTypeInt(x, y, z) << std::endl;
+    std::cout << "Blocktype: " << BlockTypeManager::GetBlockType(getBlockTypeInt(x, y, z))->info_string() << std::endl;
+    std::cout << "" << std::endl;
+    return BlockTypeManager::GetBlockType(getBlockTypeInt(glm::vec3(x, y, z)));
 }
 
 bool SuperChunk::has_Block_collision(glm::vec3 pos){
@@ -423,7 +450,5 @@ void SuperChunk::saveWorld(){
         chunks.at(i)->serialize(worldSavePath);
     }
 }
-
-
 
 
