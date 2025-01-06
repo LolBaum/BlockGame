@@ -24,13 +24,16 @@ void Block::setId(int id) {
     typeId = id;
 }
 
+uint8 Block::getRot() {
+    return rotation;
+}
+
+void Block::setRot(BlockRotation rot) {
+    rotation = rot;
+}
 
 
-
-
-
-
-BlockType::BlockType(int TypeId,  std::string blocktypename, TextureType tex_type, 
+BlockType::BlockType(int TypeId,  std::string blocktypename, TextureType tex_type,
             int tex_cord_x, int tex_cord_y, TransparencyType opaqueness, bool collision, bool onAir) {
     //std::cout << "adding Blocktype: " << blocktypename << std::endl;
     initialize_basic(TypeId, blocktypename, tex_type, opaqueness, collision, onAir);
@@ -39,7 +42,7 @@ BlockType::BlockType(int TypeId,  std::string blocktypename, TextureType tex_typ
     printInfo();
 }
 BlockType::BlockType(int TypeId, SpecialBlockTexture tex, std::string blocktypename, TextureType tex_type, 
-            TransparencyType opaqueness, bool collision, bool onAir) {
+            TransparencyType opaqueness, bool collision, bool onAir, bool isRot) {
     //std::cout << "adding Blocktype: " << blocktypename << std::endl;
     initialize_basic(TypeId, blocktypename, tex_type, opaqueness, collision, onAir);
     int tex_cord_x = 0;
@@ -48,6 +51,7 @@ BlockType::BlockType(int TypeId, SpecialBlockTexture tex, std::string blocktypen
     texture = StadardBlockTexture(tex_cord_x, tex_cord_y);
     multi_texture = tex;
     texture_type = tex_type;
+    is_rotatable = isRot;
     printInfo();
 }
 void BlockType::initialize_basic(int TypeId,  std::string blocktypename, TextureType tex_type,
@@ -59,6 +63,7 @@ void BlockType::initialize_basic(int TypeId,  std::string blocktypename, Texture
     has_collision = collision; // blocks with no collision, should have opaqueness = false
     is_transparent = opaque==Foliage || opaque==Transparent || opaque==Glass;
     is_placeable_on_air = onAir;
+    is_rotatable = false;
 }
 
 
@@ -102,6 +107,7 @@ std::string BlockType::info_string(){
     std::string opt;
     std::string col;
     std::string onAir;
+    std::string isRot;
     if (texture_type == SingleTexture){
         tt = "SingleTexture";
     }else if (texture_type == MultiTexture){
@@ -133,8 +139,14 @@ std::string BlockType::info_string(){
     }else{
         onAir = "NOT placeable on air";
     }
+
+    if (is_rotatable){
+        isRot = "is rotatable";
+    }else{
+        isRot = "is NOT rotatable";
+    }
     std::cout << "BlockType: " << id << ", " << name << ", " << tt << ", " << opt << ", "
-              << col << ", " << onAir << std::endl;
+              << col << ", " << onAir << ", " << isRot << std::endl;
     return ss.str();
 }
 std::string BlockType::get_name(){
@@ -143,6 +155,10 @@ std::string BlockType::get_name(){
 
 TransparencyType BlockType::get_transparency_type() {
     return opaque;
+}
+
+bool BlockType::isRotatable() {
+    return is_rotatable;
 }
 
 

@@ -397,6 +397,44 @@ public:
         update_selection_box();
     }
 
+    BlockRotation calc_block_placing_rotation(glm::vec3 place, glm::vec3 adjacent){
+        int x1,y1,z1,x2,y2,z2;
+        x1 = place.x;
+        y1 = place.y;
+        z1 = place.z;
+
+        x2 = adjacent.x;
+        y2 = adjacent.y;
+        z2 = adjacent.z;
+
+        BlockRotation rotation;
+
+        if (x1-x2 < 0){
+            rotation = X_negative;
+            std::cout << "-x" << std::endl;
+        }else if (x1-x2 > 0){
+            rotation = X_positive;
+            std::cout << "+x" << std::endl;
+        }else if (y1-y2 < 0){
+            rotation = Y_negative;
+            std::cout << "-y" << std::endl;
+        }else if (y1-y2 > 0){
+            rotation = Y_positive;
+            std::cout << "+y" << std::endl;
+        }else if (z1-z2 < 0){
+            rotation = Z_negative;
+            std::cout << "-z" << std::endl;
+        }else if (z1-z2 > 0){
+            rotation = Z_positive;
+            std::cout << "+z" << std::endl;
+        }else{
+            rotation = Z_positive;
+            std::cout << "Rotation error" << std::endl;
+        }
+
+        return rotation;
+    }
+
     void place_block() {
         glm::vec3 lookAt = camera.getLookAt();
         std::cout << vec3_toString(lookAt, "lookAt") << std::endl;
@@ -418,8 +456,11 @@ public:
                             break;
                         }
                     }
+
+
+                    BlockRotation rot = calc_block_placing_rotation(previousPos, stepPos);
                     inventory.pop_item(selected_inventory_slot);
-                    SuperChunk::setBlock(previousPos, block_type);
+                    SuperChunk::setBlock(previousPos, block_type, rot);
                     found = true;
                 }
                 break;

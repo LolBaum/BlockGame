@@ -55,20 +55,22 @@ void Chunk::clearChunk() {
     
 }
 
-void Chunk::setBlock(int x, int y, int z, int type) {
+void Chunk::setBlock(int x, int y, int z, int type, BlockRotation rot) {
     if (0 <= x && x <= 15 && 0 <= y && y <= 15 && 0 <= z && z <= 15) {
         blocks[x][y][z].setId(type);
+        blocks[x][y][z].setRot(rot);
         changed = true;
         //changed_since_loading = true;
     }
 } //add changes
-void Chunk::setBlock(glm::vec3 pos, int type) {
+void Chunk::setBlock(glm::vec3 pos, int type, BlockRotation rot) {
     int x = pos.x;
     int y = pos.y;
     int z = pos.z;
 
     if (0 <= x && x <= 15 && 0 <= y && y <= 15 && 0 <= z && z <= 15) {
         blocks[x][y][z].setId(type);
+        blocks[x][y][z].setRot(rot);
         changed = true;
         std::cout << "set Block at: " << vec3_toString(pos) << std::endl;
         changed_since_loading = true;                                           // should only be true i the player changed a block (not worldgen)
@@ -310,36 +312,115 @@ void Chunk::updateMesh() {
                                     break;
                                 }
                                 case MultiTexture: {
-                                    //std::cout << "Mulittexture" << std::endl;
-                                    int tex_x = 0;
-                                    int tex_y = 0;
-                                    SpecialBlockTexture* tex = bt->get_multi_texture();
-                                    //std::cout << tex << std::endl;
-                                    if (getBlockType(x - 1, y, z)->isTransparent()) { // Todo: check for opeaqeness
-                                        tex->get_left(&tex_x, &tex_y);
-                                        mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 3, tex_x, tex_y); // left
-                                    }
+
+                                    if(bt->isRotatable()){
+
+                                        //std::cout << "Mulittexture" << std::endl;
+                                        int* order;
+                                        int tex_x = 0;
+                                        int tex_y = 0;
+                                        SpecialBlockTexture* tex = bt->get_multi_texture();
+
+                                        std::cout << "update Chunk Multitexture" << std::endl;
+
+                                        const int order_z_positive[6] = {3, 1, 2, 0, 5, 4};
+                                        const int order_z_negative[6] = {3, 1, 0, 2, 4, 5};
+                                        const int order_y_positive[6] = {3, 1, 4, 5, 2, 0};
+                                        const int order_y_negative[6] = {3, 1, 5, 4, 0, 2};
+                                        const int order_x_positive[6] = {4, 5, 3, 1, 2, 0};
+                                        const int order_x_negative[6] = {5, 4, 1, 3, 2, 0};// TODO
+                                        switch (blocks[x][y][z].getRot()) {
+                                            case X_negative:
+                                                order = (int*)order_x_negative;
+                                                std::cout << "Rotation: X_negative" << std::endl;
+                                                break;
+                                            case X_positive:
+                                                order = (int*)order_x_positive;
+                                                std::cout << "Rotation: X_positive" << std::endl;
+                                                break;
+                                            case Y_negative:
+                                                order = (int*)order_y_negative;
+                                                std::cout << "Rotation: Y_negative" << std::endl;
+                                                break;
+                                            case Y_positive:
+                                                order = (int*)order_y_positive;
+                                                std::cout << "Rotation: Y_positive" << std::endl;
+                                                break;
+                                            case Z_negative:
+                                                order = (int*)order_z_negative;
+                                                std::cout << "Rotation: Z_negative" << std::endl;
+                                                break;
+                                            case Z_positive:
+                                                order = (int*)order_z_positive;
+                                                std::cout << "Rotation: Z_positive" << std::endl;
+                                                break;
+                                            default:
+                                                order = (int*)order_y_positive;
+                                                std::cout << "Chunk::updateMesh Rotation: ERROR" << std::endl;
+                                                break;
+                                        }
+
+                                        //std::cout << tex << std::endl;
+                                        // TODO: add array[6] for plane rotation indices
+                                        // TODO: array for each block rotation
+                                        if (getBlockType(x - 1, y, z)->isTransparent()) { // Todo: check for opeaqeness
+                                            tex->get_left(&tex_x, &tex_y);
+                                            mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, order[0], tex_x, tex_y); // left
+                                        }
                                         if (getBlockType(x + 1, y, z)->isTransparent()) { // Todo: check for opeaqeness
-                                        tex->get_right(&tex_x, &tex_y);
-                                        mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 1, tex_x, tex_y); // right
+                                            tex->get_right(&tex_x, &tex_y);
+                                            mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, order[1], tex_x, tex_y); // right
+                                        }
+                                        if (getBlockType(x, y - 1, z)->isTransparent()) { // Todo: check for opeaqeness
+                                            tex->get_bottom(&tex_x, &tex_y);
+                                            mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, order[2], tex_x, tex_y); // bottom
+                                        }
+                                        if (getBlockType(x, y + 1, z)->isTransparent()) { // Todo: check for opeaqeness
+                                            tex->get_top(&tex_x, &tex_y);
+                                            mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, order[3], tex_x, tex_y); // top
+                                        }
+                                        if (getBlockType(x, y, z - 1)->isTransparent()) { // Todo: check for opeaqeness
+                                            tex->get_back(&tex_x, &tex_y);
+                                            mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, order[4], tex_x, tex_y); // back
+                                        }
+                                        if (getBlockType(x, y, z + 1)->isTransparent()) { // Todo: check for opeaqeness
+                                            tex->get_front(&tex_x, &tex_y);
+                                            mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, order[5], tex_x, tex_y); // front
+                                        }
+                                        break;
                                     }
-                                    if (getBlockType(x, y - 1, z)->isTransparent()) { // Todo: check for opeaqeness
-                                        tex->get_bottom(&tex_x, &tex_y);
-                                        mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 4, tex_x, tex_y); // bottom
+                                    else{
+                                        //std::cout << "Mulittexture" << std::endl;
+                                        int tex_x = 0;
+                                        int tex_y = 0;
+                                        SpecialBlockTexture* tex = bt->get_multi_texture();
+                                        //std::cout << tex << std::endl;
+                                        if (getBlockType(x - 1, y, z)->isTransparent()) { // Todo: check for opeaqeness
+                                            tex->get_left(&tex_x, &tex_y);
+                                            mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 3, tex_x, tex_y); // left
+                                        }
+                                        if (getBlockType(x + 1, y, z)->isTransparent()) { // Todo: check for opeaqeness
+                                            tex->get_right(&tex_x, &tex_y);
+                                            mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 1, tex_x, tex_y); // right
+                                        }
+                                        if (getBlockType(x, y - 1, z)->isTransparent()) { // Todo: check for opeaqeness
+                                            tex->get_bottom(&tex_x, &tex_y);
+                                            mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 4, tex_x, tex_y); // bottom
+                                        }
+                                        if (getBlockType(x, y + 1, z)->isTransparent()) { // Todo: check for opeaqeness
+                                            tex->get_top(&tex_x, &tex_y);
+                                            mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 5, tex_x, tex_y); // top
+                                        }
+                                        if (getBlockType(x, y, z - 1)->isTransparent()) { // Todo: check for opeaqeness
+                                            tex->get_back(&tex_x, &tex_y);
+                                            mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 2, tex_x, tex_y); // back
+                                        }
+                                        if (getBlockType(x, y, z + 1)->isTransparent()) { // Todo: check for opeaqeness
+                                            tex->get_front(&tex_x, &tex_y);
+                                            mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 0, tex_x, tex_y); // front
+                                        }
+                                        break;
                                     }
-                                    if (getBlockType(x, y + 1, z)->isTransparent()) { // Todo: check for opeaqeness
-                                        tex->get_top(&tex_x, &tex_y);
-                                        mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 5, tex_x, tex_y); // top
-                                    }
-                                    if (getBlockType(x, y, z - 1)->isTransparent()) { // Todo: check for opeaqeness
-                                        tex->get_back(&tex_x, &tex_y);
-                                        mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 2, tex_x, tex_y); // back
-                                    }
-                                    if (getBlockType(x, y, z + 1)->isTransparent()) { // Todo: check for opeaqeness
-                                        tex->get_front(&tex_x, &tex_y);
-                                        mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, 0, tex_x, tex_y); // front
-                                    }
-                                    break;
                                 }
                                 case Cross:{
                                     int tex_x = 0;
