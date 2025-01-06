@@ -1,3 +1,6 @@
+#ifndef TEXTURES_H
+#define TEXTURES_H
+
 #pragma once
 #include <glew.h>
 #include <iostream>
@@ -46,6 +49,8 @@ public:
 	virtual void get_right(int* uv_x, int* uv_y);
 	virtual void get_top(int* uv_x, int* uv_y);
 	virtual void get_bottom(int* uv_x, int* uv_y);
+    virtual void get_coords(int* uv_x, int* uv_y, BlockDirection side);
+
 	~StadardBlockTexture();
 };
 
@@ -71,6 +76,7 @@ public:
 	void get_right(int* uv_x, int* uv_y);
 	void get_top(int* uv_x, int* uv_y);
 	void get_bottom(int* uv_x, int* uv_y);
+    void get_coords(int* uv_x, int* uv_y, BlockDirection side);
 	/* std::string get_info_string(){
 		return std::string("Texture x: " << x << ", y: " << y)
 	} */
@@ -78,3 +84,4 @@ public:
 	~SpecialBlockTexture();
 };
 
+#endif //TEXTURES_H

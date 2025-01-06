@@ -5,7 +5,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+
 #include "util_funcs.hpp"
+
 
 
 
@@ -81,9 +83,7 @@ void StadardBlockTexture::get_bottom(int* uv_x, int* uv_y){}
 
 StadardBlockTexture::~StadardBlockTexture(){}
 
-
-
-
+void StadardBlockTexture::get_coords(int *uv_x, int *uv_y, BlockDirection side) {}
 
 
 SpecialBlockTexture::SpecialBlockTexture() : StadardBlockTexture(){}
@@ -131,4 +131,32 @@ void SpecialBlockTexture::get_bottom(int* uv_x, int* uv_y){
 } */
 
 SpecialBlockTexture::~SpecialBlockTexture(){}
+
+void SpecialBlockTexture::get_coords(int *uv_x, int *uv_y, BlockDirection side) {
+    switch (side) {
+        case X_negative:
+            SpecialBlockTexture::get_left(uv_x, uv_y);
+            break;
+        case X_positive:
+            SpecialBlockTexture::get_right(uv_x, uv_y);
+            break;
+        case Y_negative:
+            SpecialBlockTexture::get_bottom(uv_x, uv_y);
+            break;
+        case Y_positive:
+            SpecialBlockTexture::get_top(uv_x, uv_y);
+            break;
+        case Z_negative:
+            SpecialBlockTexture::get_back(uv_x, uv_y);
+            break;
+        case Z_positive:
+            SpecialBlockTexture::get_front(uv_x, uv_y);
+            break;
+        default:
+            SpecialBlockTexture::get_coords(uv_x, uv_y);
+            std::cout << "SpecialBlockTexture::get_coords: BlockDirection side is not defined "
+                      << "value: " << side << std::endl;
+            break;
+    }
+}
 
