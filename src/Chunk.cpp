@@ -55,7 +55,7 @@ void Chunk::clearChunk() {
     
 }
 
-void Chunk::setBlock(int x, int y, int z, int type, BlockRotation rot) {
+void Chunk::setBlock(int x, int y, int z, int type, BlockDirection rot) {
     if (0 <= x && x <= 15 && 0 <= y && y <= 15 && 0 <= z && z <= 15) {
         blocks[x][y][z].setId(type);
         blocks[x][y][z].setRot(rot);
@@ -63,7 +63,7 @@ void Chunk::setBlock(int x, int y, int z, int type, BlockRotation rot) {
         //changed_since_loading = true;
     }
 } //add changes
-void Chunk::setBlock(glm::vec3 pos, int type, BlockRotation rot) {
+void Chunk::setBlock(glm::vec3 pos, int type, BlockDirection rot) {
     int x = pos.x;
     int y = pos.y;
     int z = pos.z;

@@ -15,6 +15,7 @@ typedef uint64_t uint64;
 typedef float float32;
 typedef double float64;
 
+enum BlockDirection : uint8 {X_positive, X_negative, Y_positive, Y_negative, Z_positive, Z_negative};
 
 struct Vertex {
 	~Vertex() {

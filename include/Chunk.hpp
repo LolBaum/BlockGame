@@ -21,8 +21,8 @@ struct Chunk{
 
 	void clearChunk();
 
-	void setBlock(int x, int y, int z, int type, BlockRotation rot=Y_positive);
-	void setBlock(glm::vec3 pos, int type, BlockRotation rot=Y_positive);
+	void setBlock(int x, int y, int z, int type, BlockDirection rot=Y_positive);
+	void setBlock(glm::vec3 pos, int type, BlockDirection rot=Y_positive);
 
 	int getBlockTypeInt(int x, int y, int z);
 	int getBlockTypeInt(glm::vec3 pos);

@@ -1,14 +1,18 @@
+#ifndef BLOCK_H
+#define BLOCK_H
+
 #pragma once
 #include <vector>
 #include <string>
 
 #include "textures.hpp"
+#include "definitions.hpp"
 
 
 
 enum TextureType { SingleTexture, MultiTexture, Cross };
 enum TransparencyType { Solid, Foliage, Glass, Transparent };
-enum BlockRotation : uint8 {X_positive, X_negative, Y_positive, Y_negative, Z_positive, Z_negative};
+
 
 struct Block{
 public:
@@ -20,7 +24,7 @@ public:
 	void setId(int id);
 
     uint8 getRot();
-    void setRot(BlockRotation rot);
+    void setRot(BlockDirection rot);
 
 private:
 	uint16 typeId;
@@ -92,3 +96,4 @@ public:
 	static BlockType* GetBlockType(int id);
 }; 
 
+#endif //BLOCK_H

@@ -439,7 +439,7 @@ bool SuperChunk::has_Block_collision(glm::vec3 pos){
 }
 
 /// @param [in] pos Block Position in WorldCoordinates
-void SuperChunk::setBlock(glm::vec3 pos, int type, BlockRotation rot) {
+void SuperChunk::setBlock(glm::vec3 pos, int type, BlockDirection rot) {
     int cx = floor(pos.x / CX) * CX;
     int cy = floor(pos.y / CY) * CY;
     int cz = floor(pos.z / CZ) * CZ;
@@ -457,7 +457,7 @@ void SuperChunk::setBlock(glm::vec3 pos, int type, BlockRotation rot) {
 }
 
 /// @param [in] x,y,z Block Position in Chunk Aligned Coordinates
-void SuperChunk::setBlock(int x, int y, int z, int type, BlockRotation rot) {
+void SuperChunk::setBlock(int x, int y, int z, int type, BlockDirection rot) {
     Chunk* chunk = getChunk({x, y, z});
     int px, py, pz;
     if (!chunk) {

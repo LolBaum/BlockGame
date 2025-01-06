@@ -28,7 +28,7 @@ uint8 Block::getRot() {
     return rotation;
 }
 
-void Block::setRot(BlockRotation rot) {
+void Block::setRot(BlockDirection rot) {
     rotation = rot;
 }
 

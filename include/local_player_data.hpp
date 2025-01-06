@@ -397,7 +397,7 @@ public:
         update_selection_box();
     }
 
-    BlockRotation calc_block_placing_rotation(glm::vec3 place, glm::vec3 adjacent){
+    BlockDirection calc_block_placing_rotation(glm::vec3 place, glm::vec3 adjacent){
         int x1,y1,z1,x2,y2,z2;
         x1 = place.x;
         y1 = place.y;
@@ -407,7 +407,7 @@ public:
         y2 = adjacent.y;
         z2 = adjacent.z;
 
-        BlockRotation rotation;
+        BlockDirection rotation;
 
         if (x1-x2 < 0){
             rotation = X_negative;
@@ -458,7 +458,7 @@ public:
                     }
 
 
-                    BlockRotation rot = calc_block_placing_rotation(previousPos, stepPos);
+                    BlockDirection rot = calc_block_placing_rotation(previousPos, stepPos);
                     inventory.pop_item(selected_inventory_slot);
                     SuperChunk::setBlock(previousPos, block_type, rot);
                     found = true;
