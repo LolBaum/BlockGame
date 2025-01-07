@@ -132,7 +132,7 @@ void SuperChunk::unloadChunk(glm::vec3 pos) {
     //}
 
 }
-
+//
 //void SuperChunk::PopulateChunk(Chunk* chunk){ // TODO: NOT WORKING !!!
 //    glm::vec3 pos = chunk->getPos();
 //    glm::vec3 offset = {0, 0.9, 0};
@@ -439,7 +439,7 @@ bool SuperChunk::has_Block_collision(glm::vec3 pos){
 }
 
 /// @param [in] pos Block Position in WorldCoordinates
-void SuperChunk::setBlock(glm::vec3 pos, int type) {
+void SuperChunk::setBlock(glm::vec3 pos, int type, BlockDirection rot) {
     int cx = floor(pos.x / CX) * CX;
     int cy = floor(pos.y / CY) * CY;
     int cz = floor(pos.z / CZ) * CZ;
@@ -452,12 +452,12 @@ void SuperChunk::setBlock(glm::vec3 pos, int type) {
     }
     else {
         //std::cout << "pos in chunk: " <<vec3_toString(position_in_chunk(pos)) << std::endl;
-        chunk->setBlock(position_in_chunk(pos), type);
+        chunk->setBlock(position_in_chunk(pos), type, rot);
     }
 }
 
 /// @param [in] x,y,z Block Position in Chunk Aligned Coordinates
-void SuperChunk::setBlock(int x, int y, int z, int type) {
+void SuperChunk::setBlock(int x, int y, int z, int type, BlockDirection rot) {
     Chunk* chunk = getChunk({x, y, z});
     int px, py, pz;
     if (!chunk) {
@@ -470,7 +470,7 @@ void SuperChunk::setBlock(int x, int y, int z, int type) {
         px = positionInChunk(p.x);
         py = positionInChunk(p.y);
         pz = positionInChunk(p.z);
-        chunk->setBlock(px, py, pz, type);
+        chunk->setBlock(px, py, pz, type, rot);
     }
 }
 

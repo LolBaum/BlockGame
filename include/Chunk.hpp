@@ -13,8 +13,6 @@
 /* class BlockType;
 struct Block; */
 
-
-
 struct Chunk{
 	Chunk(glm::vec3 position = glm::vec3(0,0,0));
 	~Chunk();
@@ -23,8 +21,8 @@ struct Chunk{
 
 	void clearChunk();
 
-	void setBlock(int x, int y, int z, int type);
-	void setBlock(glm::vec3 pos, int type);
+	void setBlock(int x, int y, int z, int type, BlockDirection rot=Y_positive);
+	void setBlock(glm::vec3 pos, int type, BlockDirection rot=Y_positive);
 
 	int getBlockTypeInt(int x, int y, int z);
 	int getBlockTypeInt(glm::vec3 pos);

@@ -24,13 +24,16 @@ void Block::setId(int id) {
     typeId = id;
 }
 
+uint8 Block::getRot() {
+    return rotation;
+}
+
+void Block::setRot(BlockDirection rot) {
+    rotation = rot;
+}
 
 
-
-
-
-
-BlockType::BlockType(int TypeId,  std::string blocktypename, TextureType tex_type, 
+BlockType::BlockType(int TypeId,  std::string blocktypename, TextureType tex_type,
             int tex_cord_x, int tex_cord_y, TransparencyType opaqueness, bool collision, bool onAir) {
     //std::cout << "adding Blocktype: " << blocktypename << std::endl;
     initialize_basic(TypeId, blocktypename, tex_type, opaqueness, collision, onAir);
@@ -39,7 +42,7 @@ BlockType::BlockType(int TypeId,  std::string blocktypename, TextureType tex_typ
     printInfo();
 }
 BlockType::BlockType(int TypeId, SpecialBlockTexture tex, std::string blocktypename, TextureType tex_type, 
-            TransparencyType opaqueness, bool collision, bool onAir) {
+            TransparencyType opaqueness, bool collision, bool onAir, RotationType rot) {
     //std::cout << "adding Blocktype: " << blocktypename << std::endl;
     initialize_basic(TypeId, blocktypename, tex_type, opaqueness, collision, onAir);
     int tex_cord_x = 0;
@@ -48,6 +51,7 @@ BlockType::BlockType(int TypeId, SpecialBlockTexture tex, std::string blocktypen
     texture = StadardBlockTexture(tex_cord_x, tex_cord_y);
     multi_texture = tex;
     texture_type = tex_type;
+    rotation_type = rot;
     printInfo();
 }
 void BlockType::initialize_basic(int TypeId,  std::string blocktypename, TextureType tex_type,
@@ -102,6 +106,7 @@ std::string BlockType::info_string(){
     std::string opt;
     std::string col;
     std::string onAir;
+    std::string rot;
     if (texture_type == SingleTexture){
         tt = "SingleTexture";
     }else if (texture_type == MultiTexture){
@@ -133,8 +138,16 @@ std::string BlockType::info_string(){
     }else{
         onAir = "NOT placeable on air";
     }
+
+    if (rotation_type == None){
+        rot = "None";
+    }else if (rotation_type == AxisAlignedRotation){
+        rot = "AxisAlignedRotation";
+    }else{
+        rot = "UNDEFINED";
+    }
     std::cout << "BlockType: " << id << ", " << name << ", " << tt << ", " << opt << ", "
-              << col << ", " << onAir << std::endl;
+              << col << ", " << onAir << ", " << rot << std::endl;
     return ss.str();
 }
 std::string BlockType::get_name(){
@@ -143,6 +156,10 @@ std::string BlockType::get_name(){
 
 TransparencyType BlockType::get_transparency_type() {
     return opaque;
+}
+
+RotationType BlockType::get_rotation_type() {
+    return rotation_type;
 }
 
 
@@ -156,6 +173,7 @@ BlockTypeManager::~BlockTypeManager() {}
 
 
 void BlockTypeManager::AddBlockType(BlockType type) {
+    // TODO: What should happen if ID is already used? Handle it!
     BlockTypeList.push_back(type);
     ItemTypeManager::AddItemType(new BlockItemType(type.GetId(), type.get_name().append(" block"), type.GetId(), type.get_texture())); // add a function to itm that returns the next free item id
 }

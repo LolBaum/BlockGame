@@ -1,13 +1,24 @@
+#ifndef BLOCK_H
+#define BLOCK_H
+
 #pragma once
 #include <vector>
 #include <string>
 
 #include "textures.hpp"
+#include "definitions.hpp"
 
 
 
 enum TextureType { SingleTexture, MultiTexture, Cross };
 enum TransparencyType { Solid, Foliage, Glass, Transparent };
+enum RotationType {
+        None, // Grass Block
+        AxisAlignedRotation, // Wood logs
+        CardinalRotation, // Furnace - Not implemented
+        BlockFaceRotation // Ladders, Dispensers - not implemented
+};
+
 
 struct Block{
 public:
@@ -17,6 +28,10 @@ public:
 
 	int getId();
 	void setId(int id);
+
+    uint8 getRot();
+    void setRot(BlockDirection rot);
+
 private:
 	uint16 typeId;
 	uint8 rotation;
@@ -33,7 +48,7 @@ public:
               bool onAir=true);
 
 	BlockType(int TypeId, SpecialBlockTexture tex, std::string blocktypename="Unamed Block", TextureType tex_type = SingleTexture, 
-		      TransparencyType opaqueness = Solid, bool collision=true, bool is_placeable_on_air=true);
+		      TransparencyType opaqueness = Solid, bool collision=true, bool is_placeable_on_air=true, RotationType rot=None);
 	void initialize_basic(int TypeId,  std::string blocktypename, TextureType tex_type, TransparencyType opaqueness,
                           bool collision, bool onAir);
 	
@@ -52,8 +67,10 @@ public:
 	bool isTransparent();
 	bool hasCollision();
     bool isPlaceableOnAir();
+    bool isRotatable();
 
     TransparencyType get_transparency_type();
+    RotationType get_rotation_type();
 
 	void printInfo();
 	std::string info_string();
@@ -70,13 +87,9 @@ private:
 	bool has_collision = true;
     bool is_transparent = false;
     bool is_placeable_on_air = true;
+    RotationType rotation_type = None;
 
 };
-
-
-
-
-
 
 
 class BlockTypeManager{
@@ -90,3 +103,4 @@ public:
 	static BlockType* GetBlockType(int id);
 }; 
 
+#endif //BLOCK_H

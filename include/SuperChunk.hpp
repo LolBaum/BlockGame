@@ -73,8 +73,8 @@ public:
 	static bool has_Block_collision(glm::vec3 pos);
 
 
-	static void setBlock(glm::vec3 pos, int type=0);
-    static void setBlock(int x, int y, int z, int type=0);
+	static void setBlock(glm::vec3 pos, int type=0, BlockDirection rot=Y_positive);
+    static void setBlock(int x, int y, int z, int type=0, BlockDirection rot=Y_positive);
 	static int get_num_all_faces();
 
 	static Shader & get_shader();

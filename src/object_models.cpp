@@ -182,12 +182,42 @@ void ChunkMesh::addPlane(glm::vec3 position, int rotation, int tex_x, int tex_y,
     usedVertices += 4;
 }
 
-void ChunkMesh::addPlane_basic_lighting(glm::vec3 position, int rotation, int tex_x, int tex_y, int size) {
+void ChunkMesh::addPlane_basic_lighting(glm::vec3 position, BlockDirection rotation, int tex_x, int tex_y, int size,
+                                        int face_rot) {
 
-    float uv_x_1 = tex_x * tex_factor;
-    float uv_x_2 = tex_x * tex_factor + tex_factor;
-    float uv_y_1 = 1.0f - tex_y * tex_factor - tex_factor;
-    float uv_y_2 = 1.0f - tex_y * tex_factor;
+    float uv_x_0, uv_x_1, uv_x_2, uv_x_3;
+    float uv_y_0, uv_y_1, uv_y_2, uv_y_3;
+
+
+    if(face_rot == 0){
+        uv_x_0 = tex_x * tex_factor;
+        uv_x_1 = tex_x * tex_factor + tex_factor;
+        uv_x_2 = uv_x_1;
+        uv_x_3 = uv_x_0;
+        uv_y_0 = 1.0f - tex_y * tex_factor - tex_factor;
+        uv_y_3 = 1.0f - tex_y * tex_factor;
+        uv_y_1 = uv_y_0;
+        uv_y_2 = uv_y_3;
+    }else if(face_rot == 1){
+        uv_x_0 = tex_x * tex_factor + tex_factor;
+        uv_x_1 = uv_x_0;
+        uv_x_2 = tex_x * tex_factor;
+        uv_x_3 = uv_x_2;
+        uv_y_0 = 1.0f - tex_y * tex_factor - tex_factor;
+        uv_y_3 = uv_y_0;
+        uv_y_1 = 1.0f - tex_y * tex_factor;
+        uv_y_2 = uv_y_1;
+    } else{
+        uv_x_0 = tex_x * tex_factor;
+        uv_x_1 = tex_x * tex_factor + tex_factor;
+        uv_x_2 = uv_x_1;
+        uv_x_3 = uv_x_0;
+        uv_y_0 = 1.0f - tex_y * tex_factor - tex_factor;
+        uv_y_3 = 1.0f - tex_y * tex_factor;
+        uv_y_1 = uv_y_0;
+        uv_y_2 = uv_y_3;
+        std::cout << "ChunkMesh::addPlane_basic_lighting face_rot undefined value: " << face_rot << std::endl;
+    }
 
     indices.push_back(usedVertices + 0);
     indices.push_back(usedVertices + 1);
@@ -199,94 +229,94 @@ void ChunkMesh::addPlane_basic_lighting(glm::vec3 position, int rotation, int te
 
     switch (rotation)
     {
-    case 0: {
+    case Z_positive: {
 
         vertices.push_back(Vertex{ position.x + 0.0f, position.y + 0.0f, position.z + 1.0f,
-                    uv_x_1, uv_y_1,
+                    uv_x_0, uv_y_0,
                     0.7 });
         vertices.push_back(Vertex{ position.x + 1.0f, position.y + 0.0f, position.z + 1.0f,
-                        uv_x_2, uv_y_1,
+                        uv_x_1, uv_y_1,
                         0.7 });
         vertices.push_back(Vertex{ position.x + 1.0f, position.y + 1.0f, position.z + 1.0f,
                         uv_x_2, uv_y_2,
                         0.7 });
         vertices.push_back(Vertex{ position.x + 0.0f, position.y + 1.0f, position.z + 1.0f,
-                        uv_x_1, uv_y_2,
+                        uv_x_3, uv_y_3,
                         0.7 });
         break;
     }
-    case 1: {
+    case X_positive: {
         vertices.push_back(Vertex{ position.x + 1.0f, position.y + 0.0f, position.z + 1.0f,
-                    uv_x_1, uv_y_1,
+                    uv_x_0, uv_y_0,
                     0.8 });
         vertices.push_back(Vertex{ position.x + 1.0f, position.y + 0.0f, position.z + 0.0f,
-                        uv_x_2, uv_y_1,
+                        uv_x_1, uv_y_1,
                         0.8 });
         vertices.push_back(Vertex{ position.x + 1.0f, position.y + 1.0f, position.z + 0.0f,
                         uv_x_2, uv_y_2,
                         0.8 });
         vertices.push_back(Vertex{ position.x + 1.0f, position.y + 1.0f, position.z + 1.0f,
-                        uv_x_1, uv_y_2,
+                        uv_x_3, uv_y_3,
                         0.8 });
         break;
     }
-    case 2: {
+    case Z_negative: {
         vertices.push_back(Vertex{ position.x + 1.0f, position.y + 0.0f, position.z + 0.0f,
-                    uv_x_1, uv_y_1,
+                    uv_x_0, uv_y_0,
                     0.7 });
         vertices.push_back(Vertex{ position.x + 0.0f, position.y + 0.0f, position.z + 0.0f,
-                        uv_x_2, uv_y_1,
+                        uv_x_1, uv_y_1,
                         0.7 });
         vertices.push_back(Vertex{ position.x + 0.0f, position.y + 1.0f, position.z + 0.0f,
                         uv_x_2, uv_y_2,
                         0.7 });
         vertices.push_back(Vertex{ position.x + 1.0f, position.y + 1.0f, position.z + 0.0f,
-                        uv_x_1, uv_y_2,
+                        uv_x_3, uv_y_3,
                         0.7 });
         break;
     }
-    case 3: {
+    case X_negative: {
         vertices.push_back(Vertex{ position.x + 0.0f, position.y + 0.0f, position.z + 0.0f,
-                    uv_x_1, uv_y_1,
+                    uv_x_0, uv_y_0,
                     0.8 });
         vertices.push_back(Vertex{ position.x + 0.0f, position.y + 0.0f, position.z + 1.0f,
-                        uv_x_2, uv_y_1,
+                        uv_x_1, uv_y_1,
                         0.8 });
         vertices.push_back(Vertex{ position.x + 0.0f, position.y + 1.0f, position.z + 1.0f,
                         uv_x_2, uv_y_2,
                         0.8 });
         vertices.push_back(Vertex{ position.x + 0.0f, position.y + 1.0f, position.z + 0.0f,
-                        uv_x_1, uv_y_2,
+                        uv_x_3, uv_y_3,
                         0.8 });
         break;
     }
-    case 4: {
+    case Y_negative: {
         vertices.push_back(Vertex{ position.x + 0.0f, position.y + 0.0f, position.z + 0.0f,
-                    uv_x_1, uv_y_1,
+                    uv_x_0, uv_y_0,
                     0.6 });
         vertices.push_back(Vertex{ position.x + 1.0f, position.y + 0.0f, position.z + 0.0f,
-                        uv_x_2, uv_y_1,
+                        uv_x_1, uv_y_1,
                         0.6 });
         vertices.push_back(Vertex{ position.x + 1.0f, position.y + 0.0f, position.z + 1.0f,
                         uv_x_2, uv_y_2,
                         0.6 });
         vertices.push_back(Vertex{ position.x + 0.0f, position.y + 0.0f, position.z + 1.0f,
-                        uv_x_1, uv_y_2,
+                        uv_x_3, uv_y_3,
                         0.6 });
         break;
     }
-    case 5: {
+    case Y_positive: {
         vertices.push_back(Vertex{ position.x + 0.0f, position.y + 1.0f, position.z + 1.0f,
-                    uv_x_1, uv_y_1,
+                    uv_x_0, uv_y_0,
                     1.0 });
         vertices.push_back(Vertex{ position.x + 1.0f, position.y + 1.0f, position.z + 1.0f,
-                        uv_x_2, uv_y_1,
+                        uv_x_1, uv_y_1,
                         1.0 });
         vertices.push_back(Vertex{ position.x + 1.0f, position.y + 1.0f, position.z + 0.0f,
                         uv_x_2, uv_y_2,
                         1.0 });
         vertices.push_back(Vertex{ position.x + 0.0f, position.y + 1.0f, position.z + 0.0f,
-                        uv_x_1, uv_y_2,
+                        uv_x_3, uv_y_3,
                         1.0 });
         break;
     }

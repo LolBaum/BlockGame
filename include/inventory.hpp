@@ -26,8 +26,10 @@ private:
     unsigned int size = 9;
     /* Item items[9] = {Item(0), Item(0), Item(0), Item(0), Item(0), 
                Item(0), Item(0), Item(0), Item(0), }; */
-    Item items[9] = {Item(1, 300), Item(6, 300), Item(3, 64), Item(4, 64), Item(5, 300), 
-               Item(2, 64), Item(7, 64), Item(8, 64), Item(9, 64)};
+//    Item items[9] = {Item(1, 300), Item(6, 300), Item(3, 64), Item(4, 64), Item(5, 300),
+//               Item(2, 64), Item(7, 64), Item(8, 64), Item(9, 64)};
+    Item items[9] = {Item(1, 300), Item(6, 300), Item(3, 64), Item(4, 64), Item(5, 300),
+                     Item(10, 64), Item(7, 64), Item(8, 64), Item(9, 64)};
     int first_empty_slot = 0;
 public:
     Inventory(/* args */);
