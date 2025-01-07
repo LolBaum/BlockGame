@@ -62,7 +62,8 @@ public:
 	~ChunkMesh();
 	void reserveFaces(int numFaces);
 	void addPlane(glm::vec3 position, int rotation = 0, int tex_x = 0, int tex_y = 1, int size = 1);
-	void addPlane_basic_lighting(glm::vec3 position, int rotation = 0, int tex_x = 0, int tex_y = 0, int size = 1);
+	void addPlane_basic_lighting(glm::vec3 position, BlockDirection rotation = Z_positive, int tex_x = 0, int tex_y = 0,
+                                 int size = 1, int face_rot = 0);
 	void add_Block(glm::vec3 position, int tex_x = 0, int tex_y = 1);
 
     void addPlane_basic_lighting_with_offset(glm::vec3 position, int rotation, int tex_x, int tex_y, float size);

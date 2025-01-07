@@ -172,6 +172,7 @@ BlockTypeManager::~BlockTypeManager() {}
 
 
 void BlockTypeManager::AddBlockType(BlockType type) {
+    // TODO: What should happen if ID is already used? Handle it!
     BlockTypeList.push_back(type);
     ItemTypeManager::AddItemType(new BlockItemType(type.GetId(), type.get_name().append(" block"), type.GetId(), type.get_texture())); // add a function to itm that returns the next free item id
 }

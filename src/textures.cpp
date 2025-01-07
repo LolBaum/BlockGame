@@ -133,6 +133,7 @@ void SpecialBlockTexture::get_bottom(int* uv_x, int* uv_y){
 SpecialBlockTexture::~SpecialBlockTexture(){}
 
 void SpecialBlockTexture::get_coords(int *uv_x, int *uv_y, BlockDirection side) {
+    std::cout << "SpecialBlockTexture::get_coords: BlockDirection:" << side << std::endl;
     switch (side) {
         case X_negative:
             SpecialBlockTexture::get_left(uv_x, uv_y);
