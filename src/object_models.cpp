@@ -190,26 +190,41 @@ void ChunkMesh::addPlane_basic_lighting(glm::vec3 position, BlockDirection rotat
 
 
     if(face_rot == 0){
-        uv_x_1 = tex_x * tex_factor;
-        uv_x_0 = uv_x_1;
-        uv_x_2 = tex_x * tex_factor + tex_factor;
-        uv_x_3 = uv_x_2;
-        uv_y_1 = 1.0f - tex_y * tex_factor - tex_factor;
-        uv_y_0 = uv_y_1;
-        uv_y_2 = 1.0f - tex_y * tex_factor;
-        uv_y_3 = uv_y_2;
-    }else if(face_rot == 1){
+        uv_x_0 = tex_x * tex_factor;
         uv_x_1 = tex_x * tex_factor + tex_factor;
-        uv_x_2 = tex_x * tex_factor + tex_factor;
-        uv_y_1 = 1.0f - tex_y * tex_factor - tex_factor;
-        uv_y_2 = 1.0f - tex_y * tex_factor;
+        uv_x_2 = uv_x_1;
+        uv_x_3 = uv_x_0;
+        uv_y_0 = 1.0f - tex_y * tex_factor - tex_factor;
+        uv_y_3 = 1.0f - tex_y * tex_factor;
+        uv_y_1 = uv_y_0;
+        uv_y_2 = uv_y_3;
+    }else if(face_rot == 1){
+        uv_x_0 = tex_x * tex_factor + tex_factor;
+        uv_x_1 = uv_x_0;
+        uv_x_2 = tex_x * tex_factor;
+        uv_x_3 = uv_x_2;
+        uv_y_0 = 1.0f - tex_y * tex_factor - tex_factor;
+        uv_y_3 = uv_y_0;
+        uv_y_1 = 1.0f - tex_y * tex_factor;
+        uv_y_2 = uv_y_1;
     } else{
-        uv_x_1 = tex_x * tex_factor;
-        uv_x_2 = tex_x * tex_factor + tex_factor;
-        uv_y_1 = 1.0f - tex_y * tex_factor - tex_factor;
-        uv_y_2 = 1.0f - tex_y * tex_factor;
+        uv_x_0 = tex_x * tex_factor;
+        uv_x_1 = tex_x * tex_factor + tex_factor;
+        uv_x_2 = uv_x_1;
+        uv_x_3 = uv_x_0;
+        uv_y_0 = 1.0f - tex_y * tex_factor - tex_factor;
+        uv_y_3 = 1.0f - tex_y * tex_factor;
+        uv_y_1 = uv_y_0;
+        uv_y_2 = uv_y_3;
         std::cout << "ChunkMesh::addPlane_basic_lighting face_rot undefined value: " << face_rot << std::endl;
     }
+
+    indices.push_back(usedVertices + 0);
+    indices.push_back(usedVertices + 1);
+    indices.push_back(usedVertices + 2);
+    indices.push_back(usedVertices + 0);
+    indices.push_back(usedVertices + 2);
+    indices.push_back(usedVertices + 3);
     usedIndices += 6;
 
     switch (rotation)

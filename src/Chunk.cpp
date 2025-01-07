@@ -355,6 +355,10 @@ void Chunk::updateMesh() {
                                     BlockDirection *order;
                                     int tex_x = 0;
                                     int tex_y = 0;
+
+                                    int face_rotation_X = 0;
+                                    int face_rotation_Y = 0;
+                                    int face_rotation_Z = 0;
                                     SpecialBlockTexture *tex = bt->get_multi_texture();
 
                                     std::cout << "update Chunk Multitexture" << std::endl;
@@ -375,10 +379,14 @@ void Chunk::updateMesh() {
                                     std::cout << "0: " << order_z_positive[0] <<  ", 1: " << order_z_positive[1] << ", 2: " << order_z_positive[2] << ", 3: " << order_z_positive[3] << ", 4: " << order_z_positive[4] << ", 5: " << order_z_positive[5] << std::endl;
                                     switch (blocks[x][y][z].getRot()) {
                                         case X_negative:
+                                            face_rotation_Z = 1;
+                                            face_rotation_Y = 1;
                                             order = (BlockDirection *) order_x_positive;
                                             std::cout << "Rotation: X_positive" << std::endl;
                                             break;
                                         case X_positive:
+                                            face_rotation_Z = 1;
+                                            face_rotation_Y = 1;
                                             order = (BlockDirection *) order_x_positive;
                                             std::cout << "Rotation: X_positive" << std::endl;
                                             break;
@@ -391,10 +399,12 @@ void Chunk::updateMesh() {
                                             std::cout << "Rotation: Y_positive" << std::endl;
                                             break;
                                         case Z_negative:
+                                            face_rotation_X = 1;
                                             order = (BlockDirection *) order_z_positive;
                                             std::cout << "Rotation: Z_positive" << std::endl;
                                             break;
                                         case Z_positive:
+                                            face_rotation_X = 1;
                                             order = (BlockDirection *) order_z_positive;
                                             std::cout << "Rotation: Z_positive" << std::endl;
                                             break;
@@ -413,37 +423,37 @@ void Chunk::updateMesh() {
                                         std::cout << "BlockDirection:" << order[0] << std::endl;
                                         tex->get_coords(&tex_x, &tex_y, order[0]);
                                         mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, X_negative, tex_x,
-                                                                     tex_y, 0); // left
+                                                                     tex_y, 0, face_rotation_X); // left
                                     }
                                     if (getBlockType(x + 1, y, z)->isTransparent()) { // Todo: check for opeaqeness
                                         std::cout << "BlockDirection:" << order[1] << std::endl;
                                         tex->get_coords(&tex_x, &tex_y, order[1]);
                                         mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, X_positive, tex_x,
-                                                                     tex_y, 0); // right
+                                                                     tex_y, 0, face_rotation_X); // right
                                     }
                                     if (getBlockType(x, y - 1, z)->isTransparent()) { // Todo: check for opeaqeness
                                         std::cout << "BlockDirection:" << order[2] << std::endl;
                                         tex->get_coords(&tex_x, &tex_y, order[2]);
                                         mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, Y_negative, tex_x,
-                                                                     tex_y, 0); // bottom
+                                                                     tex_y, 0, face_rotation_Y); // bottom
                                     }
                                     if (getBlockType(x, y + 1, z)->isTransparent()) { // Todo: check for opeaqeness
                                         std::cout << "BlockDirection:" << order[3] << std::endl;
                                         tex->get_coords(&tex_x, &tex_y, order[3]);
                                         mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, Y_positive, tex_x,
-                                                                     tex_y, 0); // top
+                                                                     tex_y, 0, face_rotation_Y); // top
                                     }
                                     if (getBlockType(x, y, z - 1)->isTransparent()) { // Todo: check for opeaqeness
                                         std::cout << "BlockDirection:" << order[4] << std::endl;
                                         tex->get_coords(&tex_x, &tex_y, order[4]);
                                         mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, Z_negative, tex_x,
-                                                                     tex_y, 0); // back
+                                                                     tex_y, 0, face_rotation_Z); // back
                                     }
                                     if (getBlockType(x, y, z + 1)->isTransparent()) { // Todo: check for opeaqeness
                                         std::cout << "BlockDirection:" << order[5] << std::endl;
                                         tex->get_coords(&tex_x, &tex_y, order[5]);
                                         mesh.addPlane_basic_lighting(glm::vec3(x, y, z) + dummyPos, Z_positive, tex_x,
-                                                                     tex_y, 0); // front
+                                                                     tex_y, 0, face_rotation_Z); // front
                                     }
                                     break;
                                 } else {
