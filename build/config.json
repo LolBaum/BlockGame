@@ -5,7 +5,7 @@
     "Fullscreen": true,
     "ShaderPath": "shaders/",
     "SightDistance": 2,
-    "TileAtlasPathName": "graphics/TileAtlas64_Quandary_1_1_grass.png",
+    "TileAtlasPathName": "graphics/Terrain_OurCraft.png",
     "WindowMaximezed": false,
     "WindowResizeable": false,
     "WindowX": 1440,

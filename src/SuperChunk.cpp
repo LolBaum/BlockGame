@@ -133,27 +133,27 @@ void SuperChunk::unloadChunk(glm::vec3 pos) {
 
 }
 
-void SuperChunk::PopulateChunk(Chunk* chunk){ // TODO: NOT WORKING !!!
-    glm::vec3 pos = chunk->getPos();
-    glm::vec3 offset = {0, 0.9, 0};
-    std::cout << "POPULATING CHUNK " << vec3_toString(pos) << std::endl;
-    if (isChunkEmty(pos)){
-        std::cout << "IS EMPTY !!" << std::endl;
-        return;
-    }
-    for (int x = 0; x < CX; x++) {
-        for (int y = 0; y < CY; y++) {
-            for (int z = 0; z < CZ; z++) {
-                // TODO use variable do identify block types
-                getBlockType(x,y,z)->printInfo();
-                if (getBlockTypeInt(x,y,z) == 3){ // grass
-                    std::cout << "Setting Grass" << std::endl;
-                    chunk->setBlock(x, y, z, 4);
-                }
-            }
-        }
-    }
-}
+//void SuperChunk::PopulateChunk(Chunk* chunk){ // TODO: NOT WORKING !!!
+//    glm::vec3 pos = chunk->getPos();
+//    glm::vec3 offset = {0, 0.9, 0};
+//    std::cout << "POPULATING CHUNK " << vec3_toString(pos) << std::endl;
+//    if (isChunkEmty(pos)){
+//        std::cout << "IS EMPTY !!" << std::endl;
+//        return;
+//    }
+//    for (int x = 0; x < CX; x++) {
+//        for (int y = 0; y < CY; y++) {
+//            for (int z = 0; z < CZ; z++) {
+//                // TODO use variable do identify block types
+//                getBlockType(x,y,z)->printInfo();
+//                if (getBlockTypeInt(x,y,z) == 3){ // grass
+//                    std::cout << "Setting Grass" << std::endl;
+//                    chunk->setBlock(x, y, z, 4);
+//                }
+//            }
+//        }
+//    }
+//}
 
 void SuperChunk::generateChunk(Chunk* chunk){
     std::cout << "Generating Chunk " << vec3_toString(chunk->getPos()) << std::endl;
