@@ -458,9 +458,14 @@ public:
                     }
 
 
-                    BlockDirection rot = calc_block_placing_rotation(previousPos, stepPos);
+                    if (bt->get_rotation_type() != None){
+                        BlockDirection rot = calc_block_placing_rotation(previousPos, stepPos);
+                        SuperChunk::setBlock(previousPos, block_type, rot);
+                    }else{
+                        SuperChunk::setBlock(previousPos, block_type);
+                    }
                     inventory.pop_item(selected_inventory_slot);
-                    SuperChunk::setBlock(previousPos, block_type, rot);
+
                     found = true;
                 }
                 break;

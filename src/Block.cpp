@@ -42,7 +42,7 @@ BlockType::BlockType(int TypeId,  std::string blocktypename, TextureType tex_typ
     printInfo();
 }
 BlockType::BlockType(int TypeId, SpecialBlockTexture tex, std::string blocktypename, TextureType tex_type, 
-            TransparencyType opaqueness, bool collision, bool onAir, bool isRot) {
+            TransparencyType opaqueness, bool collision, bool onAir, RotationType rot) {
     //std::cout << "adding Blocktype: " << blocktypename << std::endl;
     initialize_basic(TypeId, blocktypename, tex_type, opaqueness, collision, onAir);
     int tex_cord_x = 0;
@@ -51,7 +51,7 @@ BlockType::BlockType(int TypeId, SpecialBlockTexture tex, std::string blocktypen
     texture = StadardBlockTexture(tex_cord_x, tex_cord_y);
     multi_texture = tex;
     texture_type = tex_type;
-    is_rotatable = isRot;
+    rotation_type = rot;
     printInfo();
 }
 void BlockType::initialize_basic(int TypeId,  std::string blocktypename, TextureType tex_type,
@@ -63,7 +63,6 @@ void BlockType::initialize_basic(int TypeId,  std::string blocktypename, Texture
     has_collision = collision; // blocks with no collision, should have opaqueness = false
     is_transparent = opaque==Foliage || opaque==Transparent || opaque==Glass;
     is_placeable_on_air = onAir;
-    is_rotatable = false;
 }
 
 
@@ -107,7 +106,7 @@ std::string BlockType::info_string(){
     std::string opt;
     std::string col;
     std::string onAir;
-    std::string isRot;
+    std::string rot;
     if (texture_type == SingleTexture){
         tt = "SingleTexture";
     }else if (texture_type == MultiTexture){
@@ -140,13 +139,15 @@ std::string BlockType::info_string(){
         onAir = "NOT placeable on air";
     }
 
-    if (is_rotatable){
-        isRot = "is rotatable";
+    if (rotation_type == None){
+        rot = "None";
+    }else if (rotation_type == AxisAlignedRotation){
+        rot = "AxisAlignedRotation";
     }else{
-        isRot = "is NOT rotatable";
+        rot = "UNDEFINED";
     }
     std::cout << "BlockType: " << id << ", " << name << ", " << tt << ", " << opt << ", "
-              << col << ", " << onAir << ", " << isRot << std::endl;
+              << col << ", " << onAir << ", " << rot << std::endl;
     return ss.str();
 }
 std::string BlockType::get_name(){
@@ -157,8 +158,8 @@ TransparencyType BlockType::get_transparency_type() {
     return opaque;
 }
 
-bool BlockType::isRotatable() {
-    return is_rotatable;
+RotationType BlockType::get_rotation_type() {
+    return rotation_type;
 }
 
 

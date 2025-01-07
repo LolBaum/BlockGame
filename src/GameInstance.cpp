@@ -94,14 +94,14 @@ void GameInstance::load() {
     BlockTypeManager::AddBlockType(BlockType(3, SpecialBlockTexture(2,0, 2,0, 2,0, 2,0, 3,0, 1,0), "Dirt/Grass", MultiTexture));
     BlockTypeManager::AddBlockType(BlockType(4, "Grass", Cross, 2, 1, Foliage, false, false));
     //BlockTypeManager::AddBlockType(BlockType(5, SpecialBlockTexture(0,2, 0,2, 0,2, 0,2, 1,2, 1,2), "Wood Log", MultiTexture, Solid, true, true, true));
-    BlockTypeManager::AddBlockType(BlockType(5, SpecialBlockTexture(1,2, 0,2, 1,2, 0,2, 0,2, 0,2), "Wood Log", MultiTexture, Solid, true, true, true));
+    BlockTypeManager::AddBlockType(BlockType(5, SpecialBlockTexture(1,2, 0,2, 1,2, 0,2, 0,2, 0,2), "Wood Log", MultiTexture, Solid, true, true, AxisAlignedRotation));
     BlockTypeManager::AddBlockType(BlockType(6, "Wooden Planks", SingleTexture, 0, 3));
     //BlockTypeManager::AddBlockType(BlockType(6, "Withe Test - no collision", SingleTexture, 3, 1, Solid, false));
     BlockTypeManager::AddBlockType(BlockType(7, "Leafs", SingleTexture, 2, 3, Foliage));
     BlockTypeManager::AddBlockType(BlockType(8, "Glass", SingleTexture, 3, 2, Glass));
     BlockTypeManager::AddBlockType(BlockType(9, "Ice", SingleTexture, 3, 3, Transparent));
 //    BlockTypeManager::AddBlockType(BlockType(10, SpecialBlockTexture(5,15, 0,15, 4,15, 1,15, 3,15, 2,15), "Directional Debug", MultiTexture, Solid, true, true, true));
-    BlockTypeManager::AddBlockType(BlockType(10, SpecialBlockTexture(5,14, 0,14, 4,14, 1,14, 3,14, 2,14), "Directional Debug", MultiTexture, Solid, true, true, true));
+    BlockTypeManager::AddBlockType(BlockType(10, SpecialBlockTexture(5,14, 0,14, 4,14, 1,14, 3,14, 2,14), "Directional Debug", MultiTexture, Solid, true, true, AxisAlignedRotation));
 
     ItemTypeManager::AddItemType(new ItemType(10, "Stick"));
 }

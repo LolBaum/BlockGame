@@ -349,7 +349,7 @@ void Chunk::updateMesh() {
                             }
                             case MultiTexture: {
 
-                                if (bt->isRotatable()) {
+                                if (bt->get_rotation_type() == AxisAlignedRotation) {
 
                                     //std::cout << "Mulittexture" << std::endl;
                                     BlockDirection *order;

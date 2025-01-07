@@ -12,6 +12,12 @@
 
 enum TextureType { SingleTexture, MultiTexture, Cross };
 enum TransparencyType { Solid, Foliage, Glass, Transparent };
+enum RotationType {
+        None, // Grass Block
+        AxisAlignedRotation, // Wood logs
+        CardinalRotation, // Furnace - Not implemented
+        BlockFaceRotation // Ladders, Dispensers - not implemented
+};
 
 
 struct Block{
@@ -42,7 +48,7 @@ public:
               bool onAir=true);
 
 	BlockType(int TypeId, SpecialBlockTexture tex, std::string blocktypename="Unamed Block", TextureType tex_type = SingleTexture, 
-		      TransparencyType opaqueness = Solid, bool collision=true, bool is_placeable_on_air=true, bool isRot=false);
+		      TransparencyType opaqueness = Solid, bool collision=true, bool is_placeable_on_air=true, RotationType rot=None);
 	void initialize_basic(int TypeId,  std::string blocktypename, TextureType tex_type, TransparencyType opaqueness,
                           bool collision, bool onAir);
 	
@@ -64,6 +70,7 @@ public:
     bool isRotatable();
 
     TransparencyType get_transparency_type();
+    RotationType get_rotation_type();
 
 	void printInfo();
 	std::string info_string();
@@ -80,7 +87,7 @@ private:
 	bool has_collision = true;
     bool is_transparent = false;
     bool is_placeable_on_air = true;
-    bool is_rotatable = false;
+    RotationType rotation_type = None;
 
 };
 
