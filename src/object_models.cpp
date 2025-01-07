@@ -628,9 +628,12 @@ glm::vec3 calculate_slot_position(int slot_number){
 }
 
 
-UImesh::UImesh() {
+UImesh::UImesh(int texture_size) {
     vertexBuffer = *new ChunkVertexBuffer();
     indexBuffer = *new IndexBuffer();
+
+    textureAtlasSize = texture_size;
+    tex_factor = 1.0f / textureAtlasSize;
 
     reserveVertices(100*4);
     reserveIndices(100 * 6);
@@ -728,7 +731,7 @@ void UImesh::render(GLuint textureId) {  // disable Depth testing
 // ItemBarMesh
 
 
-ItemBarMesh::ItemBarMesh():UImesh(){
+ItemBarMesh::ItemBarMesh(int texture_size) : UImesh(texture_size){
     glm::vec3 pos;
     for(int i=0; i<9; i++){
         pos = calculate_slot_position(i);

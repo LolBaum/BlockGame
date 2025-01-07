@@ -54,7 +54,7 @@ public:
 
 class ChunkMesh: public Mesh {
 private:
-	int textureAtlasSize = 4;
+	int textureAtlasSize = 16; //TODO: Use a Global Var / get()
 	float tex_factor = 1.0f / textureAtlasSize;
 
 public:
@@ -331,57 +331,62 @@ struct SkyQuad:Quad{
 
 
 
-struct UImesh{
+class UImesh{
+public:
+    explicit UImesh(int texture_size=16);
+    ~UImesh();
+    void reserveVertices(int numVertices);
+    void reserveIndices(int numIndices);
+    uint32 getNumIndices();
+    uint32 getNumVertices();
+    Vertex* getVertices();
+    uint32* getIndices();
+
+    void update();
+    void addQuad(glm::vec3 position, int rotation = 0, int tex_x = 0, int tex_y = 0, float scale = 1);
+
+    void clearMesh();
+
+    void render(GLuint textureId);
+protected:
 	std::vector<Vertex> vertices;
 	uint32 usedVertices = 0;
 
 	std::vector<uint32> indices;
 	uint32 usedIndices = 0;
 
-	int textureAtlasSize = 4;
-	float tex_factor = 1.0f / textureAtlasSize;
+	int textureAtlasSize; //TODO: Use a Global Var / get()
+	float tex_factor;
 	ChunkVertexBuffer vertexBuffer;
 	IndexBuffer indexBuffer;
 
 	float aspect_ratio;
-	float inv_aspect_ratio;
 /////////////////////////////////////////////////////
-	UImesh();
-	void reserveVertices(int numVertices);
-	void reserveIndices(int numIndices);
-	~UImesh();
-	uint32 getNumIndices();
-	uint32 getNumVertices();
-	Vertex* getVertices();
-	uint32* getIndices();
 
-	void update();
-	void addQuad(glm::vec3 position, int rotation = 0, int tex_x = 0, int tex_y = 0, float scale = 1);
-
-	void clearMesh();
-
-	void render(GLuint textureId);
 };
 
 
 glm::vec3 calculate_slot_position(int slot_number);
 
-struct ItemBarMesh:UImesh{
-	ItemBarMesh();
+class ItemBarMesh: public UImesh{
+public:
+	explicit ItemBarMesh(int texture_size=4);
+    ~ItemBarMesh() = default;
 };
 
-struct InventoryMesh{
-	ItemBarMesh itemBar;
-	UImesh slotSelector;
+class InventoryMesh{
+public:
+    InventoryMesh();
+
+    void update();
+
+    void setSlot(int slot_number);
+
+    void render(GLuint UItextureId, GLuint BlocktextureId);
+	ItemBarMesh itemBar = ItemBarMesh(4);
+	UImesh slotSelector = UImesh(4);
 	UImesh items;
 	int last_selected_slot=5;
-	InventoryMesh();
-
-	void update();
-
-	void setSlot(int slot_number);
-
-	void render(GLuint UItextureId, GLuint BlocktextureId);
 };
 
 
