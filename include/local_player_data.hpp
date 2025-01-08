@@ -361,11 +361,11 @@ public:
 
         for (int x=1; x<=sightDistance; x++){
             int offset_x = 16*x;
+            _addChunkStack(base_x + offset_x, base_z);
+            _addChunkStack(base_x - offset_x, base_z);
             for (int z=1; z<=sightDistance; z++){
-                _addChunkStack(base_x + offset_x, base_z);
                 _addChunkStack(base_x + offset_x, base_z + 16*z);
                 _addChunkStack(base_x + offset_x, base_z - 16*z);
-                _addChunkStack(base_x - offset_x, base_z);
                 _addChunkStack(base_x - offset_x, base_z + 16*z);
                 _addChunkStack(base_x - offset_x, base_z - 16*z);
             }
