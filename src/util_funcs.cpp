@@ -51,31 +51,27 @@ glm::vec3 Chunk_Position(glm::vec3 pos) {
 	return chunkpos;
 }
 glm::vec3 position_in_chunk(glm::vec3 pos) {
-	int x;
-	if (pos.x >= 0) {
-		x = abs((int)pos.x % CX); // not floor(). use (int)
-	}
-	else {
-		x = CX -1 - abs((int)pos.x % CX);
-	}
-
-	int y;
-	if (pos.y >= 0) {
-		y = abs((int)pos.y % CY);
-	}
-	else {
-		y = CY -1 - abs((int)pos.y % CY);
-	}
-
-	int z;
-	if (pos.z >= 0) {
-		z = abs((int)pos.z % CZ);
-	}
-	else {
-		z = CZ -1 - abs((int)pos.z % CZ);
-	}
-	return glm::vec3(x, y, z);
+	int x = positionInChunk(pos.x);
+    int y = positionInChunk(pos.y);
+    int z = positionInChunk(pos.z);
+	return {x, y, z};
 }
+
+int positionInChunk(float p){
+    int x;
+    if (p >= 0) {
+        x = abs((int)floor(p) % 16); // USE FLOOR !
+    }
+    else {
+        if ((int)floor(p) % 16 == 0){
+            x = 0;
+        }else{
+            x = 16 - abs((int)floor(p) % 16);
+        }
+    }
+    return x;
+}
+
 
 int positionInChunk(int p){
     int x;
@@ -136,10 +132,40 @@ void calcChunkCoords(glm::vec3 pos, int* x, int* y, int* z){
 inline int toChunkCoord(float p){
     int c;
     if (p>=0){
-        c = (int)p - (int)p%16;
+        c = floor(p) - (int)floor(p)%16;
     }
     else{
-        c =  (int)p - (16 + ((int)p+1)%16)+1;
+        c =  floor(p) - (16 + ((int)floor(p)+1)%16)+1;
     }
     return c;
+}
+
+bool compareGreaterVec3(glm::vec3 a, glm::vec3 b) {
+    if (a.x > b.x){
+        return true;
+    }else if(a.x < b.x){
+        return false;
+    }
+
+    if (a.y > b.y){
+        return true;
+    }else if(a.y < b.y){
+        return false;
+    }
+
+    if (a.z > b.z){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+std::ostream &operator<<(std::ostream &os, const glm::vec3 &m) {
+    return os << m.x << " "  << m.y << " "  << m.z;
+}
+
+std::ostream &operator<<(std::ostream &os, const std::vector<glm::vec3> &m) {
+    for (auto x: m) { // TODO: check for size correctly!
+        os << x << std::endl;
+    };
 }
