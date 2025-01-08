@@ -52,6 +52,8 @@ int sign(T Value){
 }
 
 
+bool compareGreaterVec3(glm::vec3 v1, glm::vec3 v2);
+
 bool compareVec3(glm::vec3 v1, glm::vec3 v2);
 
 bool isChunkEmty(glm::vec3 v1);
@@ -64,5 +66,9 @@ glm::vec3 scale_vec3(glm::vec3 vec, float value);
 bool is_inside_block(glm::vec3 blockpos, glm::vec3 pos);
 
 unsigned long long map_3d_to_1d(glm::vec3);
+
+std::ostream &operator<<(std::ostream &os, glm::vec3 const &m);
+std::ostream &operator<<(std::ostream &os, const std::vector<glm::vec3> &m);
+
 
 #endif 
