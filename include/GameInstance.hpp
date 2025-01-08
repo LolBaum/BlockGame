@@ -95,5 +95,9 @@ public:
     Texture* UItexture;
     InventoryMesh* ui;
     Renderer* renderer;
+
+    void setupTesting();
+
+    void Testing();
 };
 #endif //BLOCKGAME_GAMEINSTANCE_H

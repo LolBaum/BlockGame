@@ -479,6 +479,11 @@ public:
         return sightDistance;
     }
 
+    void setPosition(glm::vec3 p){
+        camera.setPos(p);
+        update();
+    }
+
     // Work in Progress Functions:
     // --- RENDERING ---
 

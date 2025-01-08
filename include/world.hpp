@@ -54,7 +54,7 @@ public:
     static void setBoolValue(std::string, bool);
     static void setvec3Value(std::string, glm::vec3);
 
-    static void init();
+    static void init(bool load_from_file = true);
     static void saveWorldFile();
    
 };

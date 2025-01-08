@@ -15,6 +15,8 @@ Shader SuperChunk::shader = Shader();
 Shader SuperChunk::transparent_shader = Shader();
 Texture SuperChunk::tile_atlas;
 
+bool SuperChunk::debug_dont_load_from_file = false;
+
 std::string SuperChunk::worldSavePath = "world";
 
 SuperChunk::SuperChunk(){}
@@ -42,7 +44,7 @@ void SuperChunk::initialize(){
 void SuperChunk::addChunk(int x, int y, int z) {
     Chunk* newChunk = new Chunk(glm::vec3(x, y, z));
     chunks.push_back(newChunk);
-    generateChunk(newChunk);
+    generateChunk(newChunk, 0);
     std::cout << "added Chunk to SuperChunk at " << x << ", " << y << ", " << z << ", " << std::endl;
 }
 
@@ -71,8 +73,10 @@ void SuperChunk::loadChunk_new(glm::vec3 pos) {
             chunk_pointer = newChunk;
         }
 
-        if ( ! chunk_pointer->deserialize(worldSavePath, pos.x, pos.y, pos.z)){
-            generateChunk(chunk_pointer);
+        if (debug_dont_load_from_file){
+            generateChunk(chunk_pointer, 0);
+        }else if ( ! chunk_pointer->deserialize(worldSavePath, pos.x, pos.y, pos.z)){
+            generateChunk(chunk_pointer, 0);
         }
         chunk_pointer->updateMesh();
 
@@ -103,9 +107,9 @@ void SuperChunk::loadChunk(glm::vec3 pos) {
 
 void SuperChunk::unloadChunk_new(glm::vec3 pos) {
     Chunk* chunk = getChunk(pos);
-    std::cout <<  vec3_toString(pos, "unloadChunk_new  pos") << std::endl;
+//    std::cout <<  vec3_toString(pos, "unloadChunk_new  pos") << std::endl;
     if (chunk != NULL) {
-        std::cout <<  vec3_toString(chunk->getPos(), "unloadChunk_new cpos") << std::endl;
+//        std::cout <<  vec3_toString(chunk->getPos(), "unloadChunk_new cpos") << std::endl;
         chunk->serialize(worldSavePath);
         chunk->clearChunk();
     }
@@ -155,8 +159,10 @@ void SuperChunk::unloadChunk(glm::vec3 pos) {
 //    }
 //}
 
-void SuperChunk::generateChunk(Chunk* chunk){
-    std::cout << "Generating Chunk " << vec3_toString(chunk->getPos()) << std::endl;
+void SuperChunk::generateChunk(Chunk *chunk, int variant) {
+
+
+    //std::cout << "Generating Chunk " << vec3_toString(chunk->getPos()) << std::endl;
     float pos_x = chunk->getPos().x;
     float pos_z = chunk->getPos().z;
     int pos_y = chunk->getPos().y;
@@ -167,42 +173,31 @@ void SuperChunk::generateChunk(Chunk* chunk){
     //std::cout << "Chunk: " << vec3_toString(chunk->getPos()) << std::endl;
     for (int x = 0; x < CX; x++) {
         for (int z = 0; z < CY; z++) {
-            float a = (glm::perlin(glm::vec2((x + pos_x) / frequency_a, (z + pos_z) / frequency_a)) + 1) / 2;
-            float b = (glm::perlin(glm::vec2((x + pos_x) / frequency_b, (z + pos_z) / frequency_b)) + 1) / 2 * 48;// + (glm::perlin(glm::vec2((x + pos_x) / 1000, (z + pos_z) / 1000)) + 1)*20;
-            //int h = a * b;
-            int h = a * b/4 + 20;
+            if (variant == 1) {
+                float a = (glm::perlin(glm::vec2((x + pos_x) / frequency_a, (z + pos_z) / frequency_a)) + 1) / 2;
+                float b = (glm::perlin(glm::vec2((x + pos_x) / frequency_b, (z + pos_z) / frequency_b)) + 1) / 2 * 48;
+                int h = a * b / 4 + 20;
+                if (h >= pos_y) {
+                    for (int y = 0; (y + pos_y <= h - gras_hight) && (y + pos_y < max_y); y++) {
+                        chunk->setBlock(x, y, z, 1);
+                    }
+                    if (h <= max_y) {
+                        for (int i = h - gras_hight; i <= h - 1; i++) {
+                            chunk->setBlock(x, i - pos_y, z, 2);// add: check if boundings are correct
+                        }
+                        chunk->setBlock(x, h - pos_y, z, 3);
 
-            //int h = (glm::abs(glm::perlin(glm::vec2((x + pos_x) / 16.0, (z + pos_z) / 16.0)))) * 16;
-            //std::cout << "perlin: " << h << std::endl;
-            if (h >= pos_y) {
-                for (int y = 0; (y + pos_y <= h-gras_hight) && (y + pos_y <max_y); y++) {
+                        float grass_val = (glm::perlin(glm::vec2((x + pos_x) / 4, (z + pos_z) / 4)));
+                        if (grass_val > 0.5) {
+                            //chunk->setBlock(x, h - pos_y+1, z, 4);
+                            SuperChunk::setBlock((int) (x + pos_x), h + 1, (int) (z + pos_z), 4);
+                        }
+                    }
+                }
+            }else{
+                for (int y = 0; (y + pos_y < 1) && (y + pos_y < max_y); y++) {
                     chunk->setBlock(x, y, z, 1);
-                    //blocks[x][y][z].setId(1);
-                    //if (y + pos_y == h) {
-                    //	chunk->setBlock(x, h - pos_y, z, 2);
-                    //	
-                    //	std::cout << "h: " << h << std::endl << std::endl;
-                    //}
                 }
-                if (h<=max_y)
-                {
-                    for (int i = h - gras_hight; i <= h-1; i++) {
-                        chunk->setBlock(x, i - pos_y, z, 2);// add: check if boundings are correct
-                    }
-                    chunk->setBlock(x, h - pos_y, z, 3);
-
-                    float grass_val = (glm::perlin(glm::vec2((x + pos_x) /4, (z + pos_z) / 4)));
-                    if (grass_val >0.5){
-                        //chunk->setBlock(x, h - pos_y+1, z, 4);
-                        SuperChunk::setBlock((int)(x + pos_x), h+1, (int)(z + pos_z), 4);
-                    }
-                        
-                }
-                //else
-                //{
-                //	std::cout << "max_y: " << max_y << std::endl;
-                //	std::cout << "h: " << h << std::endl << std::endl;
-                //}
             }
 
         }
@@ -409,10 +404,14 @@ int SuperChunk::getBlockTypeInt(int x, int y, int z) {
         return chunk->getBlockTypeInt(position_in_chunk(glm::vec3(x,y,z)));
     }
 }
-int SuperChunk::getBlockTypeInt(glm::vec3 pos) {
+int SuperChunk::getBlockTypeInt(glm::vec3 pos, bool debug) {
     int cx = floor(pos.x / CX) * CX;
     int cy = floor(pos.y / CY) * CY;
     int cz = floor(pos.z / CZ) * CZ;
+
+    if (debug){
+        std::cout << vec3_toString(position_in_chunk(pos)) << std::endl;
+    }
 
 
     Chunk* chunk = _getChunk(cx, cy, cz);
@@ -421,6 +420,7 @@ int SuperChunk::getBlockTypeInt(glm::vec3 pos) {
         //printf("%d %d %d\n\n", cx, cy, cz);
     }
     else {
+
         return chunk->getBlockTypeInt(position_in_chunk(pos));
     }
 }
@@ -431,6 +431,10 @@ BlockType* SuperChunk::getBlockType(int x, int y, int z) {
     //std::cout << "Blocktype: " << BlockTypeManager::GetBlockType(getBlockTypeInt(x, y, z))->info_string() << std::endl;
     //std::cout << "" << std::endl;
     return BlockTypeManager::GetBlockType(getBlockTypeInt(glm::vec3(x, y, z)));
+}
+
+BlockType* SuperChunk::getBlockType(glm::vec3 p) {
+    return BlockTypeManager::GetBlockType(getBlockTypeInt(p, true));
 }
 
 bool SuperChunk::has_Block_collision(glm::vec3 pos){
@@ -444,14 +448,15 @@ void SuperChunk::setBlock(glm::vec3 pos, int type, BlockDirection rot) {
     int cy = floor(pos.y / CY) * CY;
     int cz = floor(pos.z / CZ) * CZ;
 
-    //std::cout << "cx: " << cx << ", cy: " << cy << ", cz: " << cz << std::endl;
+    std::cout << "cx: " << cx << ", cy: " << cy << ", cz: " << cz << std::endl;
 
     Chunk* chunk = _getChunk(cx, cy, cz);
     if (!chunk) {
+        std::cout << "Chunk not found" << std::endl;
         return;
     }
     else {
-        //std::cout << "pos in chunk: " <<vec3_toString(position_in_chunk(pos)) << std::endl;
+        std::cout << "pos in chunk: " <<vec3_toString(position_in_chunk(pos)) << std::endl;
         chunk->setBlock(position_in_chunk(pos), type, rot);
     }
 }
@@ -498,4 +503,7 @@ void SuperChunk::saveWorld(){
     }
 }
 
-
+void SuperChunk::printChunks(){
+    auto glambda = [](auto a) { std::cout << vec3_toString(a->getPos()) << std::endl;};
+    for_each(chunks.begin(), chunks.end(), glambda);
+}

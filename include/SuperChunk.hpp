@@ -39,7 +39,7 @@ public:
 	static void unloadChunk(glm::vec3 pos);
 
 
-	static void generateChunk(Chunk* chunk);
+	static void generateChunk(Chunk *chunk, int variant=0);
 
 	static void render(const GLfloat* modelViewProj);
 
@@ -67,7 +67,7 @@ public:
 	static std::vector<Chunk*>getChunks();
 
 	static int getBlockTypeInt(int x, int y, int z);
-	static int getBlockTypeInt(glm::vec3);
+	static int getBlockTypeInt(glm::vec3, bool debug=false);
     static BlockType *getBlockType(int x, int y, int z);
 
 	static bool has_Block_collision(glm::vec3 pos);
@@ -81,6 +81,11 @@ public:
 	static Texture* get_tile_atlas();
 
 	static void saveWorld();
+
+    static bool debug_dont_load_from_file;
+    static void printChunks();
+
+    static BlockType *getBlockType(glm::vec3 p);
 
 private:
 	static std::vector<Chunk*> chunks;

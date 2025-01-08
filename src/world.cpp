@@ -97,7 +97,7 @@ std::string World::filePaht;
 
 World::World(){}
 
-void World::init(){
+void World::init(bool load_from_file){
     string fpath = Config::getStringValue("WorldSavePath");
     if (fpath.length() > 0){
         fpath = fpath + "/";
@@ -117,7 +117,9 @@ void World::init(){
     //print_map("[World-info] float: ", floatData);
     //print_map("[World-info] bool: ", boolData);
 
-    loadWorldFile();
+    if (load_from_file){
+        loadWorldFile();
+    }
 
     //print_map("[World-info] int: ", intData);
     //print_map("[World-info] string: ", stringData);

@@ -4,10 +4,70 @@
 #include "GameInstance.hpp"
 
 
+void GameInstance::setupTesting() {
+    player->setPosition({0, 10, 0});
+    SuperChunk::debug_dont_load_from_file = true;
+    SuperChunk::updateChunkLoadingData(player->getLocalChunkIds());
+    for (int i = 0; i < 128; ++i) {
+        SuperChunk::load_unload_singleChunk();
+    }
+}
+
+void GameInstance::Testing() {
+    std::cout << "TESTING" << std::endl;
+
+    //SuperChunk::printChunks();
+
+    int t = 2;
+    bool r;
+    glm::vec3 p;
+    p = {-16,1, 0};
+    SuperChunk::setBlock(p, t);
+    r = SuperChunk::getBlockTypeInt(p);
+    std::cout << "expected: " << t << " got: " << r << std::endl;
+
+    p = {16.5,1, 0};
+    SuperChunk::setBlock(p, t);
+    r = SuperChunk::getBlockTypeInt(p);
+    std::cout << "expected: " << t << " got: " << r << std::endl;
+
+    p = {0,1, -16.5};
+    SuperChunk::setBlock(p, t);
+    r = SuperChunk::getBlockTypeInt(p);
+    std::cout << "expected: " << t << " got: " << r << std::endl;
+
+    p = {0,1, 0};
+    SuperChunk::setBlock(p, t);
+    r = SuperChunk::getBlockTypeInt(p);
+    std::cout << "expected: " << t << " got: " << r << std::endl;
+
+    p = {0,1, 16.5};
+    SuperChunk::setBlock(p, t);
+    r = SuperChunk::getBlockTypeInt(p);
+    std::cout << "expected: " << t << " got: " << r << std::endl;
+//    p = {0,1, 16};
+//    SuperChunk::setBlock(p, t);
+//    r = SuperChunk::getBlockTypeInt(p);
+//    std::cout << "expected: " << t << " got: " << r << std::endl;
+    p = {0,1, 17};
+    SuperChunk::setBlock(p, t);
+    r = SuperChunk::getBlockTypeInt(p);
+    std::cout << "expected: " << t << " got: " << r << std::endl;
+
+    p = {0,1, 15};
+    SuperChunk::setBlock(p, t);
+    r = SuperChunk::getBlockTypeInt(p);
+    std::cout << "expected: " << t << " got: " << r << std::endl;
+
+
+    std::cout << "TESTING DONE" << std::endl;
+}
 
 void GameInstance::start() {
     initialize();
     load();
+    setupTesting();
+    Testing();
     runGameLoop();
 }
 
@@ -49,7 +109,7 @@ void GameInstance::initialize() {
 
     std::cout << "screen size: width = " << SDL_handler::getWidth() << " height = " << SDL_handler::getHeight() << std::endl;
 
-    World::init();
+    World::init(false);
 
 
     SuperChunk::initialize();
@@ -392,6 +452,8 @@ void GameInstance::render() {
         ss << vec3_toString({x,y,z}, "pos ") << std::endl;
         ss << "Number of Faces: " << SuperChunk::get_num_all_faces() << std::endl;
         ss << "Sight distance: " << player->get_sight_distance() << std::endl;
+
+        ss << "Block below: " << SuperChunk::getBlockType(player->getPosition() - glm::vec3{0, 1, 0})->get_name() << std::endl;
         text = ss.str();
         time_since_slow_tick = 0;
 
@@ -410,6 +472,8 @@ void GameInstance::runGameLoop() {
         handleInput();
         applyGameMechanics();
         render();
+
+        //close = true;
     }
     stop();
 }

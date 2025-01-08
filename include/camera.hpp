@@ -38,6 +38,10 @@ public:
 		return position;
 	}
 
+    void setPos(glm::vec3 p){
+        position = p;
+    }
+
 	glm::mat4 getProjection(){
 		return projection;
 	}
