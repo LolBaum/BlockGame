@@ -8,9 +8,11 @@ void GameInstance::setupTesting() {
     player->setPosition({0, 10, 0});
     SuperChunk::debug_dont_load_from_file = true;
     SuperChunk::updateChunkLoadingData(player->getLocalChunkIds());
-    for (int i = 0; i < 128; ++i) {
+    for (int i = 0; i < 256; ++i) {
         SuperChunk::load_unload_singleChunk();
     }
+
+    //player->printLocalChunks();
 }
 
 void GameInstance::Testing() {
@@ -19,45 +21,29 @@ void GameInstance::Testing() {
     //SuperChunk::printChunks();
 
     int t = 2;
-    bool r;
+    int r;
     glm::vec3 p;
+    p = {0,1, -16};
+    SuperChunk::setBlock(p, t);
+    r = SuperChunk::getBlockTypeInt(p, true);
+    std::cout << "expected: " << t << " got: " << r << std::endl<< std::endl;
+
+    p = {0,1, 16};
+    SuperChunk::setBlock(p, t);
+    r = SuperChunk::getBlockTypeInt(p, true);
+    std::cout << "expected: " << t << " got: " << r << std::endl<< std::endl;
+
+    p = {16,1, 0};
+    SuperChunk::setBlock(p, t);
+    r = SuperChunk::getBlockTypeInt(p, true);
+    std::cout << "expected: " << t << " got: " << r << std::endl<< std::endl;
+
+
     p = {-16,1, 0};
     SuperChunk::setBlock(p, t);
-    r = SuperChunk::getBlockTypeInt(p);
-    std::cout << "expected: " << t << " got: " << r << std::endl;
+    r = SuperChunk::getBlockTypeInt(p, true);
+    std::cout << "expected: " << t << " got: " << r << std::endl<< std::endl;
 
-    p = {16.5,1, 0};
-    SuperChunk::setBlock(p, t);
-    r = SuperChunk::getBlockTypeInt(p);
-    std::cout << "expected: " << t << " got: " << r << std::endl;
-
-    p = {0,1, -16.5};
-    SuperChunk::setBlock(p, t);
-    r = SuperChunk::getBlockTypeInt(p);
-    std::cout << "expected: " << t << " got: " << r << std::endl;
-
-    p = {0,1, 0};
-    SuperChunk::setBlock(p, t);
-    r = SuperChunk::getBlockTypeInt(p);
-    std::cout << "expected: " << t << " got: " << r << std::endl;
-
-    p = {0,1, 16.5};
-    SuperChunk::setBlock(p, t);
-    r = SuperChunk::getBlockTypeInt(p);
-    std::cout << "expected: " << t << " got: " << r << std::endl;
-//    p = {0,1, 16};
-//    SuperChunk::setBlock(p, t);
-//    r = SuperChunk::getBlockTypeInt(p);
-//    std::cout << "expected: " << t << " got: " << r << std::endl;
-    p = {0,1, 17};
-    SuperChunk::setBlock(p, t);
-    r = SuperChunk::getBlockTypeInt(p);
-    std::cout << "expected: " << t << " got: " << r << std::endl;
-
-    p = {0,1, 15};
-    SuperChunk::setBlock(p, t);
-    r = SuperChunk::getBlockTypeInt(p);
-    std::cout << "expected: " << t << " got: " << r << std::endl;
 
 
     std::cout << "TESTING DONE" << std::endl;

@@ -420,6 +420,12 @@ int SuperChunk::getBlockTypeInt(glm::vec3 pos, bool debug) {
         //printf("%d %d %d\n\n", cx, cy, cz);
     }
     else {
+        if (debug){
+            //chunk->printChunk();
+            std::cout << "GetBlock: pos in chunk: " <<vec3_toString(position_in_chunk(pos)) << std::endl;
+            std::cout << "GetBlock: pos: " <<vec3_toString(pos) << std::endl;
+            chunk->debug_find_pos(2);
+        }
 
         return chunk->getBlockTypeInt(position_in_chunk(pos));
     }
@@ -434,7 +440,7 @@ BlockType* SuperChunk::getBlockType(int x, int y, int z) {
 }
 
 BlockType* SuperChunk::getBlockType(glm::vec3 p) {
-    return BlockTypeManager::GetBlockType(getBlockTypeInt(p, true));
+    return BlockTypeManager::GetBlockType(getBlockTypeInt(p));
 }
 
 bool SuperChunk::has_Block_collision(glm::vec3 pos){
@@ -458,6 +464,8 @@ void SuperChunk::setBlock(glm::vec3 pos, int type, BlockDirection rot) {
     else {
         std::cout << "pos in chunk: " <<vec3_toString(position_in_chunk(pos)) << std::endl;
         chunk->setBlock(position_in_chunk(pos), type, rot);
+
+        chunk->debug_find_pos(type);
     }
 }
 

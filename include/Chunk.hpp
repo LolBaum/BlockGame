@@ -62,6 +62,10 @@ struct Chunk{
 
 	void serialize(const std::string& worldSavePath);
 	bool deserialize(const std::string& worldSavePath, int load_x, int load_y, int load_z);
+    void printChunk();
+    void debug_find_pos(int id);
+
+    int px, py, pz;
 
 
 
@@ -81,11 +85,5 @@ private:
 
 	int num_faces_transparent;
 	ChunkMesh mesh_transparent;
-
-    int px;
-    int py;
-    int pz;
-
-
 };
 //Chunk NullChunk = *new Chunk(glm::vec3(0,0,0));

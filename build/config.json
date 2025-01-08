@@ -4,7 +4,7 @@
     "Fov": 91.0,
     "Fullscreen": true,
     "ShaderPath": "shaders/",
-    "SightDistance": 2,
+    "SightDistance": 4,
     "TileAtlasPathName": "graphics/Terrain_OurCraft.png",
     "WindowMaximezed": false,
     "WindowResizeable": false,

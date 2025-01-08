@@ -681,3 +681,31 @@ bool Chunk::deserialize(const std::string &worldSavePath, int load_x, int load_y
 const unsigned long long Chunk::getId() {
     return id;
 }
+
+void Chunk::printChunk() {
+    int x,y,z;
+    std::cout << "ChunkPos: " << vec3_toString(pos) << std::endl;
+    for( x=0; x<CX; x++){
+        for( y=0; y<CX; y++){
+            for( z=0; z<CX; z++){
+                std::cout << blocks[x][y][z].getId() << " " ;
+            }
+            std::cout << "" << std::endl;
+        }
+        std::cout << "" << std::endl;
+    }
+}
+
+void Chunk::debug_find_pos(int id) {
+    int x,y,z;
+    std::cout << "ChunkPos: " << vec3_toString(pos) << std::endl;
+    for( x=0; x<CX; x++){
+        for( y=0; y<CX; y++){
+            for( z=0; z<CX; z++){
+                if (blocks[x][y][z].getId() == id){
+                    std::cout << "found id: " << id << " at " << x << " " << y << " " << z << std::endl;
+                }
+            }
+        }
+    }
+}

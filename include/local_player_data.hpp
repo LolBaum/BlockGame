@@ -293,25 +293,11 @@ public:
     }
 
     void printLocalChunks() {
-        std::stringstream ss;
-        string output;
-        glm::vec3 chunkPosition;
-        int counter = 0;
-        for (int x = -sightDistance; x <= sightDistance; x++) {
-            for (int y = -sightDistance; y <= sightDistance; y++) {
-                for (int z = -sightDistance; z <= sightDistance; z++) {
-                    chunkPosition.x = currentChunkPos.x + x * 16;
-                    chunkPosition.y = currentChunkPos.y + y * 16;
-                    chunkPosition.z = currentChunkPos.z + z * 16;
-                    ss << vec3_toString(chunkPosition) << "  ";
-                    counter++;
-                }
-                ss << "\n";
-            }
-            ss << "\n";
-        }
-        output = ss.str();
-        std::cout << output << std::endl;
+        std::vector<glm::vec3> v_sorted(chunksInSight.size());
+        partial_sort_copy(begin(chunksInSight), end(chunksInSight),
+                          begin(v_sorted), end(v_sorted), compareGreaterVec3);
+
+        std::cout << v_sorted << std::endl;
     }
     void _addChunkStack(int pos_x, int pos_z){
         for (int y = -MAX_HEIGHT_IN_CHUNKS; y <= MAX_HEIGHT_IN_CHUNKS; y++) {
