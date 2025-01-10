@@ -51,42 +51,37 @@ glm::vec3 Chunk_Position(glm::vec3 pos) {
 	return chunkpos;
 }
 glm::vec3 position_in_chunk(glm::vec3 pos) {
-	int x;
-	if (pos.x >= 0) {
-		x = abs((int)pos.x % CX); // not floor(). use (int)
-	}
-	else {
-		x = CX -1 - abs((int)pos.x % CX);
-	}
-
-	int y;
-	if (pos.y >= 0) {
-		y = abs((int)pos.y % CY);
-	}
-	else {
-		y = CY -1 - abs((int)pos.y % CY);
-	}
-
-	int z;
-	if (pos.z >= 0) {
-		z = abs((int)pos.z % CZ);
-	}
-	else {
-		z = CZ -1 - abs((int)pos.z % CZ);
-	}
-	return glm::vec3(x, y, z);
+    int x = positionInChunk(pos.x);
+    int y = positionInChunk(pos.y);
+    int z = positionInChunk(pos.z);
+    return {x, y, z};
 }
 
-int positionInChunk(int p){
+int positionInChunk(float p){
     int x;
     if (p >= 0) {
-        x = abs((int)p % CX); // not floor(). use (int)
+        x = abs((int)p % 16); // USE FLOOR !
     }
     else {
-        x = CX -1 - abs((int)p % CX);
+        x = 16 - abs((int)floor(p) % 16);
+    }
+    if (x==16){
+        x = 0;
     }
     return x;
 }
+
+
+//int positionInChunk(int p){
+//    int x;
+//    if (p >= 0) {
+//        x = abs((int)p % CX); // not floor(). use (int)
+//    }
+//    else {
+//        x = CX -1 - abs((int)p % CX);
+//    }
+//    return x;
+//}
 
 glm::vec3 scale_vec3(glm::vec3 vec, float value) {
 	vec.x *= value;
@@ -136,10 +131,10 @@ void calcChunkCoords(glm::vec3 pos, int* x, int* y, int* z){
 inline int toChunkCoord(float p){
     int c;
     if (p>=0){
-        c = (int)p - (int)p%16;
+        c = floor(p) - (int)floor(p)%16;
     }
     else{
-        c =  (int)p - (16 + ((int)p+1)%16)+1;
+        c =  floor(p) - (16 + ((int)floor(p)+1)%16)+1;
     }
     return c;
 }
