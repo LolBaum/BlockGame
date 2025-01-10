@@ -43,7 +43,8 @@ class SuperChunk;
 
 
 
-
+enum PlayerMovementState {Walking, Flying, Swimming};
+enum JumpMethod {SingleJump, DoubleJump, Fly};
 
 
 class LocalPlayer
@@ -111,18 +112,49 @@ public:
     virtual void translate(glm::vec3 v) {
         new_position += v;
     }
-    void moveFront(float amount) {
-        if (abs(vel_forward) < speed || sign(vel_forward) != sign(amount)){
-            vel_forward += amount*15;
+    void moveFront(float amount) { // Todo: rewrite this again
+//        if(is_sprinting && abs(velocity.z) < speed*sprintingFactor || sign(velocity.z) != sign(amount)){
+//            velocity.z += amount*15;
+//        }else if (abs(velocity.z) < speed || sign(velocity.z) != sign(amount)){
+//            velocity.z += amount*15;
+//        }
+
+        //velocity += lookAt * amount * 3.0f; // for dynamic flying e.g. Jetpack
+        if(is_grounded){
+            velocity += normalize(onlyXZ(lookAt)) * amount;
+        }else{
+            velocity +=  normalize(onlyXZ(lookAt)) * amount * 0.1f;
         }
         movement_input_f = true;
     }
 
+
     void moveSideways(float amount) {
-        if (abs(vel_sideways) < speed || sign(vel_sideways) != sign(amount)){
-            vel_sideways += amount*15;
+        if(is_grounded){
+            velocity +=  normalize(glm::vec3(-lookAt.z, 0, lookAt.x)) * amount;
+        }else{
+            velocity +=  normalize(glm::vec3(-lookAt.z, 0, lookAt.x)) * amount*0.1f;
         }
         movement_input_s = true;
+    }
+
+
+    void decelFront(float decel_fac) { // Todo: rewrite this again
+        auto rotationMat_l_to_g = glm::rotate(glm::mat4(1.0f), -vectorAngleRadXZ(lookAt.x, lookAt.z), {0, 1, 0});
+        auto rotationMat_g_to_l = glm::rotate(glm::mat4(1.0f), vectorAngleRadXZ(lookAt.x, lookAt.z), {0, 1, 0});
+        auto g_vel = glm::vec3(rotationMat_l_to_g * glm::vec4(velocity, 1.0));
+        g_vel.z *= decel_fac;
+        velocity = glm::vec3(rotationMat_g_to_l * glm::vec4(g_vel, 1.0));
+
+    }
+
+    void decelSideways(float decel_fac) { // Todo: rewrite this again
+        auto rotationMat_l_to_g = glm::rotate(glm::mat4(1.0f), -vectorAngleRadXZ(lookAt.x, lookAt.z), {0, 1, 0});
+        auto rotationMat_g_to_l = glm::rotate(glm::mat4(1.0f), vectorAngleRadXZ(lookAt.x, lookAt.z), {0, 1, 0});
+        auto g_vel = glm::vec3(rotationMat_l_to_g * glm::vec4(velocity, 1.0));
+        g_vel.x *= decel_fac;
+        velocity = glm::vec3(rotationMat_g_to_l * glm::vec4(g_vel, 1.0));
+
     }
 
     void moveUp(float amount) {
@@ -160,8 +192,22 @@ public:
 	}  */
 
     void jump(){
-        if (is_grounded){
-            velocity.y = jump_strength;
+        switch (jumpMethod) {
+            case SingleJump:
+                if (is_grounded){
+                    velocity.y = jump_strength;
+                }
+                break;
+            case DoubleJump:
+                if (is_grounded){
+                    velocity.y = jump_strength;
+                }
+                break;
+            case Fly:
+                if (is_grounded){
+                    velocity.y = jump_strength;
+                }
+                break;
         }
     }
 
@@ -198,23 +244,37 @@ public:
     }
 
     void move(float amount){
-        if (length(velocity) > max_velocity){
-            velocity = normalize(velocity) * max_velocity;
+
+        velocity = limitXZ(velocity, max_velocity);
+
+
+        float vel_xz_ratio = angleXZ(velocity) / 90.0f;
+
+//        if (is_grounded || (!movement_input_f && !movement_input_s)){
+//            velocity = scaleXZ(velocity, 0.5);
+//        }
+
+        float decel_fac;
+        if (is_grounded){
+            decel_fac = 0.2;
+        }
+        else{
+            decel_fac = 0.9;
         }
 
-        if(abs(vel_forward) > 0 && !movement_input_f && is_grounded){
-            vel_forward *= 0.2;
+        if (!movement_input_f){
+            decelFront(decel_fac);
         }
-        translate(glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * camera.getLookAt()) * amount * vel_forward);
-
-        if(abs(vel_sideways) > 0 && !movement_input_s && is_grounded){
-            vel_sideways *= 0.2;
+        if (!movement_input_s){
+            decelSideways(decel_fac);
         }
-        translate(glm::normalize(glm::cross(camera.getLookAt(), up)) * amount * vel_sideways);
+        translate(glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * camera.getLookAt()) * amount * velocity.z);
+        translate(glm::normalize(glm::cross(camera.getLookAt(), up)) * amount * velocity.x);
 
         glm::vec3 motion = new_position - position + velocity;
         glm::vec3 correct_motion = motion;
         glm::vec3 pos = new_position + velocity;
+        glm::vec3 lookAt = camera.getLookAt();
 
         int sign_x = sign(motion.x);
         int sign_z = sign(motion.z);
@@ -245,6 +305,7 @@ public:
             //is_grounded = true;
             correct_motion.x = 0.0f;
             pos.x = position.x -motion.x;
+            velocity.x = 0;
         }
 
 
@@ -252,6 +313,7 @@ public:
         if (check_collision_z(pos, sign_z)){
             correct_motion.z = 0.0f;
             pos.z = position.z -motion.z;
+            velocity.z = 0;
         }
 
         camera.translate(correct_motion);
@@ -301,8 +363,8 @@ public:
     glm::mat4 getModelViewProj() {
         return modelViewProj;
     }
-    const GLfloat* getModelViewProj_GL() {
-        return (const GLfloat*)&modelViewProj[0][0];
+    GLfloat* getModelViewProj_GL() {
+        return (GLfloat*)&modelViewProj[0][0];
     }
 
     void printLocalChunks() {
@@ -391,7 +453,7 @@ public:
 
     void get_focussed_Block() {
         glm::vec3 lookAt = camera.getLookAt();
-        std::cout << vec3_toString(lookAt, "lookAt") << std::endl;
+        //std::cout << vec3_toString(lookAt, "lookAt") << std::endl;
         glm::vec3 stepPos;
         glm::vec3 viewpos = camera.getViewPos();
         bool found = false;
@@ -594,6 +656,28 @@ public:
 
 
 
+    PlayerMovementState getMovementState(){
+        return movementState;
+    }
+
+    bool getIsSprinting(){
+        return is_sprinting;
+    }
+
+    void setIsSprinting(bool val){
+        is_sprinting = val;
+    }
+
+    glm::vec3 getVelocity(){
+        return velocity;
+    }
+
+    glm::vec3 getSelectionPos(){
+        return selection_box_pos;
+    }
+
+
+
     //////////////////////////
     // --- World Saving --- //
     //////////////////////////
@@ -613,13 +697,18 @@ private:
     glm::vec3 lookAt;
     float mouseSensitivity = 0.3f;
 
-    float vel_forward = 0;
-    float vel_sideways = 0;
-    float max_velocity = 0.5;
-    float jump_strength = 0.2;
+    //float vel_forward = 0;
+    //float vel_sideways = 0;
+    float max_velocity = 0.08;
+    float jump_strength = 0.15;
     bool is_grounded = false;
     bool movement_input_f = false;
     bool movement_input_s = false;
+
+    PlayerMovementState movementState = Walking;
+    JumpMethod jumpMethod = Fly;
+    bool is_sprinting = false;
+    float sprintingFactor = 1.5;
 
     float player_radius = 0.3;
     float player_height =  1.6;

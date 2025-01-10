@@ -8,6 +8,8 @@
 #include <cmath>
 
 #include "glm/glm.hpp"
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 #define CX 16
 #define CY 16
@@ -52,6 +54,16 @@ int sign(T Value){
 }
 
 
+float angleXZ(glm::vec3 v);
+glm::vec3 onlyXZ(glm::vec3 v);
+glm::vec3 scaleXZ(glm::vec3 v, float f);
+glm::vec3 limitXZ(glm::vec3 v, float max);
+float vecLengthXZ(glm::vec3);
+//glm::vec3 normalizeXZ(glm::vec3 v);
+glm::vec3 clacLookAt(float yaw, float pitch);
+
+float vectorAngleRadXZ(float x1, float y1);
+float vectorAngle(float x1, float y1, float x2, float y2);
 bool compareVec3(glm::vec3 v1, glm::vec3 v2);
 
 bool isChunkEmty(glm::vec3 v1);

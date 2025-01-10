@@ -33,6 +33,18 @@ void createDir_IfDoesNotExist(const std::string& name){
 	}
 }
 
+inline double convertRadDeg(double radians)
+{
+    double pi = 3.141592653589793238463;
+    return(radians * (180 / pi));
+}
+
+float vectorAngle(float x1, float y1, float x2, float y2) {
+    float dot = x1*x2 + y1*y2;      // Dot product between [x1, y1] and [x2, y2]
+    float det = x1*y2 - y1*x2 ;     // Determinant
+    float angle = atan2(det, dot);  // atan2(y, x) or atan2(sin, cos)
+    return convertRadDeg(angle);
+}
 
 
 bool compareVec3(glm::vec3 v1, glm::vec3 v2) {
@@ -138,3 +150,49 @@ inline int toChunkCoord(float p){
     }
     return c;
 }
+
+glm::vec3 clacLookAt(float yaw, float pitch) {
+    glm::vec3 front;
+    front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+    front.y = sin(glm::radians(pitch));
+    front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+    return glm::normalize(front);
+}
+
+float vecLengthXZ(glm::vec3 v) {
+    return glm::length(glm::vec3{v.x, 0, v.z});
+}
+
+glm::vec3 limitXZ(glm::vec3 v, float max) {
+    float l = vecLengthXZ(v);
+    if (l > max){
+        float y = v.y;
+        v = (v/l) * max;
+        v.y = y;
+    }
+    return v;
+}
+
+glm::vec3 scaleXZ(glm::vec3 v, float f) {
+    auto v1 = v*f;
+    v1.y = v.y;
+    return v1;
+}
+
+glm::vec3 onlyXZ(glm::vec3 v) {
+    return {v.x, 0, v.z};
+}
+
+float angleXZ(glm::vec3 v) {
+    float angle = atan2(v.x, v.z);  // atan2(y, x) or atan2(sin, cos)
+    return convertRadDeg(angle);
+}
+
+float vectorAngleRadXZ(float x, float z) {
+    return atan2(x, z);
+}
+
+//glm::vec3 normalizeXZ(glm::vec3 v) {
+//    auto n = glm::normalize(v);
+//    return ;
+//}
