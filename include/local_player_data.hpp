@@ -56,7 +56,10 @@ public:
         camera.set_camera_height(player_height);
         camera.translate(World::getvec3Value("PlayerPosition"));
         glm::vec3 yaw_pitch = World::getvec3Value("PlayerLookAt");
-        camera.setPitchYaw(yaw_pitch.y, yaw_pitch.x);
+        yaw = yaw_pitch.x;
+        pitch = yaw_pitch.y;
+        lookAt = clacLookAt(yaw, pitch);
+        camera.setLookAt(lookAt);
 
         chunksInSight.reserve(sightDistance * sightDistance * sightDistance);
         update();
@@ -93,7 +96,17 @@ public:
         }
     }
 
-
+    void onMouseMoved(float xRel, float yRel) {
+        yaw += xRel * mouseSensitivity;
+        pitch -= yRel * mouseSensitivity;
+        if (pitch > 89.0f)
+            pitch = 89.0f;
+        if (pitch < -89.0f)
+            pitch = -89.0f;
+        lookAt = clacLookAt(yaw, pitch);
+        camera.setLookAt(lookAt);
+        camera.update();
+    }
 
     virtual void translate(glm::vec3 v) {
         new_position += v;
@@ -594,6 +607,12 @@ private:
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::vec3 new_position;
     glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f); // Todo: Implement Velocity and Gravity
+
+    float yaw;
+    float pitch;
+    glm::vec3 lookAt;
+    float mouseSensitivity = 0.3f;
+
     float vel_forward = 0;
     float vel_sideways = 0;
     float max_velocity = 0.5;
