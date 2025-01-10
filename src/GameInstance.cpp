@@ -139,6 +139,9 @@ void GameInstance::handleInput() {
                 case SDLK_LSHIFT:
                     buttonShift = true;
                     break;
+                case SDLK_LCTRL:
+                    buttonCtrl = true;
+                    break;
                 case SDLK_z:
                     buttonZ = true;
                     render_wireframe = true;
@@ -198,9 +201,13 @@ void GameInstance::handleInput() {
                     break;
                 case SDLK_SPACE:
                     buttonSpace = false;
+                    releasedSpaceSinceJump = true;
                     break;
                 case SDLK_LSHIFT:
                     buttonShift = false;
+                    break;
+                case SDLK_LCTRL:
+                    buttonCtrl = false;
                     break;
                 case SDLK_z:
                     buttonZ = false;
@@ -212,7 +219,7 @@ void GameInstance::handleInput() {
             }
         }
         else if (event.type == SDL_MOUSEMOTION) {
-            player->getCamera()->onMouseMoved(event.motion.xrel, event.motion.yrel);
+            player->onMouseMoved(event.motion.xrel, event.motion.yrel);
             player->update_selection_box();
         }
         else if (event.type == SDL_MOUSEBUTTONDOWN) {
@@ -244,6 +251,7 @@ void GameInstance::applyGameMechanics() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     time += delta;
+    ticks_since_last_jump++;
 
     player->move(delta);
 
@@ -256,12 +264,25 @@ void GameInstance::applyGameMechanics() {
     }if (buttonD) {
         player->moveSideways(delta);
     }if (buttonSpace) {
-        player->jump();
+        if (ticks_since_last_jump < 60 and releasedSpaceSinceJump){
+            player->jump(true);
+        }else{
+            player->jump(false);
+            ticks_since_last_jump = 0;
+        }
+        releasedSpaceSinceJump = false;
     }
     if (buttonShift) {
         player->moveUp(-delta);
     }
-    player->apply_gravity(delta, glm::vec3(0.0f, -0.5f, 0.0f));
+    if (buttonCtrl) {
+        player->setIsSprinting(true);
+    }else{
+        player->setIsSprinting(false);
+    }
+    if(player->getMovementState()==Walking){
+        player->apply_gravity(delta, glm::vec3(0.0f, -0.5f, 0.0f));
+    }
     if (mouseButtonL) {
         if (time_since_left_tick > 0.2){
             time_since_left_tick = 0;
@@ -333,11 +354,17 @@ void GameInstance::render() {
     // rendering the players selection box ontop of the blocks
     player->render_selection_box();
 
+
+
     // Second rendering stage: transparent surfaces
     renderer->setModeTransparent();
 
     // rendering all transparent blocks
     SuperChunk::render_transparent(player->getModelViewProj_GL());
+
+//    if (graphicalDebug){
+//        SuperChunk::renderDebug_Box(player->getSelectionPos(), player->getModelViewProj_GL());
+//    }
 
     GLCALL(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 
@@ -389,14 +416,19 @@ void GameInstance::render() {
         ss << "FPS: " << FPS << std::endl;
         ss << "Number of Chunks: "<< SuperChunk::getNumChunks() << ",  " << SuperChunk::getNumFilledChunks() << std::endl;
         ss << vec3_toString(player->getPosition(), "pos ") << std::endl;
-        ss << vec3_toString({x,y,z}, "pos ") << std::endl;
+        //ss << vec3_toString({x,y,z}, "pos ") << std::endl;getVelocity
+        ss << vec3_toString(player->getVelocity(), "vel ") << std::endl;
         ss << "Number of Faces: " << SuperChunk::get_num_all_faces() << std::endl;
         ss << "Sight distance: " << player->get_sight_distance() << std::endl;
+
+        ss << "ticks_since_last_jump: " << ticks_since_last_jump<< std::endl;
+//        ss << player->getJumpMethod() << std::endl;
+//        ss << player->getMovementState() << std::endl;
         text = ss.str();
         time_since_slow_tick = 0;
 
         font->clear();
-        font->addMultipleLines(text, -0.95, 0.9, 0.05);
+        font->addMultipleLines(text, -0.95, 0.9, 0.03);
     }
     lastCounter = endCounter;
 

@@ -46,6 +46,38 @@ class SuperChunk;
 enum PlayerMovementState {Walking, Flying, Swimming};
 enum JumpMethod {SingleJump, DoubleJump, Fly};
 
+//std::ostream& operator << ( std::ostream& outs, const PlayerMovementState val)
+//{
+//    std::string s;
+//    if (val == Walking){
+//        s = "Walking";
+//    }else if (val == Flying){
+//            s = "Flying";
+//    }else if (val == Swimming){
+//        s = "Swimming";
+//    }else {
+//        s = "Undefined";
+//    }
+//    s = "PlayerMovementState: " + s;
+//return outs << s;
+//}
+//
+//std::ostream& operator << ( std::ostream& outs, const JumpMethod val)
+//{
+//    std::string s;
+//    if (val == SingleJump){
+//        s = "SingleJump";
+//    }else if (val == DoubleJump){
+//        s = "DoubleJump";
+//    }else if (val == Fly){
+//        s = "Fly";
+//    }else {
+//        s = "Undefined";
+//    }
+//    s = "JumpMethod: " + s;
+//    return outs << s;
+//}
+
 
 class LocalPlayer
 {
@@ -191,7 +223,8 @@ public:
 		}
 	}  */
 
-    void jump(){
+    void jump(bool secondJump=false){
+        std::cout << "Jump" << std::endl;
         switch (jumpMethod) {
             case SingleJump:
                 if (is_grounded){
@@ -200,7 +233,14 @@ public:
                 break;
             case DoubleJump:
                 if (is_grounded){
+                    std::cout << "is_grounded" << std::endl;
                     velocity.y = jump_strength;
+                    second_jump_allowed = true;
+                }else if(secondJump and second_jump_allowed){
+
+                    std::cout << "secondJump" << std::endl;
+                    velocity.y += jump_strength;
+                    second_jump_allowed = false;
                 }
                 break;
             case Fly:
@@ -209,6 +249,7 @@ public:
                 }
                 break;
         }
+        ticks_since_last_jump = 0;
     }
 
     bool check_collision_y(glm::vec3 pos, float offset_y){
@@ -321,6 +362,7 @@ public:
 
         movement_input_f = false;
         movement_input_s = false;
+        ticks_since_last_jump++;
     }
 
 
@@ -660,6 +702,10 @@ public:
         return movementState;
     }
 
+    JumpMethod getJumpMethod(){
+        return jumpMethod;
+    }
+
     bool getIsSprinting(){
         return is_sprinting;
     }
@@ -706,7 +752,7 @@ private:
     bool movement_input_s = false;
 
     PlayerMovementState movementState = Walking;
-    JumpMethod jumpMethod = Fly;
+    JumpMethod jumpMethod = DoubleJump;
     bool is_sprinting = false;
     float sprintingFactor = 1.5;
 
@@ -745,6 +791,8 @@ private:
     int selected_inventory_slot = 4;
     Inventory inventory;
 
+    int ticks_since_last_jump=0;
+    bool second_jump_allowed = false;
 };
 
 

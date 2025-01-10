@@ -41,6 +41,7 @@ private:
     float time_since_slow_tick = 1.0;
     float time_since_left_tick = 0;
     float time_since_right_tick = 0;
+    int ticks_since_last_jump=0;
 
     bool show_text = true;
     bool render_wireframe = false;
@@ -52,12 +53,14 @@ private:
     bool buttonSpace = false;
     //bool buttonSpacePress = false;
     bool buttonShift = false;
+    bool buttonCtrl = false;
     bool buttonZ = false;
     bool buttonF1 = false;
     bool mouseButtonL = false;
     bool mouseButtonR = false;
     bool mouseButtonClickL = false;
     bool mouseButtonClickR = false;
+    bool releasedSpaceSinceJump = false;
 
     int debug_render_state = 0; // default
 
