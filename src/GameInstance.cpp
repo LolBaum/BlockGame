@@ -131,6 +131,9 @@ void GameInstance::handleInput() {
                 case SDLK_y:
                     show_text = !show_text;
                     break;
+                case SDLK_c:
+                    buttonC = true;
+                    break;
                 case SDLK_g:
                     graphicalDebug = !graphicalDebug;
                     break;
@@ -216,6 +219,9 @@ void GameInstance::handleInput() {
                     buttonZ = false;
                     render_wireframe = false;
                     break;
+                case SDLK_c:
+                    buttonC = false;
+                    break;
                 case SDLK_F1:
                     buttonF1 = false;
                     break;
@@ -299,6 +305,7 @@ void GameInstance::applyGameMechanics() {
         }
 
     }
+    player->zoomIn(buttonC);
 
     player->update();
 

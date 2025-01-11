@@ -81,6 +81,8 @@ public:
 	static Texture* get_tile_atlas();
 
 	static void saveWorld();
+    static void renderDebug_Box(glm::vec3 p, GLfloat* modelViewProj);
+
 
 private:
 	static std::vector<Chunk*> chunks;
@@ -93,9 +95,9 @@ private:
 	static Shader shader;
 	static Shader transparent_shader;
 	static Texture tile_atlas;
+    static Box* debugBox;
 
 	static std::string worldSavePath;
-
 };
 
 

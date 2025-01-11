@@ -39,6 +39,8 @@ void SDL_handler::initialize() {
     SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
 
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 

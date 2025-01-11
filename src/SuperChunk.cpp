@@ -15,6 +15,8 @@ Shader SuperChunk::shader = Shader();
 Shader SuperChunk::transparent_shader = Shader();
 Texture SuperChunk::tile_atlas;
 
+Box* SuperChunk::debugBox;
+
 std::string SuperChunk::worldSavePath = "world";
 
 SuperChunk::SuperChunk(){}
@@ -36,6 +38,8 @@ void SuperChunk::initialize(){
     tile_atlas.load(Config::getStringValue("TileAtlasPathName").c_str(), true);
     worldSavePath = Config::getStringValue("WorldSavePath");
     createDir_IfDoesNotExist(worldSavePath);
+
+    SuperChunk::debugBox = new Box("shaders/selection_box.vs", "shaders/selection_box.fs", "graphics/selection_box_64.png");
 }
 
 
@@ -109,7 +113,7 @@ void SuperChunk::unloadChunk_new(glm::vec3 pos) {
         chunk->serialize(worldSavePath);
         chunk->clearChunk();
     }
-    
+
 }
 
 void SuperChunk::unloadChunk(int x, int y, int z) {
@@ -196,7 +200,7 @@ void SuperChunk::generateChunk(Chunk* chunk){
                         //chunk->setBlock(x, h - pos_y+1, z, 4);
                         SuperChunk::setBlock((int)(x + pos_x), h+1, (int)(z + pos_z), 4);
                     }
-                        
+
                 }
                 //else
                 //{
@@ -218,7 +222,7 @@ void SuperChunk::render(const GLfloat* modelViewProj) {
     glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND); */
-    
+
     shader.bind();
     for (int i = 0; i < chunks.size(); i++) {
         chunks.at(i)->render(modelViewProjMatrixLocation, modelViewProj, tile_atlas.get_textureId());
@@ -296,7 +300,7 @@ void SuperChunk::loadChunks(std::vector<glm::vec3> chunkIds) {
                     //std::cout << "found Chunk " << vec3_toString(chunkIds.at(j)) << std::endl;
                     unload = false;
                     chunkIds.erase(chunkIds.begin() + j);
-                    
+
                     j--;
                 }
                 j++;

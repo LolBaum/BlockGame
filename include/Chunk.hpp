@@ -63,8 +63,6 @@ struct Chunk{
 	void serialize(const std::string& worldSavePath);
 	bool deserialize(const std::string& worldSavePath, int load_x, int load_y, int load_z);
 
-
-
 private:
 	Block blocks[CX][CY][CZ];
 	glm::vec3 pos;
@@ -82,9 +80,7 @@ private:
 	int num_faces_transparent;
 	ChunkMesh mesh_transparent;
 
-    int px;
-    int py;
-    int pz;
+    int px, py, pz;
 
 
 };

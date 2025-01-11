@@ -85,7 +85,8 @@ public:
     LocalPlayer(){
         //position = glm::vec3(8.0f, 8.0f, 25.0f);
         //model = glm::scale(model, glm::vec3(1.2f));
-        camera.setFov(Config::getFloatValue("Fov"));
+        fov = Config::getFloatValue("Fov");
+        camera.setFov(fov);
         camera.set_camera_height(player_height);
         camera.translate(World::getvec3Value("PlayerPosition"));
         glm::vec3 yaw_pitch = World::getvec3Value("PlayerLookAt");
@@ -710,6 +711,18 @@ public:
     // 	return camera.getLookAt();
     // }
 
+    void zoomIn(bool should_zoom){
+        if (zoom != should_zoom){
+            if (should_zoom){
+                camera.setFov(zoomFov);
+            }else{
+                camera.setFov(fov);
+            }
+            zoom = should_zoom;
+        }
+    }
+
+
 
     // --- INVENTORY ---
 
@@ -802,6 +815,9 @@ private:
     float pitch;
     glm::vec3 lookAt;
     float mouseSensitivity = 0.3f;
+    float fov;
+    float zoomFov = 88.7;
+    bool zoom = false;
 
     //float vel_forward = 0;
     //float vel_sideways = 0;
