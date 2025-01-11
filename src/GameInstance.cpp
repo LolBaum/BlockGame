@@ -131,6 +131,9 @@ void GameInstance::handleInput() {
                 case SDLK_y:
                     show_text = !show_text;
                     break;
+                case SDLK_g:
+                    graphicalDebug = !graphicalDebug;
+                    break;
                 case SDLK_SPACE:
                     buttonSpace = true;
                     //buttonSpacePress = true;
@@ -264,10 +267,10 @@ void GameInstance::applyGameMechanics() {
     }if (buttonD) {
         player->moveSideways(delta);
     }if (buttonSpace) {
-        if (ticks_since_last_jump < 60 and releasedSpaceSinceJump){
-            player->jump(true);
+        if (ticks_since_last_jump < 30 and releasedSpaceSinceJump){
+            player->jump(true, delta);
         }else{
-            player->jump(false);
+            player->jump(false, delta);
             ticks_since_last_jump = 0;
         }
         releasedSpaceSinceJump = false;

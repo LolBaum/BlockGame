@@ -152,6 +152,11 @@ public:
 //        }
 
         //velocity += lookAt * amount * 3.0f; // for dynamic flying e.g. Jetpack
+
+        if (is_sprinting){
+            amount *= sprintingFactor;
+        }
+
         if(is_grounded){
             velocity += normalize(onlyXZ(lookAt)) * amount;
         }else{
@@ -162,12 +167,22 @@ public:
 
 
     void moveSideways(float amount) {
+        if (is_sprinting){
+            amount *= sprintingFactor;
+        }
+
         if(is_grounded){
             velocity +=  normalize(glm::vec3(-lookAt.z, 0, lookAt.x)) * amount;
         }else{
             velocity +=  normalize(glm::vec3(-lookAt.z, 0, lookAt.x)) * amount*0.1f;
         }
         movement_input_s = true;
+    }
+
+
+    void moveUp(float amount) {
+        velocity +=  up * amount * speedFactorUp;
+        movement_input_u = true;
     }
 
 
@@ -189,9 +204,11 @@ public:
 
     }
 
-    void moveUp(float amount) {
-        translate(up * amount * speed);
+    void decelUp(float decel_fac) { // Todo: rewrite this again
+        velocity.y *= decel_fac;
+        movement_input_u = true;
     }
+
 
     // the force should be a normalized vector
     void add_force(float delta_time, glm::vec3 force){
@@ -223,7 +240,7 @@ public:
 		}
 	}  */
 
-    void jump(bool secondJump=false){
+    void jump(bool secondJump=false, double amount=0.0f){
         std::cout << "Jump" << std::endl;
         switch (jumpMethod) {
             case SingleJump:
@@ -244,9 +261,26 @@ public:
                 }
                 break;
             case Fly:
-                if (is_grounded){
-                    velocity.y = jump_strength;
+                if (movementState == Walking){
+                    if (is_grounded){
+                        std::cout << "Fly Jump is_grounded" << std::endl;
+                        velocity.y = jump_strength;
+                        second_jump_allowed = true;
+                    }else if(secondJump){
+                        std::cout << "Flx Jump secondJump" << std::endl;
+                        velocity.y = jump_strength;
+                        movementState = Flying;
+                    }
+                }else if (movementState == Flying){
+                    if(secondJump){
+                        movementState = Walking;
+                    }else{
+                        std::cout << "Fly up" << std::endl;
+                        moveUp(amount);
+                        //velocity +=  up * amount;
+                    }
                 }
+
                 break;
         }
         ticks_since_last_jump = 0;
@@ -286,7 +320,25 @@ public:
 
     void move(float amount){
 
-        velocity = limitXZ(velocity, max_velocity);
+        if (movementState == Walking){
+            if(is_sprinting){
+                std::cout << "is Sprinting" << std::endl;
+                velocity = limitXZ(velocity, max_velocity*sprintingFactor);
+            }else{
+                velocity = limitXZ(velocity, max_velocity);
+            }
+        }
+        else if (movementState == Flying){
+            if(is_sprinting){
+                velocity = limitXZ(velocity, maxFlightSpeed*sprintingFactor);
+            }else{
+                velocity = limitXZ(velocity, maxFlightSpeed);
+            }
+
+            if (abs(velocity.y) > maxFlightSpeed){
+                velocity.y = maxFlightSpeed * (float)sign(velocity.y);
+            }
+        }
 
 
         float vel_xz_ratio = angleXZ(velocity) / 90.0f;
@@ -297,6 +349,9 @@ public:
 
         float decel_fac;
         if (is_grounded){
+            if(movementState == Flying){
+                movementState = Walking;
+            }
             decel_fac = 0.2;
         }
         else{
@@ -309,6 +364,10 @@ public:
         if (!movement_input_s){
             decelSideways(decel_fac);
         }
+        if(movementState == Flying && !movement_input_u){
+            decelUp(0.8);
+        }
+
         translate(glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f) * camera.getLookAt()) * amount * velocity.z);
         translate(glm::normalize(glm::cross(camera.getLookAt(), up)) * amount * velocity.x);
 
@@ -362,6 +421,7 @@ public:
 
         movement_input_f = false;
         movement_input_s = false;
+        movement_input_u = false;
         ticks_since_last_jump++;
     }
 
@@ -750,17 +810,19 @@ private:
     bool is_grounded = false;
     bool movement_input_f = false;
     bool movement_input_s = false;
+    bool movement_input_u = false;
 
     PlayerMovementState movementState = Walking;
-    JumpMethod jumpMethod = DoubleJump;
+    JumpMethod jumpMethod = Fly;
     bool is_sprinting = false;
-    float sprintingFactor = 1.5;
+    float sprintingFactor = 2;
 
     float player_radius = 0.3;
     float player_height =  1.6;
     float player_half_height = player_height/2;
 
-    float speed = 8.0f;
+    float speedFactorUp = 0.3f;
+    float maxFlightSpeed = 0.2;
     int sightDistance = Config::getIntValue("SightDistance");
     std::vector<glm::vec3> chunksInSight;
     glm::vec3 position;
