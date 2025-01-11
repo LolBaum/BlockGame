@@ -9,7 +9,7 @@ in vec2 v_texCoord;
 uniform sampler2D u_texture;
 uniform vec4 u_color;
 
-const vec4 fogcolor = vec4(0.6, 0.7, 1.0, 1.0);
+const vec3 fogcolor = vec3(0.6, 0.7, 1.0);
 const float fogdensity = 0.0003;
 
 
@@ -28,7 +28,7 @@ void main()
     float z = gl_FragCoord.z / gl_FragCoord.w;
     float fog = clamp(exp(-fogdensity * z * z+1)/2, 0.0, 1);
 
-	f_color = mix(fogcolor, vec4(texColor.xyz * v_lightValue, texColor.w), fog);
+
     //f_color_1 = vec4(gl_FragCoord.z,gl_FragCoord.z,gl_FragCoord.z,1); //vec4(fog,fog,fog,1);
     //f_color = vec4(texColor.xyz * v_lightValue, texColor.w);
     
@@ -38,15 +38,12 @@ void main()
     
     
     // this is a tempory solution to make tranparancy work
-    if (f_color.a < 0.5)
+    if (texColor.a < 0.5){
         discard;
-
-    /* if(f_color.a > 0.9){
-        gl_FragDepth = gl_FragCoord.z;
     }
-    else{
-        gl_FragDepth = 0.9;
-    }  */
+
+
+	f_color.rgb = mix(fogcolor, vec3(texColor.rgb * v_lightValue), fog);
 
 
 	//float depth = LinearizeDepth(gl_FragCoord.z)/far;
