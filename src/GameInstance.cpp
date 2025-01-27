@@ -154,7 +154,7 @@ void GameInstance::handleInput() {
                     break;
                 case SDLK_F1:
                     buttonF1 = true;
-                    saveScreenshotToFile(numerate_name("screenshots/screenshot_", ".png"), SDL_handler::getWidth(), SDL_handler::getHeight());
+                    screenshotHandler.takeScreenshot();
                     break;
                 case SDLK_1:
                     player->set_inventory_slot(1);

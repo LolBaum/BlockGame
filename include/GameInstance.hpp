@@ -100,5 +100,6 @@ public:
     Texture* UItexture;
     InventoryMesh* ui;
     Renderer* renderer;
+    ScreenshotHandeler screenshotHandler;
 };
 #endif //BLOCKGAME_GAMEINSTANCE_H

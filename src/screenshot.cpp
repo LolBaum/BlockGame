@@ -5,9 +5,27 @@
 #include <string>
 #include <glew.h>
 #include "util_funcs.hpp"
+#include "screenshot.hpp"
+#include "SDL_handler.hpp"
+
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+
 
 #include <sys/stat.h>
 
+/// based on https://stackoverflow.com/a/17223443/14779894
+/// and https://stackoverflow.com/a/58523115/14779894
+std::string return_current_time_and_date()
+{
+    auto now = std::chrono::system_clock::now();
+    auto in_time_t = std::chrono::system_clock::to_time_t(now);
+
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&in_time_t), "%Y_%m_%d_%H%M%S");
+    return ss.str();
+}
 
 
 std::string numerate_name(std::string name, std::string ending, int max_tests){
@@ -33,23 +51,60 @@ void savePNG(std::string filename, int windowWidth, int windowHeight, int num_ch
         std::cout << "Saved image as: " << filename << std::endl;
     }
     else{
-        std::cout << "Couldn't save Image." << std::endl;
+        std::cerr << "Couldn't save Image." << std::endl;
     }
 }
 
 
-void saveScreenshotToFile(std::string filename, int windowWidth, int windowHeight) {    
+void ScreenshotHandeler::runScreenshotThread() {
+    while(threadShouldRun){
+        std::unique_lock lk(m);
+        cv.wait(lk, [this]{ return dataIsReady; });
+        for (auto s : queue) {
+            savePNG(s->filename, s->width, s->height, s->channels, *s->pixels.get());
+        }
+        queue.clear();
+        lk.unlock();
+        cv.notify_one();
+    }
+    std::cout << "screenshout thread ending" << std::endl;
+}
+
+
+ScreenshotHandeler::ScreenshotHandeler() {
+    queue = std::vector<std::shared_ptr<ScreenshotData>>();
+    threadShouldRun = true;
+    thread = std::thread(&ScreenshotHandeler::runScreenshotThread, this);
+}
+
+ScreenshotHandeler::~ScreenshotHandeler() {
+    threadShouldRun = false;
+    cv.notify_one();
+    thread.join();
+}
+
+
+void ScreenshotHandeler::saveScreenshotToFile(std::string filename, int windowWidth, int windowHeight) {
     const int numberOfPixels = windowWidth * windowHeight * 3;
-    unsigned char *pixels =  new unsigned char[numberOfPixels];
+    std::shared_ptr<unsigned char*> pixels = std::make_shared<unsigned char*>(new unsigned char[numberOfPixels]);
 
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glReadBuffer(GL_FRONT);
-    glReadPixels(0, 0, windowWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+    glReadPixels(0, 0, windowWidth, windowHeight, GL_RGB, GL_UNSIGNED_BYTE, *pixels.get());
+    stbi_flip_vertically_on_write(1);
 
-	int num_chanels = 3;
-	stbi_flip_vertically_on_write(1);
-    savePNG(filename.c_str(), windowWidth, windowHeight, num_chanels, pixels);
-
-	delete[] pixels;
+    // TODO QUEUE
+    //  https://en.cppreference.com/w/cpp/thread/condition_variable
+    dataIsReady = false;
+    {
+        std::lock_guard lk(m);
+        auto data = std::make_shared<ScreenshotData>(ScreenshotData({filename, windowWidth, windowHeight, 3, pixels}));
+        queue.push_back(data);
+        dataIsReady = true;
+    }
+    cv.notify_one();
 }
 
+void ScreenshotHandeler::takeScreenshot() {
+    saveScreenshotToFile("screenshots/screenshot_" + return_current_time_and_date() + ".png", SDL_handler::getWidth(), SDL_handler::getHeight());
+}
