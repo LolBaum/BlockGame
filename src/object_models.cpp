@@ -860,7 +860,7 @@ void TextMesh::render(GLuint textureId) {  // disable Depth testing
 
     glDisable(GL_DEPTH_TEST);
     //glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
+    //glDepthMask(GL_TRUE);
     vertexBuffer.bind();
     indexBuffer.bind();
 

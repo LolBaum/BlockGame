@@ -11,6 +11,9 @@ build/graphics/GL_Gimps/Work_in_Progress
 cmake-build-*/
 .idea/
 
+build/graphics/GL_Gimps
+
+
 *.backup
 
 !build/fonts

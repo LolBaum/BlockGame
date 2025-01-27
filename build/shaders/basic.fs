@@ -43,7 +43,7 @@ void main()
     }
 
 
-	f_color.rgb = mix(fogcolor, vec3(texColor.rgb * v_lightValue), fog);
+	f_color = vec4(mix(fogcolor, vec3(texColor.rgb * v_lightValue), fog), 1.0);
 
 
 	//float depth = LinearizeDepth(gl_FragCoord.z)/far;

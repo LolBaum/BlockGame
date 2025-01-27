@@ -176,7 +176,8 @@ public:
 
     void setModeGui(){
         glDisable(GL_DEPTH_TEST);
-        glDisable(GL_BLEND);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		guiFB.bind();
         glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -199,7 +200,8 @@ public:
     void setModeScreen(){
         glDisable(GL_DEPTH_TEST);
 		glDepthMask(GL_TRUE); // enable depth writes so glClear won't ignore clearing the depth buffer
-		glDisable(GL_BLEND);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor(0.6, 0.7, 1.0, 1.0);
