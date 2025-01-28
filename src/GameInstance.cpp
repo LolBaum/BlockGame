@@ -340,6 +340,8 @@ void GameInstance::applyGameMechanics() {
     SuperChunk::load_unload_singleChunk();
     SuperChunk::load_unload_singleChunk();
     SuperChunk::load_unload_singleChunk();
+
+    SuperChunk::getGeneratedChunks();
 }
 
 void GameInstance::render() {

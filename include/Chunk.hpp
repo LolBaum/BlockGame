@@ -63,6 +63,8 @@ struct Chunk{
 	void serialize(const std::string& worldSavePath);
 	bool deserialize(const std::string& worldSavePath, int load_x, int load_y, int load_z);
 
+    bool isActive; // TODO make private
+
 private:
 	Block blocks[CX][CY][CZ];
 	glm::vec3 pos;
@@ -81,6 +83,8 @@ private:
 	ChunkMesh mesh_transparent;
 
     int px, py, pz;
+
+
 
 
 };

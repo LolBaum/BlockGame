@@ -15,7 +15,10 @@
 
 
 #include "glm/glm.hpp"
+#include "WorldGenerator.hpp"
 #include <glm/gtc/noise.hpp> //swap with own header
+
+#include <readerwriterqueue.h>
 
 class SuperChunk
 {
@@ -59,6 +62,8 @@ public:
 
 	static void load_unload_singleChunk();
 
+    static void getGeneratedChunks();
+
 
 	static int getNumChunks();
 	static int getNumFilledChunks();
@@ -98,6 +103,13 @@ private:
     static Box* debugBox;
 
 	static std::string worldSavePath;
+
+    static moodycamel::ReaderWriterQueue<shared_ptr<Chunk*>> ChunkGenQueueIn;
+    static moodycamel::ReaderWriterQueue<shared_ptr<Chunk*>> ChunkGenQueueOut;
+
+    static WorldGenerator* worldGenerator;
+
+
 };
 
 

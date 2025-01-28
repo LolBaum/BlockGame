@@ -39,7 +39,14 @@ FetchContent_Declare(
         GIT_PROGRESS    TRUE
 )
 
-FetchContent_MakeAvailable(glew glm SDL2)
+# readerwriterqueue
+FetchContent_Declare(
+        readerwriterqueue
+        GIT_REPOSITORY    https://github.com/cameron314/readerwriterqueue
+        GIT_TAG           master
+)
+
+FetchContent_MakeAvailable(glew glm SDL2 readerwriterqueue)
 
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 
@@ -69,7 +76,7 @@ ENDIF()
 add_executable(BlockGame ${all_SRCS})
 
 # Link to dependencies
-target_link_libraries(BlockGame libglew_static glm::glm ${SDL_LIBRARIES})
+target_link_libraries(BlockGame libglew_static glm::glm ${SDL_LIBRARIES} readerwriterqueue)
 
 get_cmake_property(_variableNames VARIABLES)
 list (SORT _variableNames)
