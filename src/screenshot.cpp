@@ -57,12 +57,14 @@ void savePNG(std::string filename, int windowWidth, int windowHeight, int num_ch
 
 
 void ScreenshotHandeler::runScreenshotThread() {
+    dataIsReady = false;
     while(threadShouldRun){
         std::unique_lock lk(m);
-        cv.wait(lk, [this]{ return dataIsReady; });
+        cv.wait(lk); // TODO: use wait_for() with timeout ?
         for (auto s : queue) {
             savePNG(s->filename, s->width, s->height, s->channels, *s->pixels.get());
         }
+        dataIsReady = false;
         queue.clear();
         lk.unlock();
         cv.notify_one();
@@ -95,7 +97,7 @@ void ScreenshotHandeler::saveScreenshotToFile(std::string filename, int windowWi
 
     // TODO QUEUE
     //  https://en.cppreference.com/w/cpp/thread/condition_variable
-    dataIsReady = false;
+
     {
         std::lock_guard lk(m);
         auto data = std::make_shared<ScreenshotData>(ScreenshotData({filename, windowWidth, windowHeight, 3, pixels}));
