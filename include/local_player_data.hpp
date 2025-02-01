@@ -389,33 +389,36 @@ public:
 
         // check y
         is_grounded = false;
-        if (check_collision_y(pos, offset_y)){
-            if (motion.y <= 0){
-                is_grounded = true;
+        if (!isSpectator){
+            if (check_collision_y(pos, offset_y)){
+                if (motion.y <= 0){
+                    is_grounded = true;
+                }
+                correct_motion.y = 0.0f;
+                pos.y = position.y -motion.y;
+                velocity.y = -0.0;
             }
-            correct_motion.y = 0.0f;
-            pos.y = position.y -motion.y;
-            velocity.y = -0.0;
+
+
+            // add is_gounded to x and z to add wall Climbing
+            // check x
+
+            if (check_collision_x(pos, sign_x)){
+                //is_grounded = true;
+                correct_motion.x = 0.0f;
+                pos.x = position.x -motion.x;
+                velocity.x = 0;
+            }
+
+
+            // check z
+            if (check_collision_z(pos, sign_z)){
+                correct_motion.z = 0.0f;
+                pos.z = position.z -motion.z;
+                velocity.z = 0;
+            }
         }
 
-
-        // add is_gounded to x and z to add wall Climbing
-        // check x
-
-        if (check_collision_x(pos, sign_x)){
-            //is_grounded = true;
-            correct_motion.x = 0.0f;
-            pos.x = position.x -motion.x;
-            velocity.x = 0;
-        }
-
-
-        // check z
-        if (check_collision_z(pos, sign_z)){
-            correct_motion.z = 0.0f;
-            pos.z = position.z -motion.z;
-            velocity.z = 0;
-        }
 
         camera.translate(correct_motion);
         update();
@@ -783,6 +786,14 @@ public:
         return is_sprinting;
     }
 
+    bool getIsSpectator(){
+        return isSpectator;
+    }
+
+    void setIsSpectator(bool val){
+        isSpectator = val;
+    }
+
     void setIsSprinting(bool val){
         is_sprinting = val;
     }
@@ -830,6 +841,7 @@ private:
 
     PlayerMovementState movementState = Walking;
     JumpMethod jumpMethod = Fly;
+    bool isSpectator = false;
     bool is_sprinting = false;
     float sprintingFactor = 2;
 

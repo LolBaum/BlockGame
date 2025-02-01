@@ -2,7 +2,7 @@
 // Created by Baum on 23.12.2024.
 //
 #include "GameInstance.hpp"
-
+#include "NoiseFunction.h"
 
 
 void GameInstance::start() {
@@ -152,6 +152,10 @@ void GameInstance::handleInput() {
                     buttonZ = true;
                     render_wireframe = true;
                     break;
+                case SDLK_m:
+                    buttonM = true;
+                    debug_spectator = !debug_spectator;
+                    break;
                 case SDLK_F1:
                     buttonF1 = true;
                     screenshotHandler.takeScreenshot();
@@ -218,6 +222,9 @@ void GameInstance::handleInput() {
                 case SDLK_z:
                     buttonZ = false;
                     render_wireframe = false;
+                    break;
+                case SDLK_m:
+                    buttonM = false;
                     break;
                 case SDLK_c:
                     buttonC = false;
@@ -305,6 +312,7 @@ void GameInstance::applyGameMechanics() {
         }
 
     }
+    player->setIsSpectator(debug_spectator);
     player->zoomIn(buttonC);
 
     player->update();
@@ -432,7 +440,7 @@ void GameInstance::render() {
         ss << vec3_toString(player->getVelocity(), "vel ") << std::endl;
         ss << "Number of Faces: " << SuperChunk::get_num_all_faces() << std::endl;
         ss << "Sight distance: " << player->get_sight_distance() << std::endl;
-
+        ss << "c val: " << abs(EvaluateFBM(player->getPosition().x, player->getPosition().z, 1, 0.0005, 1, 0.5, 2.0)) << std::endl;
         ss << "ticks_since_last_jump: " << ticks_since_last_jump<< std::endl;
 //        ss << player->getJumpMethod() << std::endl;
 //        ss << player->getMovementState() << std::endl;

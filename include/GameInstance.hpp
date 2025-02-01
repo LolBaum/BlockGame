@@ -52,6 +52,7 @@ private:
     bool buttonD = false;
     bool buttonZ = false;
     bool buttonC = false;
+    bool buttonM = false;
     bool buttonSpace = false;
     //bool buttonSpacePress = false;
     bool buttonShift = false;
@@ -63,6 +64,7 @@ private:
     bool mouseButtonClickR = false;
     bool releasedSpaceSinceJump = false;
 
+    bool debug_spectator = false;
     int debug_render_state = 0; // default
     bool graphicalDebug = false;
 
