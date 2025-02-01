@@ -29,32 +29,48 @@ void WorldGenerator::generateChunk(Chunk *chunk) {
     float frequency_b = 128;
     int gras_hight = 2;
     //std::cout << "Chunk: " << vec3_toString(chunk->getPos()) << std::endl;
+//    for (int x = 0; x < CX; x++) {
+//        for (int z = 0; z < CY; z++) {
+//            float a = (glm::perlin(glm::vec2((x + pos_x) / frequency_a, (z + pos_z) / frequency_a)) + 1) / 2;
+//            float b = (glm::perlin(glm::vec2((x + pos_x) / frequency_b, (z + pos_z) / frequency_b)) + 1) / 2 * 48;// + (glm::perlin(glm::vec2((x + pos_x) / 1000, (z + pos_z) / 1000)) + 1)*20;
+//            //int h = a * b;
+//            int h = a * b/4 + 20;
+//
+//            if (h >= pos_y) {
+//                for (int y = 0; (y + pos_y <= h-gras_hight) && (y + pos_y <max_y); y++) {
+//                    chunk->setBlock(x, y, z, 1);
+//                }
+//                if (h<=max_y)
+//                {
+//                    for (int i = h - gras_hight; i <= h-1; i++) {
+//                        chunk->setBlock(x, i - pos_y, z, 2);// add: check if boundings are correct
+//                    }
+//                    chunk->setBlock(x, h - pos_y, z, 3);
+//
+//                    float grass_val = (glm::perlin(glm::vec2((x + pos_x) /4, (z + pos_z) / 4)));
+//                    if (grass_val >0.5){
+//                        //chunk->setBlock(x, h - pos_y+1, z, 4);
+//                        SuperChunk::setBlock((int)(x + pos_x), h+1, (int)(z + pos_z), 4);
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+    int max_h = 128;
+    float fac = 64;
     for (int x = 0; x < CX; x++) {
-        for (int z = 0; z < CY; z++) {
-            float a = (glm::perlin(glm::vec2((x + pos_x) / frequency_a, (z + pos_z) / frequency_a)) + 1) / 2;
-            float b = (glm::perlin(glm::vec2((x + pos_x) / frequency_b, (z + pos_z) / frequency_b)) + 1) / 2 * 48;// + (glm::perlin(glm::vec2((x + pos_x) / 1000, (z + pos_z) / 1000)) + 1)*20;
-            //int h = a * b;
-            int h = a * b/4 + 20;
-
-            if (h >= pos_y) {
-                for (int y = 0; (y + pos_y <= h-gras_hight) && (y + pos_y <max_y); y++) {
-                    chunk->setBlock(x, y, z, 1);
-                }
-                if (h<=max_y)
-                {
-                    for (int i = h - gras_hight; i <= h-1; i++) {
-                        chunk->setBlock(x, i - pos_y, z, 2);// add: check if boundings are correct
-                    }
-                    chunk->setBlock(x, h - pos_y, z, 3);
-
-                    float grass_val = (glm::perlin(glm::vec2((x + pos_x) /4, (z + pos_z) / 4)));
-                    if (grass_val >0.5){
-                        //chunk->setBlock(x, h - pos_y+1, z, 4);
-                        SuperChunk::setBlock((int)(x + pos_x), h+1, (int)(z + pos_z), 4);
-                    }
+        for (int y = 0; y < CY; y++) {
+            for (int z = 0; z < CY; z++) {
+                float h = glm::abs(
+                        glm::perlin(glm::vec3((x + pos_x) / fac, (y + pos_y) / fac, (z + pos_z) / fac)));
+                //std::cout << "perlin: " << h << std::endl;
+                if (h < 0.1) {
+                    chunk->setBlock(x,y,z, 1);
                 }
             }
         }
+
     }
 }
 
