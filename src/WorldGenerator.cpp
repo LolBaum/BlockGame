@@ -4,6 +4,7 @@
 
 #include "WorldGenerator.hpp"
 #include "SuperChunk.hpp"
+#include "NoiseFunction.h"
 #include <condition_variable>
 
 WorldGenerator::WorldGenerator(moodycamel::ReaderWriterQueue<shared_ptr<Chunk*>>* in,
@@ -58,13 +59,18 @@ void WorldGenerator::generateChunk(Chunk *chunk) {
 //    }
 
     float max_h = 128;
-    float fac = 64;
+    float fac = 1;
     for (int x = 0; x < CX; x++) {
         for (int y = 0; y < CY; y++) {
             float h_fac = (y + pos_y) / max_h;
             for (int z = 0; z < CY; z++) {
-                float noise_val = glm::abs(
-                        glm::perlin(glm::vec3((x + pos_x) / fac, (y + pos_y) / fac, (z + pos_z) / fac)));
+//                float noise_val = glm::abs(
+//                        glm::perlin(glm::vec3((x + pos_x) / fac, (y + pos_y) / fac, (z + pos_z) / fac)));
+//                float noise_val = glm::abs(perlinNoise((x + pos_x) / fac, (y + pos_y) / fac, (z + pos_z) / fac, 3, 32));
+
+                float noise_val = glm::abs(EvaluateFBM(x + pos_x, y + pos_y, z + pos_z, 1, 0.02, 3, 0.5, 2.0));
+                float c = abs(EvaluateFBM(x + pos_x, z + pos_z, 1, 0.0005, 1, 0.5, 2.0));
+
                 //std::cout << "perlin: " << h << std::endl;
                 float val = ((noise_val - 1) + (h_fac*2)) * 64;
                 if (val < 0.5) {
