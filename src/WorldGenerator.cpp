@@ -57,15 +57,17 @@ void WorldGenerator::generateChunk(Chunk *chunk) {
 //        }
 //    }
 
-    int max_h = 128;
+    float max_h = 128;
     float fac = 64;
     for (int x = 0; x < CX; x++) {
         for (int y = 0; y < CY; y++) {
+            float h_fac = (y + pos_y) / max_h;
             for (int z = 0; z < CY; z++) {
-                float h = glm::abs(
+                float noise_val = glm::abs(
                         glm::perlin(glm::vec3((x + pos_x) / fac, (y + pos_y) / fac, (z + pos_z) / fac)));
                 //std::cout << "perlin: " << h << std::endl;
-                if (h < 0.1) {
+                float val = ((noise_val - 1) + (h_fac*2)) * 64;
+                if (val < 0.5) {
                     chunk->setBlock(x,y,z, 1);
                 }
             }
