@@ -397,6 +397,7 @@ private:
 	float sizeX;
 	float sizeY;
 
+
 public:
 	TextMesh(float sx, float sy);
 	~TextMesh();

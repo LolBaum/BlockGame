@@ -759,10 +759,10 @@ public:
                 ItemType* item = ItemTypeManager::GetItemType(id);
                 glm::vec3 pos = calculate_slot_position(i);
                 item->get_tex_coords(&x, &y);
-                invMesh->items.addQuad(pos, 0, x, y, 0.11);
+                invMesh->items.addQuad(pos + glm::vec3{10.0, 10.0, 0.0}, 0, x, y, 60);
                 int amount = inventory.get_item(i+1)->getAmount();
                 if (amount > 0){
-                    font->addLine(std::to_string(amount), pos.x * SDL_handler::getAspectRatio(), pos.y-0.06, 0.04);
+                    font->addLine(std::to_string(amount), pos.x + 8, pos.y + 8, 20);
                 }
             }
         }

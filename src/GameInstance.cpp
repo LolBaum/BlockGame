@@ -72,10 +72,15 @@ void GameInstance::initialize() {
 
     compositeShader = new Shader("shaders/composite.vs", "shaders/composite.fs");
     screenShader = new Shader("shaders/frame.vs", "shaders/frame.fs");
-    fontShader = new Shader("shaders/font.vs", "shaders/font.fs");
+    fontShader = new Shader("shaders/font_new.vs", "shaders/font_new.fs");
     UIShader = new Shader("shaders/UI.vs", "shaders/UI.fs");
 
     renderer = new Renderer();
+
+    GLCALL(text_projection_uniformLocation = glGetUniformLocation(fontShader->getShaderId(), "projection"));
+    GLCALL(ui_projection_uniformLocation = glGetUniformLocation(UIShader->getShaderId(), "projection"));
+    ui_projection = glm::ortho(0.0f, (float)SDL_handler::getWidth() , 0.0f, (float)SDL_handler::getHeight());
+
 
     UItexture = new Texture("graphics/UI.png");
 
@@ -381,11 +386,14 @@ void GameInstance::render() {
     renderer->setModeGui();
 
     UIShader->bind();
+    GLCALL(glUniformMatrix4fv(ui_projection_uniformLocation, 1, GL_FALSE, (const GLfloat*) &ui_projection[0][0]));
+
     ui->render(UItexture->get_textureId(), texture->get_textureId());
 
     fontShader->bind();
     font->update();
     glm::vec3 color = {1.0, 1.0, 1.0};
+    GLCALL(glUniformMatrix4fv(text_projection_uniformLocation, 1, GL_FALSE, (const GLfloat*) &ui_projection[0][0]));
     glUniform3f(glGetUniformLocation(fontShader->getShaderId(), "u_textColor"), color.x, color.y, color.z);
     font->render();
 
@@ -438,7 +446,10 @@ void GameInstance::render() {
         time_since_slow_tick = 0;
 
         font->clear();
-        font->addMultipleLines(text, -0.95, 0.9, 0.03);
+
+        float margin = 16.0f;
+        float size = 20;
+        font->addMultipleLines(text, margin, (float)SDL_handler::getHeight()-margin-size, size);
     }
     lastCounter = endCounter;
 

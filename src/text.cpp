@@ -13,6 +13,8 @@ void Font::loadFont(std::string fontPathName){
     glyphesPerRow = 18;
     glypheSizeX = 7;
     glypheSizeY = 10;
+    emptySpace = 1;
+    glypheRatio = (float)glypheSizeX / (float)glypheSizeY;
     ASCII_offset = 32-2;
 
     float sizeX = 1.0/((float)sheetSize/(float)glypheSizeX);
@@ -23,9 +25,8 @@ void Font::loadFont(std::string fontPathName){
 }
 
 Font::Font(){
-    this->loadFont("graphics/fontAtlas.png");
+    this->loadFont("graphics/FontAtlas.png");
     textHasChanged = false;
-    aspectRatio = SDL_handler::getAspectRatio();
 
 }
 Font::~Font(){
@@ -51,9 +52,9 @@ void Font::update(){
 void Font::addLine(std::string text, float x, float y, float size){
     textHasChanged = true;
     float index_x, index_y;
-    float size_x = size * aspectRatio;
+    float size_x = size * glypheRatio;
     float size_y = size;
-    float x_offset = size_x * 0.8;
+    float x_offset = size_x - (size_x / glypheSizeX);
     //float x_space_offset = size_x * 0.5;
 
     std::string::const_iterator c;

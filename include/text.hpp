@@ -22,9 +22,10 @@ struct Font{
     int glyphesPerRow;
     int glypheSizeX;
     int glypheSizeY;
+    int emptySpace;
     int ASCII_offset;
     bool textHasChanged;
-    float aspectRatio;
+    float glypheRatio;
     //std::string textBuffer;
 
 
@@ -42,6 +43,9 @@ struct Font{
     void addMultipleLines(std::string text, float x, float y, float size, float line_offset=0.01);
 
     void render();
+
+
+
 };
 
 

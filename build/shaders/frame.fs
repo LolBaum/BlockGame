@@ -10,6 +10,12 @@ layout (binding = 0) uniform sampler2D screenTexture;
 // revealage threshold buffer
 layout (binding = 1) uniform sampler2D u_texture_gui;
 
+
+float w = 1920.0;
+float h = 1080.0;
+float px_w = 1.0/w/2;
+float px_h = 1.0/h/2;
+
 vec4 kernal_sharpen(vec2 Coords, sampler2D Texture, float inverse_sharpness){
     float offset = 1.0 / inverse_sharpness; 
 
@@ -56,14 +62,39 @@ vec4 weighted_grayscale(vec4 c){
     return color;
 }
 
+vec4 samplePoint (vec2 pos){
+//     vec4 screen =  texture(screenTexture, pos);
+//     vec4 gui = texture(u_texture_gui, pos);
+//     vec4 col = mix(screen, gui, gui.a);
+//     return col;
+return texture(u_texture_gui, pos);
+}
+
 void main()
 { 
     // Standard
     FragColor = texture(screenTexture, TexCoords);
 
+
+
+        vec4 f0 = samplePoint(TexCoords);
+        vec4 f1 = samplePoint(TexCoords + vec2(px_w, px_h));
+        vec4 f2 = samplePoint(TexCoords + vec2(-px_w, px_h));
+        vec4 f3 = samplePoint(TexCoords + vec2(-px_w, -px_h));
+        vec4 f4 = samplePoint(TexCoords + vec2(px_w, -px_h));
     if (texture(u_texture_gui, TexCoords).a > 0.1){
-        FragColor = texture(u_texture_gui, TexCoords);
+        FragColor = f0;
+
+    }else{
+        vec4 screen =  texture(screenTexture, TexCoords);
+        vec4 gui = (f0*4 + f1 + f2 + f3 + f4)/8;
+    FragColor = mix(screen, gui, gui.a);
     }
+
+
+
+FragColor.a = 1.0;
+
 
     //FragColor1 = vec4(texture(screenTexture, TexCoords).x, 0, 0, 1);
 

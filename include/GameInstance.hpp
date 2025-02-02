@@ -100,5 +100,9 @@ public:
     Texture* UItexture;
     InventoryMesh* ui;
     Renderer* renderer;
+
+    uint32 ui_projection_uniformLocation;
+    uint32 text_projection_uniformLocation;
+    glm::mat4 ui_projection;
 };
 #endif //BLOCKGAME_GAMEINSTANCE_H

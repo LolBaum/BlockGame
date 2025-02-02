@@ -654,7 +654,12 @@ void SkyQuad::render(glm::vec3 lookAt, const GLfloat* InvProjection, const GLflo
 /////////////////////////////////////////////////////////////////////
 // UImesh
 glm::vec3 calculate_slot_position(int slot_number){
-	return glm::vec3((float)slot_number/6.5 -0.7, -0.9, 0.09);
+    float margin_y = 16;
+    float size = 80;
+    float padding_between = 4;
+    float start_left = ((float)SDL_handler::getWidth() - (size*9 + padding_between*8)) / 2;
+	return glm::vec3(start_left + size*(slot_number+1) + padding_between*(slot_number),
+                     margin_y, 0.0);
 }
 
 
@@ -710,16 +715,16 @@ void UImesh::addQuad(glm::vec3 position, int rotation, int tex_x, int tex_y, flo
     indices.push_back(usedVertices + 2);
     indices.push_back(usedVertices + 3);
     usedIndices += 6;
-    vertices.push_back(Vertex{ (position.x - 0.5f*scale)*aspect_ratio, position.y - 0.5f*scale, position.z + 0.5f,
+    vertices.push_back(Vertex{ (position.x), position.y, 0.0f,
                     uv_x_1, uv_y_1,
                     1.0});
-    vertices.push_back(Vertex{ (position.x + 0.5f*scale)*aspect_ratio, position.y - 0.5f*scale, position.z + 0.5f,
+    vertices.push_back(Vertex{ (position.x + scale), position.y, 0.0f,
                     uv_x_2, uv_y_1,
                     1.0 });
-    vertices.push_back(Vertex{ (position.x + 0.5f*scale)*aspect_ratio, position.y + 0.5f*scale, position.z + 0.5f,
+    vertices.push_back(Vertex{ (position.x + scale), position.y + scale, 0.0f,
                     uv_x_2, uv_y_2,
                     1.0 });
-    vertices.push_back(Vertex{ (position.x - 0.5f*scale)*aspect_ratio, position.y + 0.5f*scale, position.z + 0.5f,
+    vertices.push_back(Vertex{ (position.x), position.y + scale, 0.0f,
                     uv_x_1, uv_y_2,
                     1.0 });
     usedVertices += 4; 
@@ -765,7 +770,7 @@ ItemBarMesh::ItemBarMesh(int texture_size) : UImesh(texture_size){
     glm::vec3 pos;
     for(int i=0; i<9; i++){
         pos = calculate_slot_position(i);
-        addQuad(pos, 0, 0, 0, 0.15);
+        addQuad(pos, 0, 0, 0, 80);
 
     }
     //pos = glm::vec3((float)5/6.5 -0.7, -0.9, 0.09);
@@ -795,7 +800,7 @@ void InventoryMesh::setSlot(int slot_number){ // IMPORTANT: if the slot number c
         //std::cout << "test: SetSlot" << std::endl;
         slotSelector.clearMesh();
         glm::vec3 pos = calculate_slot_position(slot_number);
-        slotSelector.addQuad(pos, 0, 1, 0, 0.16);
+        slotSelector.addQuad(pos, 0, 1, 0, 80);
         slotSelector.update();
         last_selected_slot = slot_number;
     }
@@ -864,7 +869,6 @@ void TextMesh::render(GLuint textureId) {  // disable Depth testing
     vertexBuffer.bind();
     indexBuffer.bind();
 
-    //GLCALL(glUniformMatrix4fv(modelViewProjMatrixLocation, 1, GL_FALSE, modelViewProj));
     //std::cout << usedIndices << std::endl;
     GLCALL(glActiveTexture(GL_TEXTURE0));
     GLCALL(glBindTexture(GL_TEXTURE_2D, textureId));

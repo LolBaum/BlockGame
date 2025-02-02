@@ -39,6 +39,8 @@ private:
     glm::vec4 zeroFillerVec = glm::vec4(0.0f);
 	glm::vec4 oneFillerVec = glm::vec4(1.0f);
 
+    GLuint ui_projection_uniformLocation;
+
 public:
     Renderer(){
         /* glGenVertexArrays(1, &quadVAO);
