@@ -402,6 +402,7 @@ public:
 	TextMesh(float sx, float sy);
 	~TextMesh();
 	void reserveCharacters(int numChars);
-	void addCharacter(glm::vec2 position, int rotation = 0, float x = 0, float y = 0, float scale_x = 0.1, float scale_y = 0.1);
+	void addCharacter(glm::vec2 position, int rotation = 0, float x = 0, float y = 0,
+                      float scale_x = 0.1, float scale_y = 0.1, float brightness=1.0);
 	void render(GLuint texture_id);
 };

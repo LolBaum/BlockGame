@@ -829,7 +829,8 @@ void TextMesh::reserveCharacters(int numChars){
     reserveIndices(numChars * 6);
 }
 
-void TextMesh::addCharacter(glm::vec2 position, int rotation, float x, float y, float scale_x, float scale_y){
+void TextMesh::addCharacter(glm::vec2 position, int rotation, float x, float y, float scale_x, float scale_y,
+                            float brightness){
 
     float uv_x_1 = x * sizeX;
     float uv_x_2 = (x + 1) * sizeX;
@@ -847,16 +848,16 @@ void TextMesh::addCharacter(glm::vec2 position, int rotation, float x, float y, 
 
     vertices.push_back(Vertex{ position.x + 0.0f, position.y + 0.0f, 0.0f,
                                uv_x_1, uv_y_1,
-                               1.0});
+                               brightness});
     vertices.push_back(Vertex{ position.x + scale_x, position.y + 0.0f, 0.0f,
                                uv_x_2, uv_y_1,
-                               1.0 });
+                               brightness });
     vertices.push_back(Vertex{ position.x + scale_x, position.y + scale_y, 0.0f,
                                uv_x_2, uv_y_2,
-                               1.0 });
+                               brightness});
     vertices.push_back(Vertex{ position.x + 0.0f, position.y + scale_y, 0.0f,
                                uv_x_1, uv_y_2,
-                               1.0 });
+                               brightness});
 
     usedVertices += 4;
 }

@@ -16,6 +16,8 @@ void Font::loadFont(std::string fontPathName){
     emptySpace = 1;
     glypheRatio = (float)glypheSizeX / (float)glypheSizeY;
     ASCII_offset = 32-2;
+    renderShadow = true;
+    shadowBrightness = 0.2;
 
     float sizeX = 1.0/((float)sheetSize/(float)glypheSizeX);
 	float sizeY = 1.0/((float)sheetSize/(float)glypheSizeY);;
@@ -48,8 +50,7 @@ void Font::update(){
     }
     
 }
-
-void Font::addLine(std::string text, float x, float y, float size){
+void Font::_addLine(std::string text, float x, float y, float size, float brightness){
     textHasChanged = true;
     float index_x, index_y;
     float size_x = size * glypheRatio;
@@ -70,9 +71,16 @@ void Font::addLine(std::string text, float x, float y, float size){
         index_x = ascii_char % glyphesPerRow;
         index_y = ascii_char / glyphesPerRow;
 
-        mesh->addCharacter(pos, 0, index_x, index_y, size_x, size_y);
+        mesh->addCharacter(pos, 0, index_x, index_y, size_x, size_y, brightness);
         pos.x += x_offset;
-    } 
+    }
+}
+void Font::addLine(std::string text, float x, float y, float size, float brightness){
+    float shadow_offset = size / glypheSizeY;
+    if (renderShadow){
+        _addLine(text, x+shadow_offset, y - shadow_offset, size, shadowBrightness);
+    }
+    _addLine(text, x, y, size, brightness);
 }
 
 void Font::addMultipleLines(std::string text, float x, float y, float size, float line_offset){

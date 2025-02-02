@@ -27,9 +27,9 @@ struct Font{
     bool textHasChanged;
     float glypheRatio;
     //std::string textBuffer;
+    bool renderShadow;
+    float shadowBrightness;
 
-
-    
     void loadFont(std::string fontPathName);
 
     Font();
@@ -39,7 +39,8 @@ struct Font{
 
     void update();
 
-    void addLine(std::string text, float x, float y, float size);
+    void _addLine(std::string text, float x, float y, float size, float brightness=1.0);
+    void addLine(std::string text, float x, float y, float size, float brightness=1.0);
     void addMultipleLines(std::string text, float x, float y, float size, float line_offset=0.01);
 
     void render();
