@@ -72,7 +72,7 @@ void GameInstance::initialize() {
 
     compositeShader = new Shader("shaders/composite.vs", "shaders/composite.fs");
     screenShader = new Shader("shaders/frame.vs", "shaders/frame.fs");
-    fontShader = new Shader("shaders/font_new.vs", "shaders/font_new.fs");
+    fontShader = new Shader("shaders/font.vs", "shaders/font.fs");
     UIShader = new Shader("shaders/UI.vs", "shaders/UI.fs");
 
     renderer = new Renderer();
