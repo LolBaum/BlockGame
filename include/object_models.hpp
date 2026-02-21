@@ -318,11 +318,16 @@ struct SkyQuad:Quad{
 	uint32 lookAt_uniformLocation;
 	uint32 InvProjection_uniformLocation;
     uint32 InvView_uniformLocation;
+    uint32 NoiseTex_uniformLocation;
+    uint32 Resolution_uniformLocation;
+    uint32 Time_uniformLocation;
 	Shader shader = Shader();
+    GLuint noiseTex;
 	//uint32 sunPosition_uniformLocation;
 	//uint32 color_uniformLocation;
 	SkyQuad(const char* VertexShaderFilename, const char* fragmentShaderFilename);
 	void render(glm::vec3 lookAt, const GLfloat* InvProjection, const GLfloat* InvView);
+    void GenerateNoise();
 };
 
 

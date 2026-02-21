@@ -111,3 +111,7 @@ SDL_Window* SDL_handler::getWindow(){
     return window;
 }
 
+float SDL_handler::GetRunTimeSeconds() {
+    return SDL_GetTicks() / 1000.0f;;
+}
+

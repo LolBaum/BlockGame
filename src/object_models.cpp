@@ -627,18 +627,53 @@ void Quad::draw(){
 /////////////////////////////////////////////////////////////////////////
 // SkyQuad
 
+void SkyQuad::GenerateNoise(){
+    const int size = 256;
+    std::vector<unsigned char> noiseData(size * size);
+
+    for (int i = 0; i < size * size; i++)
+    {
+        noiseData[i] = rand() % 256;
+    }
+
+    noiseTex;
+    glGenTextures(1, &noiseTex);
+    glBindTexture(GL_TEXTURE_2D, noiseTex);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED,
+                 size, size,
+                 0, GL_RED, GL_UNSIGNED_BYTE, noiseData.data());
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
 
 SkyQuad::SkyQuad(const char* VertexShaderFilename, const char* fragmentShaderFilename):Quad(){
     shader.initialize(VertexShaderFilename, fragmentShaderFilename);
     lookAt_uniformLocation = glGetUniformLocation(shader.getShaderId(), "u_LookAt");
     InvProjection_uniformLocation = glGetUniformLocation(shader.getShaderId(), "InvProjection");
     InvView_uniformLocation = glGetUniformLocation(shader.getShaderId(), "InvView");
+    NoiseTex_uniformLocation = glGetUniformLocation(shader.getShaderId(), "u_NoiseTex");
+    Resolution_uniformLocation = glGetUniformLocation(shader.getShaderId(), "u_Resolution");
+    Time_uniformLocation = glGetUniformLocation(shader.getShaderId(), "u_Time");
+    GenerateNoise();
 }
 void SkyQuad::render(glm::vec3 lookAt, const GLfloat* InvProjection, const GLfloat* InvView){
     shader.bind();
     GLCALL(glUniform3f(lookAt_uniformLocation, lookAt.x, lookAt.y, lookAt.z));
+    GLCALL(glUniform2f(Resolution_uniformLocation, SDL_handler::getWidth(), SDL_handler::getHeight()));
+
     GLCALL(glUniformMatrix4fv(InvProjection_uniformLocation, 1, GL_FALSE, InvProjection));
     GLCALL(glUniformMatrix4fv(InvView_uniformLocation, 1, GL_FALSE, InvView));
+
+    GLCALL(glActiveTexture(GL_TEXTURE0));
+    GLCALL(glBindTexture(GL_TEXTURE_2D, noiseTex));
+    GLCALL(glUniform1i(NoiseTex_uniformLocation, 0));
+    GLCALL(glUniform1f(Time_uniformLocation, SDL_handler::GetRunTimeSeconds()));
+
 
     glDisable(GL_DEPTH_TEST);
     glBindVertexArray(quadVAO);

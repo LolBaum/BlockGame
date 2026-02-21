@@ -24,6 +24,7 @@ public:
 	static SDL_Window* getWindow();
 
 	static void SetWindowSize_ToDisplay();
+    static float GetRunTimeSeconds();
 
 private:
 	static SDL_Window* window;
