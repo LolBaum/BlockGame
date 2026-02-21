@@ -159,6 +159,71 @@ void SuperChunk::unloadChunk(glm::vec3 pos) {
 //    }
 //}
 
+// Very fast hash-based deterministic random
+bool IsRareEvent(uint32_t a, uint32_t b)
+{
+    uint32_t x = a * 374761393u + b * 668265263u; // mix inputs
+    x = (x ^ (x >> 13)) * 1274126177u;
+    x ^= (x >> 16);
+
+    // Convert to float in [0,1)
+    float value = (x & 0xFFFFFF) / float(0x1000000);
+
+    return value < 0.005f; // 2%
+}
+
+bool IsRareEvent(glm::vec2 pos)
+{
+    return IsRareEvent(pos.x, pos.y);
+}
+
+//Chat GPT
+void SuperChunk::createTree(int x, int y, int z)
+{
+    const int BLOCK_WOOD   = 5;
+    const int BLOCK_LEAVES = 7;
+
+    int height = 4 + (glm::linearRand(0, 2)); // 4–6 height
+
+    // --- Trunk ---
+    for (int i = 0; i < height; ++i)
+    {
+        setBlock(x, y + i, z, BLOCK_WOOD, BlockDirection::Y_positive);
+    }
+
+    int topY = y + height -1;
+    int leafBase = topY - 3;
+
+    // --- Bottom two leaf layers (radius 2, trimmed corners) ---
+    for (int layer = 0; layer < 2; ++layer)
+    {
+        int currentY = leafBase + layer;
+
+        for (int dx = -2; dx <= 2; ++dx)
+        {
+            for (int dz = -2; dz <= 2; ++dz)
+            {
+                if (abs(dx) == 2 && abs(dz) == 2)
+                    continue;
+
+                setBlock(x + dx, currentY, z + dz, BLOCK_LEAVES, BlockDirection::Y_positive);
+            }
+        }
+    }
+
+    // --- Third layer (radius 1) ---
+    for (int dx = -1; dx <= 1; ++dx)
+    {
+        for (int dz = -1; dz <= 1; ++dz)
+        {
+            setBlock(x + dx, leafBase + 2, z + dz, BLOCK_LEAVES, BlockDirection::Y_positive);
+        }
+    }
+
+    // --- Top leaf ---
+    setBlock(x, leafBase + 3, z, BLOCK_LEAVES, BlockDirection::Y_positive);
+}
+
 void SuperChunk::generateChunk(Chunk* chunk){
     std::cout << "Generating Chunk " << vec3_toString(chunk->getPos()) << std::endl;
     float pos_x = chunk->getPos().x;
@@ -167,14 +232,16 @@ void SuperChunk::generateChunk(Chunk* chunk){
     int max_y = pos_y + CY;
     float frequency_a = 16;
     float frequency_b = 128;
+    float frequency_c = 512;
     int gras_hight = 2;
     //std::cout << "Chunk: " << vec3_toString(chunk->getPos()) << std::endl;
     for (int x = 0; x < CX; x++) {
         for (int z = 0; z < CY; z++) {
             float a = (glm::perlin(glm::vec2((x + pos_x) / frequency_a, (z + pos_z) / frequency_a)) + 1) / 2;
             float b = (glm::perlin(glm::vec2((x + pos_x) / frequency_b, (z + pos_z) / frequency_b)) + 1) / 2 * 48;// + (glm::perlin(glm::vec2((x + pos_x) / 1000, (z + pos_z) / 1000)) + 1)*20;
+            float c = (glm::perlin(glm::vec2((x + pos_x) / frequency_c, (z + pos_z) / frequency_c)) + 1) / 2*8;
             //int h = a * b;
-            int h = a * b/4 + 20;
+            int h = a * b/4 + c*4 + 20;
 
             //int h = (glm::abs(glm::perlin(glm::vec2((x + pos_x) / 16.0, (z + pos_z) / 16.0)))) * 16;
             //std::cout << "perlin: " << h << std::endl;
@@ -199,6 +266,10 @@ void SuperChunk::generateChunk(Chunk* chunk){
                     if (grass_val >0.5){
                         //chunk->setBlock(x, h - pos_y+1, z, 4);
                         SuperChunk::setBlock((int)(x + pos_x), h+1, (int)(z + pos_z), 4);
+                    }
+
+                    if (IsRareEvent(glm::vec2((x + pos_x), (z + pos_z)))){
+                        SuperChunk::createTree((int)(x + pos_x), h+1, (int)(z + pos_z));
                     }
 
                 }

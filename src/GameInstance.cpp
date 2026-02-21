@@ -378,19 +378,27 @@ void GameInstance::render() {
 
     GLCALL(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 
-    renderer->setModeGui();
 
-    UIShader->bind();
-    ui->render(UItexture->get_textureId(), texture->get_textureId());
 
-    fontShader->bind();
-    font->update();
-    glm::vec3 color = {1.0, 1.0, 1.0};
-    glUniform3f(glGetUniformLocation(fontShader->getShaderId(), "u_textColor"), color.x, color.y, color.z);
-    font->render();
+    if (show_text){
+        renderer->setModeGui();
 
-    ItemFont->update();
-    ItemFont->render();
+        UIShader->bind();
+        ui->render(UItexture->get_textureId(), texture->get_textureId());
+
+        fontShader->bind();
+        font->update();
+        glm::vec3 color = {1.0, 1.0, 1.0};
+        glUniform3f(glGetUniformLocation(fontShader->getShaderId(), "u_textColor"), color.x, color.y, color.z);
+
+        ItemFont->update();
+
+        font->render();
+        ItemFont->render();
+    }
+
+
+
 
     // Third rendering stage: Compositing
     renderer->setModeComposite();

@@ -18,6 +18,7 @@ uniform sampler2D u_NoiseTex;
 
 uniform vec2 u_Resolution;
 uniform float u_Time;
+const float u_DayLength = 300;
 
 const vec4 iMouse = vec4(0);
 const float _fov = 91.0;
@@ -135,7 +136,25 @@ void main()
     vec3 col;
 
     // ----- Sun -----
-    vec3 light = normalize(vec3(0.9, 0.1, 0.9));
+    // fraction of day (0 … 1)
+    float dayFrac = fract(u_Time / u_DayLength);
+
+ // shift so 0 = sunrise, π/2 = noon, 1 = next sunrise
+    float sunAngle = dayFrac * 2.0 * 3.14159265359 - 1.57079632679; // -π/2
+
+    // tilt of Earth / seasonal variation
+    // you can tweak lambda to tilt the orbit horizontally
+    float lambda = radians(0.0);
+
+    // sun direction in world space (y=up)
+    vec3 sunDir = normalize(vec3(
+        cos(sunAngle) * cos(lambda),
+        sin(sunAngle),
+        0.0
+    ));
+
+
+    vec3 light = sunDir;//normalize(vec3(0.9, 0.1, 0.9));
     float sundot = clamp(dot(rd, light), 0.0, 1.0);
 
     // ----- Sky gradient -----

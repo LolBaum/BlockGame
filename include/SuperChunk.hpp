@@ -38,6 +38,7 @@ public:
 	static void unloadChunk(int x, int y, int z);
 	static void unloadChunk(glm::vec3 pos);
 
+    static void createTree(int x, int y, int z);
 
 	static void generateChunk(Chunk* chunk);
 
