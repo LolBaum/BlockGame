@@ -15,14 +15,30 @@ Table of Contents
 
 Controls
 --------
-| Button                        | Action       |
-|-------------------------------|--------------|
-| Move mouse                    | Look around  |
-| W, A, S, D                    | Move         |
-| Space                         | Jump         |
-| Left mouse button             | Remove block |
-| Right mouse button            | Place block  |
-| 0-9                           | Select item  |
+### Gameplay
+| Button             | Action          |
+|--------------------|-----------------|
+| Move mouse         | Look around     |
+| W, A, S, D         | Move            |
+| Space              | Jump            |
+| Left mouse button  | Remove block    |
+| Right mouse button | Place block     |
+| 0-9                | Select item     |
+    |
+
+### Utilities & Debugging
+
+| Button | Action                  |
+|--------|-------------------------| 
+| F1     | Take Screenshot         |
+| Z      | Render Wireframe        |
+| ESC    | Quit                    |
+| Y      | Toggle UI text          |
+| G      | Toggle visual debugging |
+
+
+
+
 
 <!---
 Paths
